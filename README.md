@@ -5,27 +5,46 @@ Enhanced React Productivity Dashboard combines a Habit Tracker, To-Do List, and 
 
 ## Features:
 #### Dashboard:
-- Personalized Greetings: Start your day with motivational quotes and personalized greetings to set a positive tone for your day.
-- Quick Overview: Get a snapshot of your daily goals, upcoming tasks, and progress right at the beginning.
-- The Habit Tracker Widget showcases your daily habits.
-- The Tasks Widget presents your to-dos at a glance.
-- The Reports Widgets deliver detailed reports on your productivity
+- Personalized Greetings
+- Quick Overview: Instantly access a snapshot of your daily objectives and progress, streamlining your productivity planning.
 
-  #### Dashboard:
+#### Habit Tracker:
+- Motivational Greetings
+- Week Days List
+- Habit List | Editable Habits
+- Progress Statistics
+- Detailed Analysis
+
+#### To-Do List:
+- Task CRUD Operations
+- A modal interface for adding and editing tasks, enhancing user experience with a clear, focused interaction model.
+- Real-Time Date and Time Handling
+- Task Prioritization (Low, Medium, High)
+- Task Completion Tracking
+- Sorted and Grouped Tasks
+
+#### Pomodoro Timer:
+- Customizable Timer
+- Adjustable Session Durations (Pomodoro, Short Break, Long Break)
+- Timer Circle Visualization
+  
   
 ## Technologies Used:
-- React: For building the user interface.
-- Tailwind CSS: For utility-first styling and responsive design.
-- Material-UI: Provides a comprehensive suite of UI tools for a refined user experience.
-- Framer Motion: Adds smooth and sophisticated animations.
+- React
+- Tailwind CSS
+- React Router
+- Context API
+- React Spring
+- Material-UI
+
   
 ## Installation
 
-To get started with wellNest:
+To get started with NexStep:
 
 ```bash
 git clone https://github.com/HitaBeeDev/wellNest.git
-cd wellNest
+cd NexStep
 npm install
 ```
     
