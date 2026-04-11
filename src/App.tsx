@@ -1,7 +1,7 @@
 
-import { HabitProvider } from "./ContextAPI/HabitContext";
-import { TaskProvider } from "./ContextAPI/TasksContext";
-import { TimeTrackerProvider } from "./ContextAPI/TimeTrackerContext";
+import { HabitProvider } from "./context/HabitContext";
+import { TaskProvider } from "./context/TasksContext";
+import { TimeTrackerProvider } from "./context/TimeTrackerContext";
 
 type AppProps = {
   children: React.ReactNode;

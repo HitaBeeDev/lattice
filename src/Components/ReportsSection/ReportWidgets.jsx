@@ -1,4 +1,4 @@
-import { useHabits } from "../../ContextAPI/HabitContext";
+import { useHabits } from "../../context/HabitContext";
 
 function ReportWidgets() {
   const { averagePercentageForWeek, bestDayMessage, bestHabitMessage } =

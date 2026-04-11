@@ -1,9 +1,9 @@
-import SessionTabs from "./SessionTabs";
-import TimerCircle from "./TimerCircle";
-import TimerButtons from "./TimerButtons";
-import TimerArticles from "./TimerArticles";
+import SessionTabs from "../components/TimeTracker/SessionTabs";
+import TimerCircle from "../components/TimeTracker/TimerCircle";
+import TimerButtons from "../components/TimeTracker/TimerButtons";
+import TimerArticles from "../components/TimeTracker/TimerArticles";
 
-function TimeTrackerPage() {
+function PomodoroPage() {
   return (
     <div>
       <div>
@@ -26,8 +26,8 @@ function TimeTrackerPage() {
           <TimerArticles />
         </div>
       </div>
-    </div>);
-
+    </div>
+  );
 }
 
-export default TimeTrackerPage;
+export default PomodoroPage;

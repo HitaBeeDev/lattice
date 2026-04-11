@@ -1,4 +1,4 @@
-import { useTimeTracker } from "../../ContextAPI/TimeTrackerContext";
+import { useTimeTracker } from "../../context/TimeTrackerContext";
 import articles from "./articles";
 
 function TimerArticles() {

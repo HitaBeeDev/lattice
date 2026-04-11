@@ -1,9 +1,9 @@
-import AddModal from "./ToDoListSection/AddModal";
-import { useHabits } from "../ContextAPI/HabitContext";
-import { useTasks } from "../ContextAPI/TasksContext";
-import { useTimeTracker } from "../ContextAPI/TimeTrackerContext";
+import AddModal from "../components/ToDoListSection/AddModal";
+import { useHabits } from "../context/HabitContext";
+import { useTasks } from "../context/TasksContext";
+import { useTimeTracker } from "../context/TimeTrackerContext";
 
-function HomePage() {
+function DashboardPage() {
   const { tasks, checkedTasks, handleAddButtonClick, showModal } = useTasks();
   const { habits, toggleDayMark, percentages } = useHabits();
   const { maxSeconds, totalSeconds } = useTimeTracker();
@@ -210,4 +210,4 @@ function FlameIcon() {
   );
 }
 
-export default HomePage;
+export default DashboardPage;

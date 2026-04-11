@@ -1,4 +1,4 @@
-import { useHabits } from "../../ContextAPI/HabitContext";
+import { useHabits } from "../../context/HabitContext";
 import habitQuotes from "./habitQuotes";
 
 export default function SummaryStats() {

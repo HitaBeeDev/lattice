@@ -1,4 +1,4 @@
-import { useTasks } from "../../ContextAPI/TasksContext";
+import { useTasks } from "../../context/TasksContext";
 
 function TasksWidget() {
   const { groupedTasks, checkedTasks, generateTaskIdentifier } = useTasks();

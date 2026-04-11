@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import articles from "../Components/TimeTracker/articles";
+import articles from "../components/TimeTracker/articles";
 
 const TimeTrackerContext = createContext();
 

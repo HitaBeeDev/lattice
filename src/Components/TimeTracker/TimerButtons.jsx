@@ -1,4 +1,4 @@
-import { useTimeTracker } from "../../ContextAPI/TimeTrackerContext";
+import { useTimeTracker } from "../../context/TimeTrackerContext";
 
 function TimerButtons() {
   const { handleStart, handlePause, handleReset, toggleEdit, editButtonText } =
