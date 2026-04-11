@@ -6,7 +6,7 @@ import ResultsReport from "./ResultsReport";
 
 function HabitTrackerPage() {
   return (
-    <div className="lg:mt-9 mb-5 mt-20 w-full flex flex-col gap-2 overflow-auto">
+    <div>
       <WelcomeBanner />
 
       <WeekDaysHeader />
@@ -16,8 +16,8 @@ function HabitTrackerPage() {
       <SummaryStats />
 
       <ResultsReport />
-    </div>
-  );
+    </div>);
+
 }
 
 export default HabitTrackerPage;

@@ -1,6 +1,4 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWrench, faEject } from "@fortawesome/free-solid-svg-icons";
 import articles from "../Components/TimeTracker/articles";
 
 const TimeTrackerContext = createContext();
@@ -89,12 +87,6 @@ export const TimeTrackerProvider = ({ children }) => {
     }
   };
 
-  const getTabClassName = (type) => {
-    return `text-md font-semibold w-36 text-center flex flex-col items-center justify-center h-12 rounded-lg text-colorA1 ${
-      sessionType === type ? "bg-colorE5 text-colorA4" : "bg-colorA5"
-    }`;
-  };
-
   const handleStart = () => setIsTimerActive(true);
 
   const handlePause = () => {
@@ -133,17 +125,7 @@ export const TimeTrackerProvider = ({ children }) => {
 
   const toggleEdit = () => setIsEditing((prev) => !prev);
 
-  const editButtonText = isEditing ? (
-    <FontAwesomeIcon
-      icon={faEject}
-      className="text-colorJ21 border-4 text-center p-2 transition-all duration-500 hover:border-colorJ15 hover:text-colorJ15 rounded-full border-colorJ21 w-6 h-6"
-    />
-  ) : (
-    <FontAwesomeIcon
-      icon={faWrench}
-      className="text-colorJ21 border-2 text-center p-2 transition-all duration-500 hover:border-colorJ15 hover:text-colorJ15 rounded-full border-colorJ21 w-6 h-6"
-    />
-  );
+  const editButtonText = isEditing ? "Cancel Edit" : "Edit Time";
 
   return (
     <TimeTrackerContext.Provider
@@ -178,7 +160,6 @@ export const TimeTrackerProvider = ({ children }) => {
         handleUpdateTime,
         toggleEdit,
         editButtonText,
-        getTabClassName,
         sessionDurations,
         radius,
         circumference,

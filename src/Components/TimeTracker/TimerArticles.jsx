@@ -6,14 +6,14 @@ function TimerArticles() {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-colorF2">
+      <h2>
         {articles[currentArticleIndex]?.title}
       </h2>
-      <p className="text-sm font-normal mt-2 text-colorF3 leading-loose">
+      <p>
         {articles[currentArticleIndex]?.content}
       </p>
-    </div>
-  );
+    </div>);
+
 }
 
 export default TimerArticles;

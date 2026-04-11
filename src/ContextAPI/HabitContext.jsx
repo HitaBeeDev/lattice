@@ -128,7 +128,7 @@ export const HabitProvider = ({ children }) => {
 
   let bestHabitMessage;
   if (bestHabits.length > 0) {
-    bestHabitMessage = `Keep up the great work! 🌱 Your best habits this week: ${bestHabits
+    bestHabitMessage = `Keep up the great work! Your best habits this week: ${bestHabits
       .map((habit) => habit.name)
       .join(", ")}. `;
   } else {

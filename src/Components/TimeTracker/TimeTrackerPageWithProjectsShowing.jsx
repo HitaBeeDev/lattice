@@ -14,7 +14,7 @@ function TimeTrackerPage() {
   const sessionDurations = {
     Pomodoro: 25 * 60,
     ShortBreak: 15 * 60,
-    LongBreak: 30 * 60,
+    LongBreak: 30 * 60
   };
 
   const [projectName, setProjectName] = useState("");
@@ -54,11 +54,11 @@ function TimeTrackerPage() {
       const initialTimeForSession = sessionDurations[sessionType]; // Use sessionType to set initial time
       setProjectTimes((prev) => ({
         ...prev,
-        [projectId]: initialTimeForSession,
+        [projectId]: initialTimeForSession
       }));
       setProjectRemainingTimes((prev) => ({
         ...prev,
-        [projectId]: initialTimeForSession,
+        [projectId]: initialTimeForSession
       }));
       setProjectName("");
     }
@@ -72,12 +72,6 @@ function TimeTrackerPage() {
     if (isTimerActive) {
       handlePause();
     }
-  };
-
-  const getTabClassName = (type) => {
-    return `text-md font-semibold w-32 text-center flex flex-col items-center justify-center h-10 rounded-lg text-colorJ10 ${
-      sessionType === type ? "bg-colorA2" : "bg-colorA3"
-    }`;
   };
 
   const handleStart = () => setIsTimerActive(true);
@@ -116,7 +110,7 @@ function TimeTrackerPage() {
 
   const radius = 80;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = (totalSeconds / maxSeconds) * circumference;
+  const strokeDashoffset = totalSeconds / maxSeconds * circumference;
 
   const toggleEdit = () => setIsEditing((prev) => !prev);
 
@@ -126,180 +120,180 @@ function TimeTrackerPage() {
     let totalTimeInSeconds = 0;
     for (const projectName in projectTimes) {
       totalTimeInSeconds +=
-        projectTimes[projectName] - projectRemainingTimes[projectName];
+      projectTimes[projectName] - projectRemainingTimes[projectName];
     }
     const hours = Math.floor(totalTimeInSeconds / 3600);
-    const minutes = Math.floor((totalTimeInSeconds % 3600) / 60);
+    const minutes = Math.floor(totalTimeInSeconds % 3600 / 60);
     const seconds = totalTimeInSeconds % 60;
     return `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
   };
 
   return (
-    <div className="lg:mt-5 lg:mb-5 mt-20 w-full flex flex-col gap-5 lg:grid lg:grid-cols-12">
-      <div className="col-span-6 bg-colorJ1 shadow-xl rounded-lg flex flex-col gap-5 justify-between p-10 items-center">
-        <div className="flex flex-row gap-5 justify-center items-center shadow-xl rounded-lg">
+    <div>
+      <div>
+        <div>
           <button
-            onClick={() => handleSessionChange("Pomodoro")}
-            className={getTabClassName("Pomodoro")}
-          >
+            onClick={() => handleSessionChange("Pomodoro")}>
+
+
             Pomodoro
           </button>
 
           <button
-            onClick={() => handleSessionChange("ShortBreak")}
-            className={getTabClassName("ShortBreak")}
-          >
+            onClick={() => handleSessionChange("ShortBreak")}>
+
+
             Short Break
           </button>
 
           <button
-            onClick={() => handleSessionChange("LongBreak")}
-            className={getTabClassName("LongBreak")}
-          >
+            onClick={() => handleSessionChange("LongBreak")}>
+
+
             Long Break
           </button>
         </div>
 
-        <div className="relative flex flex-row justify-center items-center">
+        <div>
           <svg width="200" height="200" viewBox="0 0 200 200">
             <circle
-              className="timer-circle-bg"
+
               stroke="#e6e6e6"
               cx="100"
               cy="100"
               r={radius}
               strokeWidth="4"
-              fill="transparent"
-            />
+              fill="transparent" />
+
             <circle
-              className="timer-circle-progress"
+
               stroke="#CBF1F5"
               cx="100"
               cy="100"
               r={radius}
               strokeWidth="8"
-              fill="transparent"
-              style={{
-                strokeDasharray: circumference,
-                strokeDashoffset,
-                transition: "stroke-dashoffset 1s linear",
-              }}
-            />
-            {isEditing ? (
-              <>
+              fill="transparent" />
+
+
+
+
+
+
+            {isEditing ?
+            <>
                 <foreignObject x="25" y="80" width="150" height="50">
                   <input
-                    type="text"
-                    value={editTime}
-                    onChange={(e) => setEditTime(e.target.value)}
-                    className="text-center w-full"
-                    placeholder="Enter minutes"
-                    style={{ fontSize: "16px" }}
-                  />
+                  type="text"
+                  value={editTime}
+                  onChange={(e) => setEditTime(e.target.value)}
+
+                  placeholder="Enter minutes" />
+
+
                 </foreignObject>
                 <foreignObject x="50" y="130" width="100" height="30">
                   <button
-                    onClick={handleUpdateTime}
-                    className="text-md font-semibold w-full h-full text-colorJ10 bg-colorJ15"
-                    style={{ fontSize: "12px" }}
-                  >
+                  onClick={handleUpdateTime}>
+
+
+
                     Update Time
                   </button>
                 </foreignObject>
-              </>
-            ) : (
-              <text
-                x="50%"
-                y="50%"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="20"
-              >
+              </> :
+
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="20">
+
                 {`${Math.floor(totalSeconds / 60)}:${
-                  totalSeconds % 60 < 10 ? "0" : ""
-                }${totalSeconds % 60}`}
-              </text>
-            )}
+              totalSeconds % 60 < 10 ? "0" : ""
+              }${totalSeconds % 60}`}
+              </text>}
+
           </svg>
         </div>
 
-        <div className="flex flex-row gap-5 justify-center items-center">
+        <div>
           <div>
             <input
               type="text"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
-              placeholder="Project Name"
-              className="text-input"
-            />
-            <button onClick={handleAddProject} className="add-btn">
+              placeholder="Project Name" />
+
+
+            <button onClick={handleAddProject}>
               Add
             </button>
           </div>
 
           <button
-            onClick={toggleEdit}
-            className="text-md font-semibold text-colorJ10 bg-colorJ15 p-1 rounded"
-            style={{ fontSize: "12px" }}
-          >
+            onClick={toggleEdit}>
+
+
+
             {editButtonText}
           </button>
 
           <button
-            className="text-md font-semibold w-32 text-center flex 
-                        flex-col items-center justify-center h-10 rounded-lg
-                        text-colorJ10 bg-colorJ12"
-            onClick={handleStart}
-          >
+
+
+
+            onClick={handleStart}>
+
             Start
           </button>
 
           <button
-            className="text-md font-semibold w-32 text-center flex 
-                        flex-col items-center justify-center h-10 rounded-lg
-                        text-colorJ10 bg-colorJ13"
-            onClick={handlePause}
-          >
+
+
+
+            onClick={handlePause}>
+
             Pause
           </button>
 
           <button
-            onClick={handleReset}
-            className="text-md font-semibold w-32 text-center flex 
-                        flex-col items-center justify-center h-10 rounded-lg
-                        text-colorJ10 bg-colorJ14"
-          >
+            onClick={handleReset}>
+
+
+
+
             Reset
           </button>
         </div>
       </div>
 
-      <div className="col-span-6 gap-5 overflow-auto bg-colorJ3 shadow-xl rounded-lg">
+      <div>
         <ul>
-          {projects.map((project) => (
-            <li key={project.id}>
+          {projects.map((project) =>
+          <li key={project.id}>
               {project.name} - {/* Use project.id to access times */}
               {`${Math.floor(
-                (projectTimes[project.id] - projectRemainingTimes[project.id]) /
-                  60
-              )}:${
-                (projectTimes[project.id] - projectRemainingTimes[project.id]) %
-                  60 <
-                10
-                  ? "0"
-                  : ""
-              }${
-                (projectTimes[project.id] - projectRemainingTimes[project.id]) %
-                60
-              }`}
+              (projectTimes[project.id] - projectRemainingTimes[project.id]) /
+              60
+            )}:${
+            (projectTimes[project.id] - projectRemainingTimes[project.id]) %
+            60 <
+            10 ?
+            "0" :
+            ""
+            }${
+            (projectTimes[project.id] - projectRemainingTimes[project.id]) %
+            60
+            }`}
             </li>
-          ))}
+          )}
         </ul>
 
         <div>You study the total of: {calculateTotalTimeStudied()}</div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default TimeTrackerPage;

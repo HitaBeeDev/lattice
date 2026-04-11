@@ -3,11 +3,11 @@ import UpcomingTasks from "./UpcomingTasks";
 
 function ToDoListPage() {
   return (
-    <div className="lg:mt-5 overflow-auto scroll-smooth lg:mb-5 mt-20 w-full flex flex-col gap-5 lg:grid lg:grid-cols-12 lg:justify-between">
+    <div>
       <ToDoListAndWelcomeSection />
       <UpcomingTasks />
-    </div>
-  );
+    </div>);
+
 }
 
 export default ToDoListPage;
