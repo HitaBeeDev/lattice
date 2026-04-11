@@ -13,6 +13,11 @@ dist-ssr
 *.tsbuildinfo
 *.local
 
+# Project planning docs
+CLAUDE.md
+PROJECT_OVERVIEW.md
+REFACTORING_CHECKLIST.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
