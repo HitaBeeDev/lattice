@@ -1,7 +1,7 @@
-import SessionTabs from "../components/TimeTracker/SessionTabs";
-import TimerCircle from "../components/TimeTracker/TimerCircle";
-import TimerButtons from "../components/TimeTracker/TimerButtons";
-import TimerArticles from "../components/TimeTracker/TimerArticles";
+import SessionTabs from "../components/pomodoro/SessionTabs";
+import TimerCircle from "../components/pomodoro/TimerCircle";
+import TimerButtons from "../components/pomodoro/TimerButtons";
+import TimerArticles from "../components/pomodoro/TimerArticles";
 
 function PomodoroPage() {
   return (

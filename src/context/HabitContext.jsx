@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import usePersistentState from "../usePersistentState";
-import habitQuotes from "../components/HabitSection/habitQuotes";
+import habitQuotes from "../components/habits/habitQuotes";
 
 const HabitContext = createContext();
 

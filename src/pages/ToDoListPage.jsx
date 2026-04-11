@@ -1,5 +1,5 @@
-import ToDoListAndWelcomeSection from "../components/ToDoListSection/ToDoListAndWelcomeSection";
-import UpcomingTasks from "../components/ToDoListSection/UpcomingTasks";
+import ToDoListAndWelcomeSection from "../components/tasks/ToDoListAndWelcomeSection";
+import UpcomingTasks from "../components/tasks/UpcomingTasks";
 
 function ToDoListPage() {
   return (

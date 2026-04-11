@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import App from "./App";
-import Container from "./components/Container";
+import Container from "./components/layout/Container";
 import DashboardPage from "./pages/DashboardPage";
 import HabitTrackerPage from "./pages/HabitTrackerPage";
 import ToDoListPage from "./pages/ToDoListPage";

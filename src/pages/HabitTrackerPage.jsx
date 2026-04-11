@@ -1,8 +1,8 @@
-import WelcomeBanner from "../components/HabitSection/WelcomeBanner";
-import WeekDaysHeader from "../components/HabitSection/WeekDaysHeader";
-import HabitList from "../components/HabitSection/HabitList";
-import SummaryStats from "../components/HabitSection/SummaryStats";
-import ResultsReport from "../components/HabitSection/ResultsReport";
+import WelcomeBanner from "../components/habits/WelcomeBanner";
+import WeekDaysHeader from "../components/habits/WeekDaysHeader";
+import HabitList from "../components/habits/HabitList";
+import SummaryStats from "../components/habits/SummaryStats";
+import ResultsReport from "../components/habits/ResultsReport";
 
 function HabitTrackerPage() {
   return (

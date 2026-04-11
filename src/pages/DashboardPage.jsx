@@ -1,4 +1,4 @@
-import AddModal from "../components/ToDoListSection/AddModal";
+import AddModal from "../components/tasks/AddModal";
 import { useHabits } from "../context/HabitContext";
 import { useTasks } from "../context/TasksContext";
 import { useTimeTracker } from "../context/TimeTrackerContext";
