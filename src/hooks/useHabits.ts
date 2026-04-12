@@ -23,6 +23,7 @@ export interface HabitCompletionStats {
 
 export interface HabitContextValue {
   habits: Habit[];
+  isLoading: boolean;
   editIndex: number;
   addHabit: (name: string) => void;
   startEdit: (index: number) => void;
@@ -209,6 +210,7 @@ export function useHabits(): HabitContextValue {
 
   return {
     habits,
+    isLoading: habitEntries === undefined,
     editIndex,
     addHabit,
     startEdit,

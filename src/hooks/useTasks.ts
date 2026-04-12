@@ -10,6 +10,7 @@ export interface TaskDraft extends TaskFormValues {
 
 export interface TasksContextValue {
   tasks: Task[];
+  isLoading: boolean;
   showModal: boolean;
   isEditing: boolean;
   currentTask: TaskDraft | null;
@@ -178,6 +179,7 @@ export function useTasks(): TasksContextValue {
 
   return {
     tasks,
+    isLoading: taskEntries === undefined,
     showModal,
     isEditing,
     currentTask,

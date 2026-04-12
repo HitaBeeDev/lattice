@@ -2,67 +2,44 @@ import { useHabits } from "../../context/HabitContext";
 
 function ReportWidgets() {
   const { averagePercentageForWeek, bestDayMessage, bestHabitMessage } =
-  useHabits();
+    useHabits();
+
+  const avgPct = averagePercentageForWeek;
+
+  const performanceMessage = (() => {
+    if (avgPct >= 75)
+      return `Fantastic job! Your weekly average is ${avgPct.toFixed(0)}%. Keep up the amazing work — you're on fire!`;
+    if (avgPct >= 50)
+      return `Great work! Your weekly average is ${avgPct.toFixed(0)}%. You're doing well — keep pushing towards your goals!`;
+    if (avgPct >= 25)
+      return `Good effort! Your weekly average is ${avgPct.toFixed(0)}%. Remember, progress is progress — keep going!`;
+    return `No worries! Your weekly average is ${avgPct.toFixed(0)}%. Building habits takes time — keep it up next week!`;
+  })();
 
   return (
-    <div>
-      <div>
-        <>
-          {averagePercentageForWeek >= 75 &&
-          averagePercentageForWeek <= 100 &&
-          <p>
-                Fantastic job! Your result of the week is:{" "}
-                <span>
-                  {averagePercentageForWeek.toFixed(2)}%
-                </span>
-                . Keep up the amazing work, you&apos;re on fire!
-              </p>}
-
-          {averagePercentageForWeek >= 50 && averagePercentageForWeek < 75 &&
-          <p>
-              Great work! Your result of the week is:{" "}
-              <span>
-                {averagePercentageForWeek.toFixed(2)}%
-              </span>
-              . You&apos;re doing well, keep pushing towards your goals!
-            </p>}
-
-          {averagePercentageForWeek >= 25 && averagePercentageForWeek < 50 &&
-          <p>
-              Good effort! Your result of the week is:{" "}
-              <span>
-                {averagePercentageForWeek.toFixed(2)}%
-              </span>
-              . Remember, progress is progress, keep going!
-            </p>}
-
-          {averagePercentageForWeek >= 0 && averagePercentageForWeek < 25 &&
-          <p>
-              No worries! Your result of the week is:{" "}
-              <span>
-                {averagePercentageForWeek.toFixed(2)}%
-              </span>
-              . Building habits takes time, you&apos;re doing great! Keep it up next
-              week!
-            </p>}
-
-        </>
-      </div>
-
-      <div>
-        <p>
-          {" "}
-          {bestDayMessage}
+    <section className="grid gap-4 sm:grid-cols-3">
+      <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-indigo-500">
+          Weekly average
         </p>
-      </div>
+        <p className="text-sm leading-relaxed text-slate-600">{performanceMessage}</p>
+      </article>
 
-      <div>
-        <p>
-          {bestHabitMessage}
+      <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-emerald-500">
+          Best day
         </p>
-      </div>
-    </div>);
+        <p className="text-sm leading-relaxed text-slate-600">{bestDayMessage}</p>
+      </article>
 
+      <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-amber-500">
+          Best habit
+        </p>
+        <p className="text-sm leading-relaxed text-slate-600">{bestHabitMessage}</p>
+      </article>
+    </section>
+  );
 }
 
 export default ReportWidgets;

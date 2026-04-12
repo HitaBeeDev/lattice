@@ -35,11 +35,8 @@ function WelcomeCard() {
   } = formatWelcomeDate(currentTime);
 
   return (
-    <div>
-      <GreetingSection
-        message={message}
-        title={title}
-      />
+    <div className="rounded-3xl bg-gradient-to-br from-indigo-600 to-indigo-800 p-6 text-white shadow-sm">
+      <GreetingSection message={message} title={title} />
       <DateTimeSection
         currentDate={currentDate}
         dayOfWeek={dayOfWeek}
