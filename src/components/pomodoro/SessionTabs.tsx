@@ -1,7 +1,5 @@
 import { useTimeTracker } from "../../context/TimeTrackerContext";
 
-import articles from "./articles";
-
 function SessionTabs() {
   const { handleSessionChange } = useTimeTracker();
 

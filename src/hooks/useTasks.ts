@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import usePersistentState from "./usePersistentState";
 
 export interface TaskEntry {
@@ -46,11 +46,7 @@ export function useTasks() {
   const [editTaskIndex, setEditTaskIndex] = useState<number | null>(null);
   const [tasks, setTasks] = usePersistentState<TaskEntry[]>("tasks", []);
   const [newTask, setNewTask] = useState<NewTaskForm>(EMPTY_TASK_FORM);
-  const [checkedTasks, setCheckedTasks] = useState<string[]>([]);
-
-  useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
+  const [checkedTasks, setCheckedTasks] = usePersistentState<string[]>("checkedTasks", []);
 
   const getCurrentDate = (): string => {
     const months = [
@@ -121,16 +117,6 @@ export function useTasks() {
     setShowModal(false);
   };
 
-  const handleTaskSaveClick = () => {
-    if (editTaskIndex === null) return;
-    const updatedTasks = [...tasks];
-    updatedTasks[editTaskIndex] = newTask as TaskEntry;
-    setTasks(updatedTasks);
-    setIsEditing(false);
-    setEditTaskIndex(null);
-    setShowModal(false);
-  };
-
   const updateNewTask = (field: keyof NewTaskForm, value: string) => {
     setNewTask((prev) => ({ ...prev, [field]: value }));
   };
@@ -156,26 +142,29 @@ export function useTasks() {
     return new Date(dateA).getTime() - new Date(dateB).getTime();
   });
 
-  return {
-    tasks,
-    showModal,
-    isEditing,
-    editTaskIndex,
-    newTask,
-    getCurrentDate,
-    handleAddButtonClick,
-    handleCloseModal,
-    handleTaskAddition,
-    handleTaskSave,
-    handleTaskDelete,
-    handleTaskEditClick,
-    handleTaskCancelClick,
-    handleTaskSaveClick,
-    updateNewTask,
-    groupedTasks,
-    checkedTasks,
-    handleCheckboxChange,
-    sortedTasks,
-    generateTaskIdentifier,
-  };
+  return useMemo(
+    () => ({
+      tasks,
+      showModal,
+      isEditing,
+      editTaskIndex,
+      newTask,
+      getCurrentDate,
+      handleAddButtonClick,
+      handleCloseModal,
+      handleTaskAddition,
+      handleTaskSave,
+      handleTaskDelete,
+      handleTaskEditClick,
+      handleTaskCancelClick,
+      updateNewTask,
+      groupedTasks,
+      checkedTasks,
+      handleCheckboxChange,
+      sortedTasks,
+      generateTaskIdentifier,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tasks, showModal, isEditing, editTaskIndex, newTask, checkedTasks]
+  );
 }

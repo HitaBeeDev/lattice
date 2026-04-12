@@ -1,8 +1,9 @@
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useMemo, useState, ChangeEvent } from "react";
 import usePersistentState from "./usePersistentState";
 import habitQuotes from "../components/habits/habitQuotes";
 
 export interface HabitEntry {
+  id: string;
   name: string;
   days: boolean[];
 }
@@ -44,7 +45,8 @@ export function useHabits() {
 
   const handleAddClick = () => {
     if (!habitInput) return;
-    setHabits([...habits, { name: habitInput, days: Array(7).fill(false) }]);
+    const id = `habit-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    setHabits([...habits, { id, name: habitInput, days: Array(7).fill(false) }]);
     setHabitInput("");
   };
 
@@ -159,33 +161,37 @@ export function useHabits() {
 
   const visibleWeekDates = isLargeScreen ? weekDates : [new Date()];
 
-  return {
-    habits,
-    editIndex,
-    editInput,
-    habitInput,
-    handleInputChange,
-    handleAddClick,
-    handleEditClick,
-    handleSaveClick,
-    handleCancelClick,
-    handleEditInputChange,
-    handleDeleteClick,
-    toggleDayMark,
-    getWeekDates,
-    formatDate,
-    formatDayOfWeek,
-    calculateHabitCompletion,
-    calculateAveragePercentageForWeek,
-    totalHabits,
-    formattedToday,
-    completedHabits,
-    bestDayMessage,
-    bestHabitMessage,
-    averagePercentageForWeek,
-    weekDates,
-    percentages,
-    visibleWeekDates,
-    quoteIndex,
-  };
+  return useMemo(
+    () => ({
+      habits,
+      editIndex,
+      editInput,
+      habitInput,
+      handleInputChange,
+      handleAddClick,
+      handleEditClick,
+      handleSaveClick,
+      handleCancelClick,
+      handleEditInputChange,
+      handleDeleteClick,
+      toggleDayMark,
+      getWeekDates,
+      formatDate,
+      formatDayOfWeek,
+      calculateHabitCompletion,
+      calculateAveragePercentageForWeek,
+      totalHabits,
+      formattedToday,
+      completedHabits,
+      bestDayMessage,
+      bestHabitMessage,
+      averagePercentageForWeek,
+      weekDates,
+      percentages,
+      visibleWeekDates,
+      quoteIndex,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [habits, habitInput, editIndex, editInput, quoteIndex, windowWidth]
+  );
 }

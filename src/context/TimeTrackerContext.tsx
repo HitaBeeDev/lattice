@@ -1,7 +1,7 @@
 import { createContext, useContext, ReactNode } from "react";
-import { useTimeTracker as useTimeTrackerHook } from "../hooks/useTimeTracker";
+import { useTimer } from "../hooks/useTimer";
 
-type TimeTrackerContextValue = ReturnType<typeof useTimeTrackerHook>;
+type TimeTrackerContextValue = ReturnType<typeof useTimer>;
 
 const TimeTrackerContext = createContext<TimeTrackerContextValue | null>(null);
 
@@ -12,7 +12,7 @@ export const useTimeTracker = (): TimeTrackerContextValue => {
 };
 
 export const TimeTrackerProvider = ({ children }: { children: ReactNode }) => {
-  const value = useTimeTrackerHook();
+  const value = useTimer();
   return (
     <TimeTrackerContext.Provider value={value}>
       {children}

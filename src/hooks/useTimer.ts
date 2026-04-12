@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import articles from "../components/pomodoro/articles";
 
 export type SessionType = "Pomodoro" | "ShortBreak" | "LongBreak";
@@ -17,7 +17,7 @@ const SESSION_DURATIONS: Record<SessionType, number> = {
 const INITIAL_TOTAL_SECONDS = SESSION_DURATIONS.Pomodoro;
 const TIMER_RADIUS = 80;
 
-export function useTimeTracker() {
+export function useTimer() {
   const [totalSeconds, setTotalSeconds] = useState(INITIAL_TOTAL_SECONDS);
   const [maxSeconds, setMaxSeconds] = useState(INITIAL_TOTAL_SECONDS);
   const [timerId, setTimerId] = useState<ReturnType<typeof setInterval> | null>(null);
@@ -122,41 +122,58 @@ export function useTimeTracker() {
   const circumference = 2 * Math.PI * TIMER_RADIUS;
   const strokeDashoffset = (totalSeconds / maxSeconds) * circumference;
 
-  return {
-    totalSeconds,
-    setTotalSeconds,
-    maxSeconds,
-    setMaxSeconds,
-    timerId,
-    setTimerId,
-    isTimerActive,
-    setIsTimerActive,
-    isEditing,
-    setIsEditing,
-    editTime,
-    setEditTime,
-    sessionType,
-    setSessionType,
-    projectName,
-    setProjectName,
-    projects,
-    setProjects,
-    projectTimes,
-    setProjectTimes,
-    projectRemainingTimes,
-    setProjectRemainingTimes,
-    handleAddProject,
-    handleSessionChange,
-    handleStart,
-    handlePause,
-    handleReset,
-    handleUpdateTime,
-    toggleEdit,
-    editButtonText,
-    sessionDurations: SESSION_DURATIONS,
-    radius: TIMER_RADIUS,
-    circumference,
-    strokeDashoffset,
-    currentArticleIndex,
-  };
+  return useMemo(
+    () => ({
+      totalSeconds,
+      setTotalSeconds,
+      maxSeconds,
+      setMaxSeconds,
+      timerId,
+      setTimerId,
+      isTimerActive,
+      setIsTimerActive,
+      isEditing,
+      setIsEditing,
+      editTime,
+      setEditTime,
+      sessionType,
+      setSessionType,
+      projectName,
+      setProjectName,
+      projects,
+      setProjects,
+      projectTimes,
+      setProjectTimes,
+      projectRemainingTimes,
+      setProjectRemainingTimes,
+      handleAddProject,
+      handleSessionChange,
+      handleStart,
+      handlePause,
+      handleReset,
+      handleUpdateTime,
+      toggleEdit,
+      editButtonText,
+      sessionDurations: SESSION_DURATIONS,
+      radius: TIMER_RADIUS,
+      circumference,
+      strokeDashoffset,
+      currentArticleIndex,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      totalSeconds,
+      maxSeconds,
+      timerId,
+      isTimerActive,
+      isEditing,
+      editTime,
+      sessionType,
+      projectName,
+      projects,
+      projectTimes,
+      projectRemainingTimes,
+      currentArticleIndex,
+    ]
+  );
 }
