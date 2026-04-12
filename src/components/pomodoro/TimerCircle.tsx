@@ -64,7 +64,11 @@ function TimerCircle() {
           <>
             <foreignObject x="55" y="78" width="120" height="70">
               <form onSubmit={handleSubmit(onSubmit)}>
+                <label className="sr-only" htmlFor="pomodoro-minutes">
+                  Session minutes
+                </label>
                 <input
+                  id="pomodoro-minutes"
                   type="number"
                   min={1}
                   max={99}

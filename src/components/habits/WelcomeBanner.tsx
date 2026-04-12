@@ -38,8 +38,12 @@ export default function WelcomeBanner() {
 
       <form className="mt-6 flex flex-col gap-3 lg:flex-row lg:items-start" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex-1">
+          <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="new-habit-name">
+            Habit name
+          </label>
           <Input
             error={errors.name?.message}
+            id="new-habit-name"
             placeholder="Add a new habit..."
             type="text"
             {...register("name")}

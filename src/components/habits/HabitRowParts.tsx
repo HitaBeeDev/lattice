@@ -19,9 +19,13 @@ export function HabitNameEditor({
 }: HabitNameEditorProps) {
   return (
     <form className="flex flex-wrap items-start gap-2" onSubmit={handleSubmit(onSubmit)}>
+      <label className="sr-only" htmlFor="edit-habit-name">
+        Habit name
+      </label>
       <Input
         className="min-w-60"
         error={error}
+        id="edit-habit-name"
         type="text"
         {...register("name")}
       />
