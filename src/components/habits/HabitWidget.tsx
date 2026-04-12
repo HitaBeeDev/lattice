@@ -6,7 +6,8 @@ function HabitWidget() {
   return (
     <div>
       <div>
-        <p>Today's Habits:</p>
+        <p>Today&apos;s Habits:</p>
+        
 
         <p>
           Keep up the amazing momentum!
@@ -15,8 +16,8 @@ function HabitWidget() {
 
       {habits && habits.length > 0 ?
       <ul>
-          {habits.map((habit, index) =>
-        <li key={index}>
+          {habits.map((habit) =>
+        <li key={habit.id}>
               {habit.name}
             </li>
         )}

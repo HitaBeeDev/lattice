@@ -2,7 +2,7 @@ import { useHabits } from "../../context/HabitContext";
 import habitQuotes from "./habitQuotes";
 
 export default function SummaryStats() {
-  const { percentages, quoteIndex } = useHabits();
+  const { percentages, quoteIndex, weekDates } = useHabits();
 
   return (
     <div>
@@ -10,10 +10,10 @@ export default function SummaryStats() {
         Daily check-ins:
       </div>
 
-      {percentages.map((percentage, index) =>
-      <div key={index}>
+      {weekDates.map((date, index) =>
+      <div key={date.toISOString()}>
           <p>
-            {percentage}%
+            {percentages[index]}%
           </p>
         </div>
       )}

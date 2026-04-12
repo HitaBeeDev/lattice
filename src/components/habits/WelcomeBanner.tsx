@@ -5,6 +5,8 @@ import {
   makeHabitSchema,
   type HabitFormValues,
 } from "../../lib/habitSchema";
+import Button from "../ui/Button";
+import Input from "../ui/Input";
 
 export default function WelcomeBanner() {
   const { habits, addHabit } = useHabits();
@@ -25,22 +27,26 @@ export default function WelcomeBanner() {
   };
 
   return (
-    <div>
-      <div>
-        <p>Welcome to the journey of building new habits!</p>
-        <p>Let's embark on this exciting adventure together!</p>
+    <div className="rounded-3xl bg-white px-6 py-8 shadow-sm ring-1 ring-slate-200">
+      <div className="space-y-2">
+        <p className="text-2xl font-semibold text-slate-900">
+          Welcome to the journey of building new habits!
+        </p>
+        <p className="text-sm leading-6 text-slate-600">
+          Let&apos;s embark on this exciting adventure together!
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <input
-            type="text"
+      <form className="mt-6 flex flex-col gap-3 lg:flex-row lg:items-start" onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex-1">
+          <Input
+            error={errors.name?.message}
             placeholder="Add a new habit..."
+            type="text"
             {...register("name")}
           />
-          <button type="submit">Add Habit</button>
         </div>
-        {errors.name && <p>{errors.name.message}</p>}
+        <Button type="submit">Add Habit</Button>
       </form>
     </div>
   );

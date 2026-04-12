@@ -9,9 +9,9 @@ export default function WeekDaysHeader() {
         <p>Your Habits</p>
       </div>
 
-      {visibleWeekDates.map((date, index) =>
+      {visibleWeekDates.map((date) =>
       <div
-        key={index}>
+        key={date.toISOString()}>
 
 
           <p>

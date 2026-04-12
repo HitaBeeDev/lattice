@@ -1,7 +1,10 @@
 import { useTasks } from "../../context/TasksContext";
 
+const byDate = ([dateA]: [string, unknown], [dateB]: [string, unknown]) =>
+  new Date(dateA).getTime() - new Date(dateB).getTime();
+
 function UpcomingTasks() {
-  const { groupedTasks, checkedTasks, generateTaskIdentifier } = useTasks();
+  const { groupedTasks, checkedTasks } = useTasks();
 
   return (
     <div>
@@ -14,16 +17,16 @@ function UpcomingTasks() {
 
       <div>
         {Object.entries(groupedTasks).
-        sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime()).
+        sort(byDate).
         map(([date, tasks], index) =>
         <div key={date}>
               {index !== 0 && <div></div>}
 
               <ul>
                 {tasks.
-            filter((task) => !checkedTasks.includes(generateTaskIdentifier(task))).
-            map((task, index) =>
-            <li key={index}>
+            filter((task) => !checkedTasks.includes(task.id)).
+            map((task) =>
+            <li key={task.id}>
                       <p>
                         {date}
                       </p>

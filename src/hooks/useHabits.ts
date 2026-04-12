@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import habitQuotes from "../components/habits/habitQuotes";
 import { useRandomIndex } from "./useRandomIndex";
@@ -15,7 +15,8 @@ const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 const DAY_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = { weekday: "short" };
 
 export function useHabits() {
-  const habits = useLiveQuery(() => db.habits.toArray(), [], []) ?? [];
+  const habitEntries = useLiveQuery(() => db.habits.toArray(), [], []);
+  const habits = useMemo(() => habitEntries ?? [], [habitEntries]);
   const [editIndex, setEditIndex] = useState(-1);
   const quoteIndex = useRandomIndex(habitQuotes.length);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);

@@ -19,7 +19,8 @@ export const EMPTY_TASK_FORM: TaskFormValues = {
 export function useTasks() {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const tasks = useLiveQuery(() => db.tasks.toArray(), [], []) ?? [];
+  const taskEntries = useLiveQuery(() => db.tasks.toArray(), [], []);
+  const tasks = useMemo(() => taskEntries ?? [], [taskEntries]);
   const [currentTask, setCurrentTask] = useState<TaskDraft | null>(null);
   const checkedTasks = useMemo(
     () => tasks.filter((task) => task.isCompleted).map((task) => task.id),
@@ -98,7 +99,7 @@ export function useTasks() {
 
   const handleTaskCancelClick = useCallback(() => {
     handleCloseModal();
-  }, []);
+  }, [handleCloseModal]);
 
   const handleCheckboxChange = useCallback((taskIdentifier: string) => {
     const task = tasks.find((entry) => entry.id === taskIdentifier);
@@ -108,9 +109,6 @@ export function useTasks() {
 
     void db.tasks.put({ ...task, isCompleted: !task.isCompleted });
   }, [tasks]);
-
-  const generateTaskIdentifier = (task: TaskEntry, _index?: number): string =>
-    task.id;
 
   const groupedTasks = tasks.reduce<Record<string, TaskEntry[]>>((acc, task) => {
     acc[task.date] = [...(acc[task.date] || []), task];
@@ -138,6 +136,5 @@ export function useTasks() {
     checkedTasks,
     handleCheckboxChange,
     sortedTasks,
-    generateTaskIdentifier,
   };
 }

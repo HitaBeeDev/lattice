@@ -15,7 +15,7 @@ function ReportWidgets() {
                 <span>
                   {averagePercentageForWeek.toFixed(2)}%
                 </span>
-                . Keep up the amazing work, you're on fire!
+                . Keep up the amazing work, you&apos;re on fire!
               </p>}
 
           {averagePercentageForWeek >= 50 && averagePercentageForWeek < 75 &&
@@ -24,7 +24,7 @@ function ReportWidgets() {
               <span>
                 {averagePercentageForWeek.toFixed(2)}%
               </span>
-              . You're doing well, keep pushing towards your goals!
+              . You&apos;re doing well, keep pushing towards your goals!
             </p>}
 
           {averagePercentageForWeek >= 25 && averagePercentageForWeek < 50 &&
@@ -42,7 +42,7 @@ function ReportWidgets() {
               <span>
                 {averagePercentageForWeek.toFixed(2)}%
               </span>
-              . Building habits takes time, you're doing great! Keep it up next
+              . Building habits takes time, you&apos;re doing great! Keep it up next
               week!
             </p>}
 

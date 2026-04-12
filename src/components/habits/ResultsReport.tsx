@@ -13,7 +13,7 @@ function ResultsReport() {
     <div>
       <div>
         {completedHabits === 0 ?
-        "No habits done? No worries! Every day's a new start. We're with you. Let's begin together!" :
+        "No habits done? No worries! Every day&apos;s a new start. We&apos;re with you. Let&apos;s begin together!" :
         `You've nailed ${completedHabits} out of ${totalHabits} habits! Your dedication is heartwarming. Keep it up!`}
       </div>
 
@@ -34,7 +34,7 @@ function ResultsReport() {
                 <span>
                   {averagePercentageForWeek.toFixed(2)}%
                 </span>
-                . Keep up the amazing work, you're on fire!
+                . Keep up the amazing work, you&apos;re on fire!
               </p>}
 
           {averagePercentageForWeek >= 50 && averagePercentageForWeek < 75 &&
@@ -43,7 +43,7 @@ function ResultsReport() {
               <span>
                 {averagePercentageForWeek.toFixed(2)}%
               </span>
-              . You're doing well, keep pushing towards your goals!
+              . You&apos;re doing well, keep pushing towards your goals!
             </p>}
 
           {averagePercentageForWeek >= 25 && averagePercentageForWeek < 50 &&
@@ -61,7 +61,7 @@ function ResultsReport() {
               <span>
                 {averagePercentageForWeek.toFixed(2)}%
               </span>
-              . Building habits takes time, you're doing great! Keep it up next
+              . Building habits takes time, you&apos;re doing great! Keep it up next
               week!
             </p>}
 
