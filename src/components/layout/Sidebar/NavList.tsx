@@ -43,6 +43,7 @@ const NavList = ({ navItems, isOpen }: NavListProps) => {
                   "flex items-center rounded-2xl px-4 py-3 text-sm font-medium text-slate-600 transition-colors",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2",
                   {
+                    "gap-3": isOpen,
                     "justify-center": !isOpen,
                     "bg-slate-900 text-white shadow-sm": isActive,
                     "hover:bg-slate-100 hover:text-slate-900": !isActive,
@@ -53,7 +54,12 @@ const NavList = ({ navItems, isOpen }: NavListProps) => {
               onKeyDown={(event) => handleKeyDown(event, item.path)}
               to={item.path}
             >
-              <span aria-hidden={!isOpen}>{isOpen ? item.label : item.shortLabel}</span>
+              <item.icon
+                aria-hidden="true"
+                className="h-5 w-5 shrink-0"
+                strokeWidth={2}
+              />
+              {isOpen && <span>{item.label}</span>}
             </NavLink>
           </li>
         );
