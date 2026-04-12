@@ -1,5 +1,5 @@
 import { useTasks } from "../../context/TasksContext";
-import Button from "../ui/Button";
+import { Button } from "../ui";
 
 function WelcomeBanner() {
   const { handleAddButtonClick } = useTasks();

@@ -1,7 +1,6 @@
 import type { HabitEntry } from "../../db/database";
 import { CheckIcon, FlameIcon } from "./dashboardIcons";
-import Button from "../ui/Button";
-import Tooltip from "../ui/Tooltip";
+import { Button, Tooltip } from "../ui";
 
 type DailyHabitsCardProps = {
   habits: HabitEntry[];

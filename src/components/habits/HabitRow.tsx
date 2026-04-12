@@ -7,8 +7,7 @@ import {
   type HabitFormValues,
 } from "../../lib/habitSchema";
 import { HabitNameEditor, HabitProgress } from "./HabitRowParts";
-import Button from "../ui/Button";
-import { cn } from "../ui/cn";
+import { Button, cn } from "../ui";
 
 const DAYS_PER_WEEK = 7;
 const PERCENTAGE_MULTIPLIER = 100;

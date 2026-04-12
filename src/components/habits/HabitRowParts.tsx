@@ -1,8 +1,6 @@
 import type { UseFormHandleSubmit, UseFormRegister } from "react-hook-form";
 import type { HabitFormValues } from "../../lib/habitSchema";
-import Button from "../ui/Button";
-import Input from "../ui/Input";
-import ProgressBar from "../ui/ProgressBar";
+import { Button, Input, ProgressBar } from "../ui";
 
 type HabitNameEditorProps = {
   cancelEdit: () => void;

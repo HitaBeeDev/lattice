@@ -1,7 +1,6 @@
 import type { TaskEntry } from "../../db/database";
 import { useTasks } from "../../context/TasksContext";
-import Badge from "../ui/Badge";
-import EmptyState from "../ui/EmptyState";
+import { Badge, EmptyState } from "../ui";
 
 const PRIORITY_VARIANTS = {
   High: "high",

@@ -1,6 +1,6 @@
 import type { FieldError, UseFormRegister, UseFormSetValue } from "react-hook-form";
 import { PRIORITY_OPTIONS, type TaskFormValues } from "../../lib/taskSchema";
-import Button from "../ui/Button";
+import { Button } from "../ui";
 
 type PrioritySelectorProps = {
   error?: FieldError;

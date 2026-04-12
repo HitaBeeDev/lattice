@@ -1,6 +1,6 @@
 import type { FieldError, UseFormRegister } from "react-hook-form";
 import type { TaskFormValues } from "../../lib/taskSchema";
-import Input from "../ui/Input";
+import { Input } from "../ui";
 
 type TaskInputFieldProps = {
   error?: FieldError;

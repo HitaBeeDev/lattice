@@ -8,10 +8,7 @@ import {
   type TaskFormValues,
 } from "../../lib/taskSchema";
 import AddModalFormFields from "./AddModalFormFields";
-import Button from "../ui/Button";
-import IconButton from "../ui/IconButton";
-import Modal from "../ui/Modal";
-import Tooltip from "../ui/Tooltip";
+import { Button, IconButton, Modal, Tooltip } from "../ui";
 
 function AddModal() {
   const {

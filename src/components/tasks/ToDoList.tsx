@@ -1,6 +1,6 @@
 import { useTasks } from "../../context/TasksContext";
 import TaskGroup from "./TaskGroup";
-import EmptyState from "../ui/EmptyState";
+import { EmptyState } from "../ui";
 
 function ToDoList() {
   const {

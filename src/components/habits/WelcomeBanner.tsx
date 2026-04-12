@@ -5,8 +5,7 @@ import {
   makeHabitSchema,
   type HabitFormValues,
 } from "../../lib/habitSchema";
-import Button from "../ui/Button";
-import Input from "../ui/Input";
+import { Button, Input } from "../ui";
 
 export default function WelcomeBanner() {
   const { habits, addHabit } = useHabits();

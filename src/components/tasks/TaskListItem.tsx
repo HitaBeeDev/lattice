@@ -1,6 +1,5 @@
 import type { TaskEntry } from "../../db/database";
-import Badge from "../ui/Badge";
-import Button from "../ui/Button";
+import { Badge, Button } from "../ui";
 
 const PRIORITY_VARIANTS = {
   High: "high",

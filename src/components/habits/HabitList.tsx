@@ -1,6 +1,6 @@
 import { useHabits } from "../../context/HabitContext";
 import HabitRow from "./HabitRow";
-import EmptyState from "../ui/EmptyState";
+import { EmptyState } from "../ui";
 
 export default function HabitList() {
   const {

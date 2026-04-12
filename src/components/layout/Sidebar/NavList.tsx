@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { cn } from "../../ui/cn";
+import { cn } from "../../ui";
 import type { NavItem } from "./navData";
 
 type NavListProps = {
