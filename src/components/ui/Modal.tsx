@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef } from "react";
-import type { MouseEvent, ReactNode } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "./cn";
 
@@ -33,6 +33,15 @@ export default function Modal({
   const descriptionId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  const handleBackdropKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    onClose();
+  };
 
   useEffect(() => {
     if (!open) {
@@ -95,8 +104,12 @@ export default function Modal({
 
   return createPortal(
     <div
+      aria-label="Close dialog"
       className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-8 backdrop-blur-sm"
       onClick={onClose}
+      onKeyDown={handleBackdropKeyDown}
+      role="button"
+      tabIndex={0}
     >
       <div
         ref={dialogRef}

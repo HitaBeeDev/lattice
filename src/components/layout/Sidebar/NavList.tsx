@@ -1,4 +1,5 @@
-import { NavLink, useLocation } from "react-router-dom";
+import type { KeyboardEvent } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "../../ui";
 import type { NavItem } from "./navData";
 
@@ -9,6 +10,7 @@ type NavListProps = {
 
 const NavList = ({ navItems, isOpen }: NavListProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isItemActive = (path: string) => {
     if (path === "/dashboard" && location.pathname === "/") {
@@ -16,6 +18,15 @@ const NavList = ({ navItems, isOpen }: NavListProps) => {
     }
 
     return location.pathname === path;
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLAnchorElement>, path: string) => {
+    if (event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    navigate(path);
   };
 
   return (
@@ -39,6 +50,7 @@ const NavList = ({ navItems, isOpen }: NavListProps) => {
                 )
               }
               end
+              onKeyDown={(event) => handleKeyDown(event, item.path)}
               to={item.path}
             >
               <span aria-hidden={!isOpen}>{isOpen ? item.label : item.shortLabel}</span>
