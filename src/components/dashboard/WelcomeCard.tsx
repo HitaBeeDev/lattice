@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import quotes from "./quoteDatas";
+import { useRandomIndex } from "../../hooks/useRandomIndex";
 
 function WelcomeCard() {
-  const [quoteIndex, setQuoteIndex] = useState(0);
+  const quoteIndex = useRandomIndex(quotes.length);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -37,15 +38,6 @@ function WelcomeCard() {
       );
     }
   }, [currentTime]);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length);
-    }, 300000);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
 
   const formatDate = (date) => {
     return {

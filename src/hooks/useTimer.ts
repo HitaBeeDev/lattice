@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import articles from "../components/pomodoro/articles";
+import { useRandomIndex } from "./useRandomIndex";
 
 export type SessionType = "Pomodoro" | "ShortBreak" | "LongBreak";
 
@@ -23,7 +24,6 @@ export function useTimer() {
   const [timerId, setTimerId] = useState<ReturnType<typeof setInterval> | null>(null);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editTime, setEditTime] = useState("");
   const [sessionType, setSessionType] = useState<SessionType>("Pomodoro");
 
   const [projectName, setProjectName] = useState("");
@@ -31,14 +31,7 @@ export function useTimer() {
   const [projectTimes, setProjectTimes] = useState<Record<string, number>>({});
   const [projectRemainingTimes, setProjectRemainingTimes] = useState<Record<string, number>>({});
 
-  const [currentArticleIndex, setCurrentArticleIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentArticleIndex((prev) => (prev + 1) % articles.length);
-    }, 15 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const currentArticleIndex = useRandomIndex(articles.length);
 
   useEffect(() => {
     if (!isTimerActive) return;
@@ -65,7 +58,7 @@ export function useTimer() {
     return () => clearInterval(id);
   }, [isTimerActive]);
 
-  const handleAddProject = () => {
+  const handleAddProject = useCallback(() => {
     if (!projectName.trim()) return;
     const projectId = Date.now().toString();
     const newProject: Project = { id: projectId, name: projectName };
@@ -74,48 +67,45 @@ export function useTimer() {
     setProjectTimes((prev) => ({ ...prev, [projectId]: initialTime }));
     setProjectRemainingTimes((prev) => ({ ...prev, [projectId]: initialTime }));
     setProjectName("");
-  };
+  }, [projectName, sessionType]);
 
-  const handlePause = () => {
+  const handlePause = useCallback(() => {
     if (timerId !== null) clearInterval(timerId);
     setIsTimerActive(false);
-  };
+  }, [timerId]);
 
-  const handleSessionChange = (type: SessionType) => {
+  const handleSessionChange = useCallback((type: SessionType) => {
     setSessionType(type);
     const newTotalSeconds = SESSION_DURATIONS[type];
     setTotalSeconds(newTotalSeconds);
     setMaxSeconds(newTotalSeconds);
     if (isTimerActive) handlePause();
-  };
+  }, [isTimerActive, handlePause]);
 
-  const handleStart = () => setIsTimerActive(true);
+  const handleStart = useCallback(() => setIsTimerActive(true), []);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     if (timerId !== null) clearInterval(timerId);
     setTimerId(null);
     setIsTimerActive(false);
     setTotalSeconds(maxSeconds);
-  };
+  }, [timerId, maxSeconds]);
 
-  const handleUpdateTime = () => {
-    const newTotalSeconds = parseInt(editTime, 10) * 60;
-    if (!isNaN(newTotalSeconds) && newTotalSeconds > 0) {
-      setTotalSeconds(newTotalSeconds);
-      setMaxSeconds(newTotalSeconds);
-      setProjectRemainingTimes((prev) => {
-        const updated: Record<string, number> = {};
-        for (const id in prev) {
-          updated[id] = newTotalSeconds;
-        }
-        return updated;
-      });
-    }
+  const handleUpdateTime = useCallback((minutes: number) => {
+    const newTotalSeconds = minutes * 60;
+    setTotalSeconds(newTotalSeconds);
+    setMaxSeconds(newTotalSeconds);
+    setProjectRemainingTimes((prev) => {
+      const updated: Record<string, number> = {};
+      for (const id in prev) {
+        updated[id] = newTotalSeconds;
+      }
+      return updated;
+    });
     setIsEditing(false);
-    setEditTime("");
-  };
+  }, []);
 
-  const toggleEdit = () => setIsEditing((prev) => !prev);
+  const toggleEdit = useCallback(() => setIsEditing((prev) => !prev), []);
 
   const editButtonText = isEditing ? "Cancel Edit" : "Edit Time";
 
@@ -134,8 +124,6 @@ export function useTimer() {
       setIsTimerActive,
       isEditing,
       setIsEditing,
-      editTime,
-      setEditTime,
       sessionType,
       setSessionType,
       projectName,
@@ -167,13 +155,11 @@ export function useTimer() {
       timerId,
       isTimerActive,
       isEditing,
-      editTime,
       sessionType,
       projectName,
       projects,
       projectTimes,
       projectRemainingTimes,
-      currentArticleIndex,
     ]
   );
 }

@@ -2,12 +2,8 @@ import { useTasks } from "../../context/TasksContext";
 
 function ToDoList() {
   const {
-    isEditing,
-    editTaskIndex,
-    newTask,
     handleTaskDelete,
     handleTaskEditClick,
-    updateNewTask,
     checkedTasks,
     handleCheckboxChange,
     sortedTasks,
@@ -71,34 +67,13 @@ function ToDoList() {
 
 
                       <div>
-                        {isEditing && editTaskIndex === index ?
-                      <input
-                        type="text"
-                        value={newTask.name}
-
-                        onChange={(e) =>
-                        updateNewTask("name", e.target.value)} /> :
-
-
-
-                      <p>
-                            {task.name}
-                          </p>}
+                        <p>
+                          {task.name}
+                        </p>
 
 
                         <p>
-                          {isEditing && editTaskIndex === index ?
-                        <input
-                          type="text"
-                          value={newTask.description}
-
-                          onChange={(e) =>
-                          updateNewTask("description", e.target.value)} /> :
-
-
-
-                        task.description}
-
+                          {task.description}
                         </p>
                       </div>
                     </div>

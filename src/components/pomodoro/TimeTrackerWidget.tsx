@@ -1,18 +1,8 @@
-import { useEffect, useState } from "react";
 import homePageArticles from "./homePageArticles";
+import { useRandomIndex } from "../../hooks/useRandomIndex";
 
 function TimeTrackerWidget() {
-  const [currentArticleIndex, setCurrentArticleIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentArticleIndex(
-        (prevIndex) => (prevIndex + 1) % homePageArticles.length
-      );
-    }, 15 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const currentArticleIndex = useRandomIndex(homePageArticles.length);
 
   return (
     <div>

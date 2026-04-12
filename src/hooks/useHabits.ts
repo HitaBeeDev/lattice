@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState, ChangeEvent } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import usePersistentState from "./usePersistentState";
 import habitQuotes from "../components/habits/habitQuotes";
+import { useRandomIndex } from "./useRandomIndex";
 
 export interface HabitEntry {
   id: string;
@@ -17,19 +18,10 @@ const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 const DAY_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = { weekday: "short" };
 
 export function useHabits() {
-  const [habitInput, setHabitInput] = useState("");
   const [habits, setHabits] = usePersistentState<HabitEntry[]>("habits", []);
   const [editIndex, setEditIndex] = useState(-1);
-  const [editInput, setEditInput] = useState("");
-  const [quoteIndex, setQuoteIndex] = useState(0);
+  const quoteIndex = useRandomIndex(habitQuotes.length);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setQuoteIndex((prev) => (prev + 1) % habitQuotes.length);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -39,53 +31,45 @@ export function useHabits() {
 
   const isLargeScreen = windowWidth >= 1024;
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setHabitInput(e.target.value);
-  };
-
-  const handleAddClick = () => {
-    if (!habitInput) return;
+  const addHabit = useCallback((name: string) => {
     const id = `habit-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-    setHabits([...habits, { id, name: habitInput, days: Array(7).fill(false) }]);
-    setHabitInput("");
-  };
+    setHabits((prev) => [
+      ...prev,
+      { id, name: name.trim(), days: Array(7).fill(false) },
+    ]);
+  }, []);
 
-  const handleEditClick = (index: number) => {
+  const startEdit = useCallback((index: number) => {
     setEditIndex(index);
-    setEditInput(habits[index].name);
-  };
+  }, []);
 
-  const handleSaveClick = () => {
-    const updatedHabits = [...habits];
-    updatedHabits[editIndex] = {
-      ...updatedHabits[editIndex],
-      name: editInput,
-    };
-    setHabits(updatedHabits);
-    setEditIndex(-1);
-  };
-
-  const handleCancelClick = () => {
-    setEditIndex(-1);
-  };
-
-  const handleEditInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEditInput(e.target.value);
-  };
-
-  const handleDeleteClick = (index: number) => {
-    setHabits(habits.filter((_, i) => i !== index));
-  };
-
-  const toggleDayMark = (habitIndex: number, dayIndex: number) => {
-    const updatedHabits = habits.map((habit, i) => {
-      if (i !== habitIndex) return habit;
-      const updatedDays = [...habit.days];
-      updatedDays[dayIndex] = !updatedDays[dayIndex];
-      return { ...habit, days: updatedDays };
+  const saveEdit = useCallback((index: number, name: string) => {
+    setHabits((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], name: name.trim() };
+      return updated;
     });
-    setHabits(updatedHabits);
-  };
+    setEditIndex(-1);
+  }, []);
+
+  const cancelEdit = useCallback(() => {
+    setEditIndex(-1);
+  }, []);
+
+  const deleteHabit = useCallback((index: number) => {
+    setHabits((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const toggleDayMark = useCallback((habitIndex: number, dayIndex: number) => {
+    setHabits((prev) =>
+      prev.map((habit, i) => {
+        if (i !== habitIndex) return habit;
+        const updatedDays = [...habit.days];
+        updatedDays[dayIndex] = !updatedDays[dayIndex];
+        return { ...habit, days: updatedDays };
+      })
+    );
+  }, []);
 
   const getWeekDates = (): Date[] => {
     const today = new Date();
@@ -165,15 +149,11 @@ export function useHabits() {
     () => ({
       habits,
       editIndex,
-      editInput,
-      habitInput,
-      handleInputChange,
-      handleAddClick,
-      handleEditClick,
-      handleSaveClick,
-      handleCancelClick,
-      handleEditInputChange,
-      handleDeleteClick,
+      addHabit,
+      startEdit,
+      saveEdit,
+      cancelEdit,
+      deleteHabit,
       toggleDayMark,
       getWeekDates,
       formatDate,
@@ -192,6 +172,6 @@ export function useHabits() {
       quoteIndex,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [habits, habitInput, editIndex, editInput, quoteIndex, windowWidth]
+    [habits, editIndex, windowWidth]
   );
 }

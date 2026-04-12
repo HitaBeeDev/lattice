@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import usePersistentState from "./usePersistentState";
+import { PRIORITY_OPTIONS, type Priority, type TaskFormValues } from "../lib/taskSchema";
 
 export interface TaskEntry {
   id: string;
@@ -8,44 +9,27 @@ export interface TaskEntry {
   date: string;
   startTime: string;
   endTime: string;
-  priority: string;
+  priority: Priority;
 }
 
-export interface NewTaskForm {
+export interface TaskDraft extends TaskFormValues {
   id?: string;
-  name: string;
-  description: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  priority: string;
 }
 
-const EMPTY_TASK_FORM: NewTaskForm = {
+export const EMPTY_TASK_FORM: TaskFormValues = {
   name: "",
   description: "",
   date: "",
   startTime: "",
   endTime: "",
-  priority: "",
+  priority: PRIORITY_OPTIONS[1],
 };
-
-const isTaskFormComplete = (task: NewTaskForm): boolean =>
-  Boolean(
-    task.name &&
-      task.description &&
-      task.date &&
-      task.startTime &&
-      task.endTime &&
-      task.priority
-  );
 
 export function useTasks() {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editTaskIndex, setEditTaskIndex] = useState<number | null>(null);
   const [tasks, setTasks] = usePersistentState<TaskEntry[]>("tasks", []);
-  const [newTask, setNewTask] = useState<NewTaskForm>(EMPTY_TASK_FORM);
+  const [currentTask, setCurrentTask] = useState<TaskDraft | null>(null);
   const [checkedTasks, setCheckedTasks] = usePersistentState<string[]>("checkedTasks", []);
 
   const getCurrentDate = (): string => {
@@ -65,70 +49,60 @@ export function useTasks() {
     return `${dayOfWeek}, ${dayOfMonth} ${month} ${year}`;
   };
 
-  const handleAddButtonClick = () => {
+  const handleAddButtonClick = useCallback(() => {
+    setIsEditing(false);
+    setCurrentTask(null);
     setShowModal(true);
-  };
+  }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setShowModal(false);
-    setNewTask(EMPTY_TASK_FORM);
-  };
+    setCurrentTask(null);
+    setIsEditing(false);
+  }, []);
 
-  const handleTaskAddition = () => {
-    if (!isTaskFormComplete(newTask)) {
-      alert("Please fill in all required fields.");
-      return;
-    }
+  const handleTaskAddition = useCallback((task: TaskFormValues) => {
     const uniqueId = `task-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-    const taskWithId: TaskEntry = { ...newTask, id: uniqueId } as TaskEntry;
-    setTasks([...tasks, taskWithId]);
+    const taskWithId: TaskEntry = { ...task, id: uniqueId };
+    setTasks((prev) => [...prev, taskWithId]);
     handleCloseModal();
-  };
+  }, [handleCloseModal, setTasks]);
 
-  const handleTaskSave = () => {
-    if (!isTaskFormComplete(newTask)) {
-      alert("Please make sure to fill in all required fields before proceeding.");
+  const handleTaskSave = useCallback((task: TaskFormValues) => {
+    if (!currentTask?.id) {
       return;
     }
-    const updatedTasks = tasks.map((task) =>
-      task.id === newTask.id ? (newTask as TaskEntry) : task
+    const updatedTasks = tasks.map((existingTask) =>
+      existingTask.id === currentTask.id ? { ...task, id: currentTask.id } : existingTask
     );
     setTasks(updatedTasks);
-    setIsEditing(false);
-    setEditTaskIndex(null);
     handleCloseModal();
-  };
+  }, [currentTask?.id, handleCloseModal, setTasks, tasks]);
 
-  const handleTaskDelete = (taskId: string) => {
+  const handleTaskDelete = useCallback((taskId: string) => {
     setTasks(tasks.filter((task) => task.id !== taskId));
-  };
+  }, [tasks]);
 
-  const handleTaskEditClick = (taskId: string) => {
+  const handleTaskEditClick = useCallback((taskId: string) => {
     const taskToEdit = tasks.find((task) => task.id === taskId);
     if (!taskToEdit) return;
     setIsEditing(true);
-    setEditTaskIndex(tasks.indexOf(taskToEdit));
-    setNewTask({ ...taskToEdit });
+    setCurrentTask({ ...taskToEdit });
     setShowModal(true);
-  };
+  }, [tasks]);
 
-  const handleTaskCancelClick = () => {
-    setIsEditing(false);
-    setShowModal(false);
-  };
+  const handleTaskCancelClick = useCallback(() => {
+    handleCloseModal();
+  }, []);
 
-  const updateNewTask = (field: keyof NewTaskForm, value: string) => {
-    setNewTask((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleCheckboxChange = (taskIdentifier: string) => {
+  const handleCheckboxChange = useCallback((taskIdentifier: string) => {
     setCheckedTasks((prev) => {
       if (prev.includes(taskIdentifier)) {
         return prev.filter((id) => id !== taskIdentifier);
       }
       return [...prev, taskIdentifier];
     });
-  };
+  }, []);
 
   const generateTaskIdentifier = (task: TaskEntry, index: number): string =>
     `${task.name}-${task.description}-${index}`;
@@ -147,8 +121,7 @@ export function useTasks() {
       tasks,
       showModal,
       isEditing,
-      editTaskIndex,
-      newTask,
+      currentTask,
       getCurrentDate,
       handleAddButtonClick,
       handleCloseModal,
@@ -157,7 +130,6 @@ export function useTasks() {
       handleTaskDelete,
       handleTaskEditClick,
       handleTaskCancelClick,
-      updateNewTask,
       groupedTasks,
       checkedTasks,
       handleCheckboxChange,
@@ -165,6 +137,6 @@ export function useTasks() {
       generateTaskIdentifier,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tasks, showModal, isEditing, editTaskIndex, newTask, checkedTasks]
+    [tasks, showModal, isEditing, currentTask, checkedTasks]
   );
 }
