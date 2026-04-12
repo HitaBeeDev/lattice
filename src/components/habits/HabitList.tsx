@@ -24,7 +24,7 @@ export default function HabitList() {
   }
 
   return (
-    <div className="space-y-3">
+    <section aria-label="Habit list" className="space-y-3">
       {habits.map((habit, index) => (
         <HabitRow
           key={habit.id}
@@ -40,6 +40,6 @@ export default function HabitList() {
           visibleWeekDates={visibleWeekDates}
         />
       ))}
-    </div>
+    </section>
   );
 }

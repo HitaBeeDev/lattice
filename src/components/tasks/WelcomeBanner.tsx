@@ -5,19 +5,24 @@ function WelcomeBanner() {
   const { handleAddButtonClick } = useTasks();
 
   return (
-    <div className="flex flex-col gap-4 rounded-3xl bg-slate-900 px-6 py-8 text-white lg:flex-row lg:items-center lg:justify-between">
-      <div className="space-y-2">
-        <p className="text-2xl font-semibold">
-          Hello there!
+    <div className="app-panel-dark relative overflow-hidden flex flex-col gap-4 px-6 py-8 lg:flex-row lg:items-center lg:justify-between">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(217,242,71,0.24),_transparent_24%)]"
+      />
+      <div className="relative space-y-3">
+        <div className="app-pill border-white/10 bg-white/5 text-white/65">Task flow</div>
+        <p className="text-3xl font-semibold tracking-[-0.04em]">
+          Keep the work in motion.
         </p>
-        <p className="max-w-xl text-sm leading-6 text-slate-200">
-          Excited to have you! Here&apos;s a checklist to get you started smoothly:
+        <p className="max-w-xl text-sm leading-6 text-white/70">
+          Capture the next deliverable, keep timing visible, and remove ambiguity from the day.
         </p>
       </div>
 
-      <div>
+      <div className="relative">
         <Button
-          className="bg-white text-slate-900 hover:bg-slate-100"
+          className="bg-white text-slate-900 shadow-none hover:bg-white"
           onClick={handleAddButtonClick}
           variant="secondary"
         >

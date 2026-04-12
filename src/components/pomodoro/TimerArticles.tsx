@@ -6,14 +6,17 @@ function TimerArticles() {
 
   return (
     <div>
-      <h2>
+      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+        Reading prompt
+      </p>
+      <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
         {articles[currentArticleIndex]?.title}
       </h2>
-      <p>
+      <p className="mt-4 text-sm leading-7 text-slate-600">
         {articles[currentArticleIndex]?.content}
       </p>
-    </div>);
-
+    </div>
+  );
 }
 
 export default TimerArticles;

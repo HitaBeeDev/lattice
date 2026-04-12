@@ -3,7 +3,7 @@ import { EmptyState, Skeleton } from "../ui";
 
 function HabitWidgetSkeleton() {
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <div className="app-card">
       <Skeleton className="mb-4 h-5 w-32" />
       <div className="space-y-3">
         {[0, 1, 2].map((i) => (
@@ -22,10 +22,15 @@ function HabitWidget() {
   }
 
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <div className="app-card">
       <div className="mb-4">
-        <p className="text-lg font-semibold text-slate-900">Today&apos;s Habits</p>
-        <p className="mt-0.5 text-sm text-slate-500">Keep up the amazing momentum!</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+          Momentum
+        </p>
+        <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-slate-950">
+          Today&apos;s habits
+        </p>
+        <p className="mt-1 text-sm text-slate-500">Keep the repeatable wins visible.</p>
       </div>
 
       {habits.length > 0 ? (
@@ -33,7 +38,7 @@ function HabitWidget() {
           {habits.map((habit) => (
             <li
               key={habit.id}
-              className="rounded-xl bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-700"
+              className="rounded-[1.35rem] border border-black/5 bg-white/55 px-4 py-3 text-sm font-medium text-slate-700"
             >
               {habit.name}
             </li>

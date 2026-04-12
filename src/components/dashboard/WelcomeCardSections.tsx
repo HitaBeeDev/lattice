@@ -5,9 +5,9 @@ type GreetingSectionProps = {
 
 export function GreetingSection({ message, title }: GreetingSectionProps) {
   return (
-    <div className="mb-4">
-      <p className="text-xl font-bold">{title}</p>
-      <p className="mt-0.5 text-sm text-indigo-200">{message}</p>
+    <div className="space-y-2">
+      <p className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">{title}</p>
+      <p className="max-w-xl text-sm leading-6 text-white/65 sm:text-base">{message}</p>
     </div>
   );
 }
@@ -26,18 +26,19 @@ export function DateTimeSection({
   period,
 }: DateTimeSectionProps) {
   return (
-    <div className="mb-4 flex items-end justify-between">
+    <div className="flex h-full flex-col justify-between gap-10">
       <div>
-        <p className="text-sm text-indigo-200">
+        <p className="text-sm text-white/60">
           Oh hey, it&apos;s <span className="font-semibold text-white">{dayOfWeek}</span> already!
         </p>
-        <p className="mt-0.5 text-sm text-indigo-200">{currentDate}</p>
+        <p className="mt-1 text-sm text-white/45">{currentDate}</p>
       </div>
 
-      <div className="text-right">
+      <div>
+        <p className="text-xs uppercase tracking-[0.22em] text-white/40">Local time</p>
         <div className="flex items-baseline gap-1">
-          <span className="text-3xl font-bold">{formattedTime}</span>
-          <span className="text-sm font-medium text-indigo-200">{period}</span>
+          <span className="text-4xl font-semibold tracking-[-0.06em]">{formattedTime}</span>
+          <span className="text-sm font-medium text-white/55">{period}</span>
         </div>
       </div>
     </div>
@@ -50,8 +51,8 @@ type QuoteSectionProps = {
 
 export function QuoteSection({ quote }: QuoteSectionProps) {
   return (
-    <div className="border-t border-indigo-500 pt-4">
-      <p className="text-sm italic text-indigo-200">&quot;{quote}&quot;</p>
+    <div className="border-t border-white/10 pt-4">
+      <p className="text-sm italic leading-6 text-white/70">&quot;{quote}&quot;</p>
     </div>
   );
 }

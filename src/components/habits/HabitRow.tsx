@@ -65,7 +65,7 @@ export default function HabitRow({
   );
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-[1.8rem] border border-black/10 bg-white/78 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.06)] backdrop-blur-sm">
       <div className="grid gap-4 lg:grid-cols-[minmax(16rem,1fr)_repeat(7,minmax(2.5rem,1fr))_auto_auto_10rem] lg:items-center">
         <div>
           {isEditing ? (
@@ -91,9 +91,9 @@ export default function HabitRow({
           >
             <div
               className={cn(
-                "h-6 w-6 rounded-full border transition",
+                "h-6 w-6 rounded-full border transition duration-200",
                 habit.days[dayIndex]
-                  ? "border-slate-900 bg-slate-900"
+                  ? "border-slate-950 bg-[var(--app-accent)]"
                   : "border-slate-300 bg-white"
               )}
             />

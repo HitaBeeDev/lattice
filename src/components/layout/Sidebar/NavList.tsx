@@ -30,7 +30,7 @@ const NavList = ({ navItems, isOpen }: NavListProps) => {
   };
 
   return (
-    <ul aria-label="Primary navigation links" className="space-y-2" role="list">
+    <ul aria-label="Primary navigation links" className="space-y-2.5" role="list">
       {navItems.map((item) => {
         const isActive = isItemActive(item.path);
 
@@ -40,13 +40,13 @@ const NavList = ({ navItems, isOpen }: NavListProps) => {
               aria-label={isOpen ? undefined : item.label}
               className={() =>
                 cn(
-                  "flex items-center rounded-2xl px-4 py-3 text-sm font-medium text-slate-600 transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2",
+                  "group flex items-center rounded-[1.35rem] px-4 py-3 text-sm font-medium transition-all duration-200",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--app-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950",
                   {
                     "gap-3": isOpen,
                     "justify-center": !isOpen,
-                    "bg-slate-900 text-white shadow-sm": isActive,
-                    "hover:bg-slate-100 hover:text-slate-900": !isActive,
+                    "bg-[var(--app-accent)] text-slate-950 shadow-[0_18px_30px_rgba(217,242,71,0.28)]": isActive,
+                    "text-white/70 hover:bg-white/8 hover:text-white": !isActive,
                   }
                 )
               }
@@ -56,15 +56,28 @@ const NavList = ({ navItems, isOpen }: NavListProps) => {
             >
               <item.icon
                 aria-hidden="true"
-                className="h-5 w-5 shrink-0"
+                className={cn(
+                  "h-5 w-5 shrink-0 transition-transform duration-200",
+                  isActive ? "" : "group-hover:scale-105"
+                )}
                 strokeWidth={2}
               />
-              {isOpen && <span>{item.label}</span>}
+              {isOpen && (
+                <div className="flex flex-1 items-center justify-between gap-3">
+                  <span>{item.label}</span>
+                  {isActive && (
+                    <span className="rounded-full bg-slate-950/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em]">
+                      Now
+                    </span>
+                  )}
+                </div>
+              )}
             </NavLink>
           </li>
         );
       })}
-    </ul>);
+    </ul>
+  );
 };
 
 export default NavList;

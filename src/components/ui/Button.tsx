@@ -4,10 +4,14 @@ import type { ButtonHTMLAttributes } from "react";
 import { cn } from "./cn";
 
 const VARIANT_STYLES = {
-  primary: "bg-slate-900 text-white hover:bg-slate-700 focus-visible:ring-slate-400",
-  secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200 focus-visible:ring-slate-300",
-  ghost: "bg-transparent text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-300",
-  danger: "bg-rose-600 text-white hover:bg-rose-500 focus-visible:ring-rose-300",
+  primary:
+    "border border-transparent bg-[var(--app-accent)] text-slate-950 shadow-[0_18px_35px_rgba(217,242,71,0.25)] hover:-translate-y-0.5 hover:brightness-95 focus-visible:ring-[var(--app-accent)]",
+  secondary:
+    "border border-black/10 bg-white/85 text-slate-900 hover:bg-white focus-visible:ring-slate-300",
+  ghost:
+    "border border-transparent bg-transparent text-slate-700 hover:bg-black/5 focus-visible:ring-slate-300",
+  danger:
+    "border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 focus-visible:ring-rose-300",
 } as const;
 
 const SIZE_STYLES = {
@@ -27,7 +31,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       type={type}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex items-center justify-center gap-2 rounded-2xl font-medium transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
         VARIANT_STYLES[variant],
         SIZE_STYLES[size],
         className

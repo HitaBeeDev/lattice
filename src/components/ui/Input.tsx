@@ -14,10 +14,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         aria-invalid={Boolean(error)}
         className={cn(
-          "w-full rounded-xl border bg-white px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-offset-1",
+          "w-full rounded-2xl border bg-white/85 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-offset-1",
           error
             ? "border-rose-400 focus:border-rose-400 focus:ring-rose-200"
-            : "border-slate-200 focus:border-slate-400 focus:ring-slate-200",
+            : "border-black/10 focus:border-slate-400 focus:ring-slate-200",
           className
         )}
         {...props}

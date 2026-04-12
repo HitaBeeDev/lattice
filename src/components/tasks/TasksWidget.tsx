@@ -29,7 +29,7 @@ const getUpcomingTasks = (
 
 function TasksWidgetSkeleton() {
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <div className="app-card">
       <Skeleton className="mb-4 h-5 w-36" />
       <div className="space-y-4">
         {[0, 1].map((i) => (
@@ -59,22 +59,29 @@ function TasksWidget() {
   const upcomingTasks = getUpcomingTasks(groupedTasks, checkedTasks);
 
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-      <p className="text-lg font-semibold text-slate-900">Upcoming Plans</p>
+    <div className="app-card">
+      <div className="mb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+          Delivery queue
+        </p>
+        <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-slate-950">
+          Upcoming plans
+        </p>
+      </div>
 
-      <div className="mt-4">
+      <div>
         {upcomingTasks.length > 0 ? (
           upcomingTasks.map((task, index) => (
             <div
-              className="border-b border-slate-100 py-4 last:border-b-0"
+              className="border-b border-black/5 py-4 last:border-b-0"
               key={task.id}
             >
               {index !== 0 && <div></div>}
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
                   {task.date}
                 </p>
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center justify-between gap-3 rounded-[1.35rem] border border-black/5 bg-white/55 px-4 py-3">
                   <div>
                     <p className="font-semibold text-slate-900">{task.name}</p>
                     <p className="text-sm text-slate-600">

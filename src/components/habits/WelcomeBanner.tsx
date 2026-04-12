@@ -26,13 +26,14 @@ export default function WelcomeBanner() {
   };
 
   return (
-    <div className="rounded-3xl bg-white px-6 py-8 shadow-sm ring-1 ring-slate-200">
-      <div className="space-y-2">
-        <p className="text-2xl font-semibold text-slate-900">
-          Welcome to the journey of building new habits!
+    <div className="app-card">
+      <div className="space-y-3">
+        <div className="app-pill">Habit system</div>
+        <p className="text-3xl font-semibold tracking-[-0.04em] text-slate-950">
+          Build repeatable momentum.
         </p>
-        <p className="text-sm leading-6 text-slate-600">
-          Let&apos;s embark on this exciting adventure together!
+        <p className="max-w-2xl text-sm leading-6 text-slate-600">
+          Keep the weekly grid simple, visible, and satisfying enough that checking in becomes automatic.
         </p>
       </div>
 

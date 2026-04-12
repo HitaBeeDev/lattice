@@ -18,8 +18,8 @@ function App({ children }: AppProps): JSX.Element {
       <TaskProvider>
         <TimeTrackerProvider>{children}</TimeTrackerProvider>
       </TaskProvider>
-    </HabitProvider>);
-
+    </HabitProvider>
+  );
 }
 
 export default App;

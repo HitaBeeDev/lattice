@@ -20,7 +20,7 @@ function DailyHabitItem({ habit, onToggle, todayIndex }: DailyHabitItemProps) {
   return (
     <li>
       <button
-        className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition hover:bg-slate-50"
+        className="flex w-full items-center justify-between rounded-[1.35rem] border border-black/5 bg-white/60 px-3 py-3 text-sm transition hover:border-black/10 hover:bg-white"
         onClick={onToggle}
         type="button"
       >
@@ -34,11 +34,11 @@ function DailyHabitItem({ habit, onToggle, todayIndex }: DailyHabitItemProps) {
           >
             {isDone && <CheckIcon />}
           </span>
-          <span className={isDone ? "font-medium text-slate-400 line-through" : "font-medium text-slate-700"}>
+          <span className={isDone ? "font-medium text-slate-500 line-through" : "font-medium text-slate-700"}>
             {habit.name}
           </span>
         </span>
-        <span className="flex items-center gap-1 text-xs text-slate-400">
+        <span className="flex items-center gap-1 text-xs text-slate-500">
           <FlameIcon />
           {habit.days.filter(Boolean).length}
         </span>
@@ -53,9 +53,14 @@ export default function DailyHabitsCard({
   toggleDayMark,
 }: DailyHabitsCardProps) {
   return (
-    <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <article className="app-card">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">Daily Habits</h2>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Consistency</p>
+          <h2 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-slate-950">
+            Daily habits
+          </h2>
+        </div>
         <Tooltip content="More habit actions coming soon">
           <Button aria-label="More habit actions" size="sm" variant="ghost">
             &hellip;
@@ -74,7 +79,7 @@ export default function DailyHabitsCard({
             />
           ))
         ) : (
-          <li className="py-4 text-center text-sm text-slate-400">
+          <li className="py-4 text-center text-sm text-slate-500">
             No habits for today.
           </li>
         )}

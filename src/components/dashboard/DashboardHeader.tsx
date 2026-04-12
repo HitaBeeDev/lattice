@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { CalendarDays, Plus, Sparkles } from "lucide-react";
 import { Button } from "../ui";
 
 type DashboardHeaderProps = {
@@ -13,18 +13,32 @@ export default function DashboardHeader({
   onAddTask,
 }: DashboardHeaderProps) {
   return (
-    <header className="flex items-center justify-between gap-4">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">{greeting}</h1>
-        <p className="mt-0.5 text-sm text-slate-500">
-          Here is your daily productivity summary for {formattedDate}.
-        </p>
+    <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div className="space-y-3">
+        <div className="app-pill">
+          <Sparkles aria-hidden="true" className="mr-2 h-3.5 w-3.5" />
+          Focus command center
+        </div>
+        <div>
+          <h1 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl">
+            {greeting}
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+            A deliberate overview of habits, tasks, and focus time for {formattedDate}.
+          </p>
+        </div>
       </div>
 
-      <Button onClick={onAddTask} type="button">
-        <Plus aria-hidden="true" className="-ml-0.5 h-4 w-4" strokeWidth={2.5} />
-        Add Task
-      </Button>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="hidden rounded-2xl border border-black/10 bg-white/65 px-4 py-3 text-sm text-slate-600 shadow-sm backdrop-blur sm:flex sm:items-center sm:gap-2">
+          <CalendarDays aria-hidden="true" className="h-4 w-4" />
+          {formattedDate}
+        </div>
+        <Button onClick={onAddTask} type="button">
+          <Plus aria-hidden="true" className="-ml-0.5 h-4 w-4" strokeWidth={2.5} />
+          Add Task
+        </Button>
+      </div>
     </header>
   );
 }

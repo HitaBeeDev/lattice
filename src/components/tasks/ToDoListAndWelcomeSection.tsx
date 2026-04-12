@@ -7,13 +7,13 @@ function ToDoListAndWelcomeSection() {
   const { showModal } = useTasks();
 
   return (
-    <div>
+    <section aria-label="Task overview" className="space-y-6">
       <WelcomeBanner />
 
       {showModal && <AddModal />}
 
       <ToDoList />
-    </div>);
+    </section>);
 
 }
 

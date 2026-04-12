@@ -10,20 +10,24 @@ type StatCardProps = {
 
 function StatCard({ icon, label, value, suffix, note }: StatCardProps) {
   return (
-    <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-      <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-500">{label}</p>
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+    <article className="app-card relative overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 top-0 h-24 w-24 rounded-full bg-[var(--app-accent-soft)] blur-2xl"
+      />
+      <div className="relative mb-6 flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{label}</p>
+          <div className="mt-4 flex items-baseline gap-2">
+            <p className="text-4xl font-semibold tracking-[-0.05em] text-slate-950">{value}</p>
+            {suffix && <p className="text-sm font-medium text-slate-600">{suffix}</p>}
+          </div>
+        </div>
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-[var(--app-accent)] shadow-lg">
           {icon}
         </span>
       </div>
-
-      <div className="mb-1 flex items-baseline gap-1">
-        <p className="text-3xl font-bold text-slate-900">{value}</p>
-        {suffix && <p className="text-sm font-medium text-slate-400">{suffix}</p>}
-      </div>
-
-      <p className="text-xs text-slate-400">{note}</p>
+      <p className="relative text-sm leading-6 text-slate-600">{note}</p>
     </article>
   );
 }

@@ -25,7 +25,7 @@ export default function TaskListItem({
   const checkboxId = `task-complete-${task.id}`;
 
   return (
-    <li className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <li className="rounded-[1.8rem] border border-black/10 bg-white/75 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.06)] backdrop-blur-sm">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-3">
           <div className="flex items-start gap-3">
