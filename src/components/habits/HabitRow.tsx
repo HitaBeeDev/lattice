@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { HabitEntry } from "../../hooks/useHabits";
 import {
   makeHabitSchema,
   type HabitFormValues,
 } from "../../lib/habitSchema";
+import type { Habit } from "../../types/habit";
 import { HabitNameEditor, HabitProgress } from "./HabitRowParts";
 import { Button, cn } from "../ui";
 
@@ -14,8 +14,8 @@ const PERCENTAGE_MULTIPLIER = 100;
 
 interface HabitRowProps {
   editIndex: number;
-  habit: HabitEntry;
-  habits: HabitEntry[];
+  habit: Habit;
+  habits: Habit[];
   index: number;
   startEdit: (index: number) => void;
   saveEdit: (index: number, name: string) => void;

@@ -1,18 +1,22 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, ReactNode } from "react";
-import { useTasks as useTasksHook } from "../hooks/useTasks";
+import { createContext, useContext, type ReactNode } from "react";
+import { useTasks as useTasksHook, type TasksContextValue } from "../hooks/useTasks";
 
-type TaskContextValue = ReturnType<typeof useTasksHook>;
+const TaskContext = createContext<TasksContextValue | null>(null);
 
-const TaskContext = createContext<TaskContextValue | null>(null);
+export const useTasks = (): TasksContextValue => {
+  const context = useContext(TaskContext);
 
-export const useTasks = (): TaskContextValue => {
-  const ctx = useContext(TaskContext);
-  if (!ctx) throw new Error("useTasks must be used within TaskProvider");
-  return ctx;
+  if (!context) {
+    throw new Error("useTasks must be used within TaskProvider");
+  }
+
+  return context;
 };
 
-export const TaskProvider = ({ children }: { children: ReactNode }) => {
-  const value = useTasksHook();
+export const TaskProvider = ({ children }: { children: ReactNode }): JSX.Element => {
+  const value: TasksContextValue = useTasksHook();
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;
 };
+
+export default TaskContext;

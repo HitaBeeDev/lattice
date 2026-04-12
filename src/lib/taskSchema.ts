@@ -1,7 +1,7 @@
 import { z } from "zod";
+import { TASK_PRIORITIES } from "../types/task";
 
-export const PRIORITY_OPTIONS = ["High", "Medium", "Low"] as const;
-export type Priority = (typeof PRIORITY_OPTIONS)[number];
+export const PRIORITY_OPTIONS = TASK_PRIORITIES;
 
 export const taskSchema = z
   .object({

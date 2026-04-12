@@ -1,4 +1,4 @@
-import type { TaskEntry } from "../../db/database";
+import type { Task } from "../../types/task";
 import TaskListItem from "./TaskListItem";
 
 type TaskGroupProps = {
@@ -7,7 +7,7 @@ type TaskGroupProps = {
   onDeleteTask: (taskId: string) => void;
   onEditTask: (taskId: string) => void;
   onToggleTask: (taskId: string) => void;
-  tasks: TaskEntry[];
+  tasks: Task[];
 };
 
 export default function TaskGroup({

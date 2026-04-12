@@ -1,15 +1,15 @@
-import type { HabitEntry } from "../../db/database";
+import type { Habit } from "../../types/habit";
 import { CheckIcon, FlameIcon } from "./dashboardIcons";
 import { Button, Tooltip } from "../ui";
 
 type DailyHabitsCardProps = {
-  habits: HabitEntry[];
+  habits: Habit[];
   todayIndex: number;
   toggleDayMark: (habitIndex: number, dayIndex: number) => void;
 };
 
 type DailyHabitItemProps = {
-  habit: HabitEntry;
+  habit: Habit;
   onToggle: () => void;
   todayIndex: number;
 };

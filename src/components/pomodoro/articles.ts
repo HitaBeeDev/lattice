@@ -1,4 +1,9 @@
-const articles = [
+type Article = {
+  title: string;
+  content: string;
+};
+
+const articles: Article[] = [
   {
     title: "Boost Your Productivity with the Pomodoro Technique",
     content:
@@ -15,8 +20,7 @@ const articles = [
       "Unlocking your full potential requires adopting effective strategies for peak productivity. Start by optimizing your environment for success, eliminating clutter, and minimizing distractions. Prioritize your tasks based on importance and urgency, and tackle them one at a time. Break large projects into smaller, manageable steps, and celebrate your progress along the way. Remember to take regular breaks to recharge your mind and body. With determination and perseverance, you can maximize your productivity and accomplish more than you ever thought possible.",
   },
   {
-    title:
-      "The Science of Productivity: Understanding Your Brain's Work Patterns",
+    title: "The Science of Productivity: Understanding Your Brain's Work Patterns",
     content:
       "Understanding the science behind productivity can help you work smarter, not harder. Our brains have natural rhythms known as ultradian cycles, which influence our ability to focus and concentrate. By aligning your work schedule with these cycles, you can optimize your productivity levels. The Pomodoro Technique, with its focus on short bursts of intense work followed by brief breaks, is a perfect example of leveraging these natural rhythms. Additionally, paying attention to factors such as sleep, nutrition, and stress management can further enhance your cognitive function and productivity.",
   },

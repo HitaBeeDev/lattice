@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef } from "react";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "./cn";
 
@@ -108,7 +108,7 @@ export default function Modal({
           "w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl",
           className
         )}
-        onClick={(event) => event.stopPropagation()}
+        onClick={(event: MouseEvent<HTMLDivElement>) => event.stopPropagation()}
       >
         <div className="mb-6 space-y-2">
           <h2 id={titleId} className="text-2xl font-semibold text-slate-900">

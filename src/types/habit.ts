@@ -1,13 +1,16 @@
-export type HabitCategory =
-  | "health"
-  | "fitness"
-  | "productivity"
-  | "learning"
-  | "mindfulness"
-  | "finance"
-  | "social"
-  | "home"
-  | "other";
+export const HABIT_CATEGORIES = [
+  "health",
+  "fitness",
+  "productivity",
+  "learning",
+  "mindfulness",
+  "finance",
+  "social",
+  "home",
+  "other",
+] as const;
+
+export type HabitCategory = (typeof HABIT_CATEGORIES)[number];
 
 export interface Habit {
   id: string;
@@ -15,6 +18,7 @@ export interface Habit {
   description?: string;
   category: HabitCategory;
   targetPerWeek?: number;
+  days: boolean[];
   isArchived: boolean;
   createdAt: string;
   updatedAt: string;

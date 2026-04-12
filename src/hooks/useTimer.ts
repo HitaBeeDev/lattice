@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import articles from "../components/pomodoro/articles";
-import { useRandomIndex } from "./useRandomIndex";
-import usePersistentState from "./usePersistentState";
 import type { TimerAnalytics, TimerSessionHistoryEntry } from "../types/pomodoro";
+import usePersistentState from "./usePersistentState";
+import { useRandomIndex } from "./useRandomIndex";
 
 export type SessionType = "Pomodoro" | "ShortBreak" | "LongBreak";
 
@@ -22,6 +22,38 @@ interface PersistedTimerState {
   projectRemainingTimes: Record<string, number>;
   runStartedAt: string | null;
   runStartedRemainingSeconds: number | null;
+}
+
+export interface TimeTrackerContextValue {
+  totalSeconds: number;
+  maxSeconds: number;
+  timerId: ReturnType<typeof setInterval> | null;
+  isTimerActive: boolean;
+  isEditing: boolean;
+  sessionType: SessionType;
+  projectName: string;
+  projects: Project[];
+  projectTimes: Record<string, number>;
+  projectRemainingTimes: Record<string, number>;
+  handleAddProject: () => void;
+  handleSessionChange: (type: SessionType) => void;
+  handleStart: () => void;
+  handlePause: () => void;
+  handleReset: () => void;
+  handleUpdateTime: (minutes: number) => void;
+  toggleEdit: () => void;
+  editButtonText: string;
+  sessionHistory: TimerSessionHistoryEntry[];
+  completedPomodoros: number;
+  shortBreakCount: number;
+  longBreakCount: number;
+  todayFocusSeconds: number;
+  dailyFocusSeconds: Record<string, number>;
+  sessionDurations: Record<SessionType, number>;
+  radius: number;
+  circumference: number;
+  strokeDashoffset: number;
+  currentArticleIndex: number;
 }
 
 const SESSION_DURATIONS: Record<SessionType, number> = {
@@ -67,18 +99,18 @@ const buildProjectRemainingTimes = (
     ])
   );
 
-const getTodayKey = (date = new Date()): string => date.toISOString().slice(0, 10);
+const getTodayKey = (date: Date = new Date()): string => date.toISOString().slice(0, 10);
 
 const getRemainingSeconds = (
   runStartedAt: string,
   runStartedRemainingSeconds: number,
-  now = Date.now()
+  now: number = Date.now()
 ): number => {
   const elapsedSeconds = Math.floor((now - new Date(runStartedAt).getTime()) / 1000);
   return Math.max(runStartedRemainingSeconds - elapsedSeconds, 0);
 };
 
-export function useTimer() {
+export function useTimer(): TimeTrackerContextValue {
   const [timerState, setTimerState] = usePersistentState<PersistedTimerState>(
     TIMER_STATE_STORAGE_KEY,
     createInitialTimerState()
@@ -88,7 +120,7 @@ export function useTimer() {
     EMPTY_ANALYTICS
   );
   const [timerId, setTimerId] = useState<ReturnType<typeof setInterval> | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const currentArticleIndex = useRandomIndex(articles.length);
 
   const {
@@ -105,8 +137,8 @@ export function useTimer() {
   } = timerState;
 
   const recordCompletedSession = useCallback(
-    (completedSessionType: SessionType, durationSeconds: number, completedAt: string) => {
-      setAnalytics((prev) => {
+    (completedSessionType: SessionType, durationSeconds: number, completedAt: string): void => {
+      setAnalytics((previousAnalytics) => {
         const historyEntry: TimerSessionHistoryEntry = {
           id: `session-${completedAt}-${Math.floor(Math.random() * 10000)}`,
           sessionType: completedSessionType,
@@ -114,7 +146,7 @@ export function useTimer() {
           completedAt,
         };
         const dateKey = getTodayKey(new Date(completedAt));
-        const nextDailyFocusSeconds = { ...prev.dailyFocusSeconds };
+        const nextDailyFocusSeconds = { ...previousAnalytics.dailyFocusSeconds };
 
         if (completedSessionType === "Pomodoro") {
           nextDailyFocusSeconds[dateKey] =
@@ -122,14 +154,17 @@ export function useTimer() {
         }
 
         return {
-          sessionHistory: [historyEntry, ...prev.sessionHistory],
+          sessionHistory: [historyEntry, ...previousAnalytics.sessionHistory],
           dailyFocusSeconds: nextDailyFocusSeconds,
           completedPomodoros:
-            prev.completedPomodoros + (completedSessionType === "Pomodoro" ? 1 : 0),
+            previousAnalytics.completedPomodoros +
+            (completedSessionType === "Pomodoro" ? 1 : 0),
           shortBreakCount:
-            prev.shortBreakCount + (completedSessionType === "ShortBreak" ? 1 : 0),
+            previousAnalytics.shortBreakCount +
+            (completedSessionType === "ShortBreak" ? 1 : 0),
           longBreakCount:
-            prev.longBreakCount + (completedSessionType === "LongBreak" ? 1 : 0),
+            previousAnalytics.longBreakCount +
+            (completedSessionType === "LongBreak" ? 1 : 0),
         };
       });
     },
@@ -141,31 +176,34 @@ export function useTimer() {
       completedSessionType: SessionType,
       durationSeconds: number,
       completedAt: string
-    ) => {
+    ): void => {
       if (timerId !== null) {
         clearInterval(timerId);
       }
 
       setTimerId(null);
-      setTimerState((prev) => ({
-        ...prev,
+      setTimerState((previousState) => ({
+        ...previousState,
         totalSeconds: 0,
         isTimerActive: false,
         runStartedAt: null,
         runStartedRemainingSeconds: null,
-        projectRemainingTimes: buildProjectRemainingTimes(prev.projectRemainingTimes, 0),
+        projectRemainingTimes: buildProjectRemainingTimes(
+          previousState.projectRemainingTimes,
+          0
+        ),
       }));
       recordCompletedSession(completedSessionType, durationSeconds, completedAt);
     },
-    [recordCompletedSession, timerId, setTimerState]
+    [recordCompletedSession, setTimerState, timerId]
   );
 
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     if (!isTimerActive || !runStartedAt || runStartedRemainingSeconds === null) {
       return;
     }
 
-    const syncTimer = () => {
+    const syncTimer = (): void => {
       const remainingSeconds = getRemainingSeconds(
         runStartedAt,
         runStartedRemainingSeconds
@@ -179,22 +217,22 @@ export function useTimer() {
         return;
       }
 
-      setTimerState((prev) => ({
-        ...prev,
+      setTimerState((previousState) => ({
+        ...previousState,
         totalSeconds: remainingSeconds,
         projectRemainingTimes: buildProjectRemainingTimes(
-          prev.projectRemainingTimes,
+          previousState.projectRemainingTimes,
           remainingSeconds
         ),
       }));
     };
 
     syncTimer();
-    const id = setInterval(syncTimer, 1000);
-    setTimerId(id);
+    const intervalId = setInterval(syncTimer, 1000);
+    setTimerId(intervalId);
 
-    return () => {
-      clearInterval(id);
+    return (): void => {
+      clearInterval(intervalId);
       setTimerId(null);
     };
   }, [
@@ -207,59 +245,76 @@ export function useTimer() {
     setTimerState,
   ]);
 
-  const handleAddProject = useCallback(() => {
-    if (!projectName.trim()) return;
+  const handleAddProject = useCallback((): void => {
+    if (!projectName.trim()) {
+      return;
+    }
+
     const projectId = Date.now().toString();
     const newProject: Project = { id: projectId, name: projectName };
     const initialTime = SESSION_DURATIONS[sessionType];
-    setTimerState((prev) => ({
-      ...prev,
-      projects: [...prev.projects, newProject],
-      projectTimes: { ...prev.projectTimes, [projectId]: initialTime },
-      projectRemainingTimes: { ...prev.projectRemainingTimes, [projectId]: initialTime },
+
+    setTimerState((previousState) => ({
+      ...previousState,
+      projects: [...previousState.projects, newProject],
+      projectTimes: { ...previousState.projectTimes, [projectId]: initialTime },
+      projectRemainingTimes: {
+        ...previousState.projectRemainingTimes,
+        [projectId]: initialTime,
+      },
       projectName: "",
     }));
   }, [projectName, sessionType, setTimerState]);
 
-  const handlePause = useCallback(() => {
+  const handlePause = useCallback((): void => {
     if (timerId !== null) {
       clearInterval(timerId);
     }
 
     setTimerId(null);
-    setTimerState((prev) => {
-      if (!prev.isTimerActive || !prev.runStartedAt || prev.runStartedRemainingSeconds === null) {
-        return { ...prev, isTimerActive: false, runStartedAt: null, runStartedRemainingSeconds: null };
+    setTimerState((previousState) => {
+      if (
+        !previousState.isTimerActive ||
+        !previousState.runStartedAt ||
+        previousState.runStartedRemainingSeconds === null
+      ) {
+        return {
+          ...previousState,
+          isTimerActive: false,
+          runStartedAt: null,
+          runStartedRemainingSeconds: null,
+        };
       }
 
       const remainingSeconds = getRemainingSeconds(
-        prev.runStartedAt,
-        prev.runStartedRemainingSeconds
+        previousState.runStartedAt,
+        previousState.runStartedRemainingSeconds
       );
 
       return {
-        ...prev,
+        ...previousState,
         totalSeconds: remainingSeconds,
         isTimerActive: false,
         runStartedAt: null,
         runStartedRemainingSeconds: null,
         projectRemainingTimes: buildProjectRemainingTimes(
-          prev.projectRemainingTimes,
+          previousState.projectRemainingTimes,
           remainingSeconds
         ),
       };
     });
-  }, [timerId, setTimerState]);
+  }, [setTimerState, timerId]);
 
-  const handleSessionChange = useCallback((type: SessionType) => {
+  const handleSessionChange = useCallback((type: SessionType): void => {
     const newTotalSeconds = SESSION_DURATIONS[type];
+
     if (timerId !== null) {
       clearInterval(timerId);
     }
 
     setTimerId(null);
-    setTimerState((prev) => ({
-      ...prev,
+    setTimerState((previousState) => ({
+      ...previousState,
       sessionType: type,
       totalSeconds: newTotalSeconds,
       maxSeconds: newTotalSeconds,
@@ -267,22 +322,25 @@ export function useTimer() {
       runStartedAt: null,
       runStartedRemainingSeconds: null,
       projectRemainingTimes: buildProjectRemainingTimes(
-        prev.projectRemainingTimes,
+        previousState.projectRemainingTimes,
         newTotalSeconds
       ),
     }));
   }, [setTimerState, timerId]);
 
-  const handleStart = useCallback(() => {
-    setTimerState((prev) => {
-      if (prev.isTimerActive) {
-        return prev;
+  const handleStart = useCallback((): void => {
+    setTimerState((previousState) => {
+      if (previousState.isTimerActive) {
+        return previousState;
       }
 
-      const remainingSeconds = prev.totalSeconds > 0 ? prev.totalSeconds : prev.maxSeconds;
+      const remainingSeconds =
+        previousState.totalSeconds > 0
+          ? previousState.totalSeconds
+          : previousState.maxSeconds;
 
       return {
-        ...prev,
+        ...previousState,
         totalSeconds: remainingSeconds,
         isTimerActive: true,
         runStartedAt: new Date().toISOString(),
@@ -291,56 +349,58 @@ export function useTimer() {
     });
   }, [setTimerState]);
 
-  const handleReset = useCallback(() => {
+  const handleReset = useCallback((): void => {
     if (timerId !== null) {
       clearInterval(timerId);
     }
 
     setTimerId(null);
-    setTimerState((prev) => ({
-      ...prev,
-      totalSeconds: prev.maxSeconds,
+    setTimerState((previousState) => ({
+      ...previousState,
+      totalSeconds: previousState.maxSeconds,
       isTimerActive: false,
       runStartedAt: null,
       runStartedRemainingSeconds: null,
       projectRemainingTimes: buildProjectRemainingTimes(
-        prev.projectRemainingTimes,
-        prev.maxSeconds
+        previousState.projectRemainingTimes,
+        previousState.maxSeconds
       ),
     }));
   }, [setTimerState, timerId]);
 
-  const handleUpdateTime = useCallback((minutes: number) => {
+  const handleUpdateTime = useCallback((minutes: number): void => {
     const newTotalSeconds = minutes * 60;
+
     if (timerId !== null) {
       clearInterval(timerId);
     }
 
     setTimerId(null);
-    setTimerState((prev) => ({
-      ...prev,
+    setTimerState((previousState) => ({
+      ...previousState,
       totalSeconds: newTotalSeconds,
       maxSeconds: newTotalSeconds,
       isTimerActive: false,
       runStartedAt: null,
       runStartedRemainingSeconds: null,
       projectRemainingTimes: buildProjectRemainingTimes(
-        prev.projectRemainingTimes,
+        previousState.projectRemainingTimes,
         newTotalSeconds
       ),
     }));
     setIsEditing(false);
   }, [setTimerState, timerId]);
 
-  const toggleEdit = useCallback(() => setIsEditing((prev) => !prev), []);
+  const toggleEdit = useCallback((): void => {
+    setIsEditing((previousState) => !previousState);
+  }, []);
 
   const editButtonText = isEditing ? "Cancel Edit" : "Edit Time";
-
   const circumference = 2 * Math.PI * TIMER_RADIUS;
   const strokeDashoffset = (totalSeconds / maxSeconds) * circumference;
   const todayFocusSeconds = analytics.dailyFocusSeconds[getTodayKey()] ?? 0;
 
-  return useMemo(
+  return useMemo<TimeTrackerContextValue>(
     () => ({
       totalSeconds,
       maxSeconds,
@@ -372,20 +432,34 @@ export function useTimer() {
       strokeDashoffset,
       currentArticleIndex,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      totalSeconds,
-      maxSeconds,
-      timerId,
-      isTimerActive,
+      analytics.completedPomodoros,
+      analytics.dailyFocusSeconds,
+      analytics.longBreakCount,
+      analytics.sessionHistory,
+      analytics.shortBreakCount,
+      circumference,
+      currentArticleIndex,
+      editButtonText,
+      handleAddProject,
+      handlePause,
+      handleReset,
+      handleSessionChange,
+      handleStart,
+      handleUpdateTime,
       isEditing,
-      sessionType,
+      isTimerActive,
+      maxSeconds,
       projectName,
-      projects,
-      projectTimes,
       projectRemainingTimes,
-      analytics,
+      projectTimes,
+      projects,
+      sessionType,
+      strokeDashoffset,
+      timerId,
       todayFocusSeconds,
+      toggleEdit,
+      totalSeconds,
     ]
   );
 }

@@ -1,10 +1,30 @@
 import { useCallback, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
+import { db } from "../db/database";
 import { PRIORITY_OPTIONS, type TaskFormValues } from "../lib/taskSchema";
-import { db, type TaskEntry } from "../db/database";
+import type { Task } from "../types/task";
 
 export interface TaskDraft extends TaskFormValues {
   id?: string;
+}
+
+export interface TasksContextValue {
+  tasks: Task[];
+  showModal: boolean;
+  isEditing: boolean;
+  currentTask: TaskDraft | null;
+  getCurrentDate: () => string;
+  handleAddButtonClick: () => void;
+  handleCloseModal: () => void;
+  handleTaskAddition: (task: TaskFormValues) => void;
+  handleTaskSave: (task: TaskFormValues) => void;
+  handleTaskDelete: (taskId: string) => void;
+  handleTaskEditClick: (taskId: string) => void;
+  handleTaskCancelClick: () => void;
+  groupedTasks: Record<string, Task[]>;
+  checkedTasks: string[];
+  handleCheckboxChange: (taskId: string) => void;
+  sortedTasks: [string, Task[]][];
 }
 
 export const EMPTY_TASK_FORM: TaskFormValues = {
@@ -16,18 +36,34 @@ export const EMPTY_TASK_FORM: TaskFormValues = {
   priority: PRIORITY_OPTIONS[1],
 };
 
-export function useTasks() {
-  const [showModal, setShowModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const taskEntries = useLiveQuery(() => db.tasks.toArray(), [], []);
-  const tasks = useMemo(() => taskEntries ?? [], [taskEntries]);
+const createTaskRecord = (task: TaskFormValues): Task => {
+  const timestamp = new Date().toISOString();
+
+  return {
+    ...task,
+    id: `task-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+    isCompleted: false,
+    status: "pending",
+    tags: [],
+    subtasks: [],
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  };
+};
+
+export function useTasks(): TasksContextValue {
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const taskEntries = useLiveQuery<Task[] | undefined>(() => db.tasks.toArray(), []);
+  const tasks = useMemo<Task[]>(() => taskEntries ?? [], [taskEntries]);
   const [currentTask, setCurrentTask] = useState<TaskDraft | null>(null);
-  const checkedTasks = useMemo(
+
+  const checkedTasks = useMemo<string[]>(
     () => tasks.filter((task) => task.isCompleted).map((task) => task.id),
     [tasks]
   );
 
-  const getCurrentDate = (): string => {
+  const getCurrentDate = useCallback((): string => {
     const months = [
       "Jan", "Feb", "Mar", "Apr", "May", "Jun",
       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -42,32 +78,26 @@ export function useTasks() {
     const month = months[currentDate.getMonth()];
     const year = currentDate.getFullYear();
     return `${dayOfWeek}, ${dayOfMonth} ${month} ${year}`;
-  };
+  }, []);
 
-  const handleAddButtonClick = useCallback(() => {
+  const handleAddButtonClick = useCallback((): void => {
     setIsEditing(false);
     setCurrentTask(null);
     setShowModal(true);
   }, []);
 
-  const handleCloseModal = useCallback(() => {
+  const handleCloseModal = useCallback((): void => {
     setShowModal(false);
     setCurrentTask(null);
     setIsEditing(false);
   }, []);
 
-  const handleTaskAddition = useCallback((task: TaskFormValues) => {
-    const uniqueId = `task-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-    const taskWithId: TaskEntry = {
-      ...task,
-      id: uniqueId,
-      isCompleted: false,
-    };
-    void db.tasks.add(taskWithId);
+  const handleTaskAddition = useCallback((task: TaskFormValues): void => {
+    void db.tasks.add(createTaskRecord(task));
     handleCloseModal();
   }, [handleCloseModal]);
 
-  const handleTaskSave = useCallback((task: TaskFormValues) => {
+  const handleTaskSave = useCallback((task: TaskFormValues): void => {
     if (!currentTask?.id) {
       return;
     }
@@ -81,43 +111,70 @@ export function useTasks() {
       ...existingTask,
       ...task,
       id: currentTask.id,
+      updatedAt: new Date().toISOString(),
     });
     handleCloseModal();
   }, [currentTask?.id, handleCloseModal, tasks]);
 
-  const handleTaskDelete = useCallback((taskId: string) => {
+  const handleTaskDelete = useCallback((taskId: string): void => {
     void db.tasks.delete(taskId);
   }, []);
 
-  const handleTaskEditClick = useCallback((taskId: string) => {
+  const handleTaskEditClick = useCallback((taskId: string): void => {
     const taskToEdit = tasks.find((task) => task.id === taskId);
-    if (!taskToEdit) return;
+    if (!taskToEdit) {
+      return;
+    }
+
     setIsEditing(true);
-    setCurrentTask({ ...taskToEdit });
+    setCurrentTask({
+      id: taskToEdit.id,
+      name: taskToEdit.name,
+      description: taskToEdit.description,
+      date: taskToEdit.date,
+      startTime: taskToEdit.startTime,
+      endTime: taskToEdit.endTime,
+      priority: taskToEdit.priority,
+    });
     setShowModal(true);
   }, [tasks]);
 
-  const handleTaskCancelClick = useCallback(() => {
+  const handleTaskCancelClick = useCallback((): void => {
     handleCloseModal();
   }, [handleCloseModal]);
 
-  const handleCheckboxChange = useCallback((taskIdentifier: string) => {
-    const task = tasks.find((entry) => entry.id === taskIdentifier);
+  const handleCheckboxChange = useCallback((taskId: string): void => {
+    const task = tasks.find((entry) => entry.id === taskId);
     if (!task) {
       return;
     }
 
-    void db.tasks.put({ ...task, isCompleted: !task.isCompleted });
+    const isCompleted = !task.isCompleted;
+
+    void db.tasks.put({
+      ...task,
+      isCompleted,
+      status: isCompleted ? "completed" : "pending",
+      updatedAt: new Date().toISOString(),
+    });
   }, [tasks]);
 
-  const groupedTasks = tasks.reduce<Record<string, TaskEntry[]>>((acc, task) => {
-    acc[task.date] = [...(acc[task.date] || []), task];
-    return acc;
-  }, {});
+  const groupedTasks = useMemo<Record<string, Task[]>>(
+    () =>
+      tasks.reduce<Record<string, Task[]>>((accumulator, task) => {
+        accumulator[task.date] = [...(accumulator[task.date] ?? []), task];
+        return accumulator;
+      }, {}),
+    [tasks]
+  );
 
-  const sortedTasks = Object.entries(groupedTasks).sort(([dateA], [dateB]) => {
-    return new Date(dateA).getTime() - new Date(dateB).getTime();
-  });
+  const sortedTasks = useMemo<[string, Task[]][]>(
+    () =>
+      Object.entries(groupedTasks).sort(([dateA], [dateB]) => {
+        return new Date(dateA).getTime() - new Date(dateB).getTime();
+      }),
+    [groupedTasks]
+  );
 
   return {
     tasks,

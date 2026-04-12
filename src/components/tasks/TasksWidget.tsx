@@ -1,4 +1,4 @@
-import type { TaskEntry } from "../../db/database";
+import type { Task } from "../../types/task";
 import { useTasks } from "../../context/TasksContext";
 import { Badge, EmptyState } from "../ui";
 
@@ -11,11 +11,11 @@ const PRIORITY_VARIANTS = {
 const MAX_GROUPS = 2;
 const MAX_TASKS_PER_GROUP = 2;
 
-const byDate = ([dateA]: [string, TaskEntry[]], [dateB]: [string, TaskEntry[]]) =>
+const byDate = ([dateA]: [string, Task[]], [dateB]: [string, Task[]]) =>
   new Date(dateA).getTime() - new Date(dateB).getTime();
 
 const getUpcomingTasks = (
-  groupedTasks: Record<string, TaskEntry[]>,
+  groupedTasks: Record<string, Task[]>,
   checkedTasks: string[]
 ) =>
   Object.entries(groupedTasks)

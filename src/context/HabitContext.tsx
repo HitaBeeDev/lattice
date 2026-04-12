@@ -1,19 +1,21 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, ReactNode } from "react";
-import { useHabits as useHabitsHook } from "../hooks/useHabits";
-
-type HabitContextValue = ReturnType<typeof useHabitsHook>;
+import { createContext, useContext, type ReactNode } from "react";
+import { useHabits as useHabitsHook, type HabitContextValue } from "../hooks/useHabits";
 
 const HabitContext = createContext<HabitContextValue | null>(null);
 
 export const useHabits = (): HabitContextValue => {
-  const ctx = useContext(HabitContext);
-  if (!ctx) throw new Error("useHabits must be used within HabitProvider");
-  return ctx;
+  const context = useContext(HabitContext);
+
+  if (!context) {
+    throw new Error("useHabits must be used within HabitProvider");
+  }
+
+  return context;
 };
 
-export const HabitProvider = ({ children }: { children: ReactNode }) => {
-  const value = useHabitsHook();
+export const HabitProvider = ({ children }: { children: ReactNode }): JSX.Element => {
+  const value: HabitContextValue = useHabitsHook();
   return <HabitContext.Provider value={value}>{children}</HabitContext.Provider>;
 };
 

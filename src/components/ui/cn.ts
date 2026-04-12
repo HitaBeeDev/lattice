@@ -1,24 +1,5 @@
-type ClassValue =
-  | string
-  | false
-  | null
-  | undefined
-  | Record<string, boolean | null | undefined>;
+import { clsx, type ClassValue } from "clsx";
 
-export function cn(...values: ClassValue[]) {
-  return values
-    .flatMap((value) => {
-      if (!value) {
-        return [];
-      }
-
-      if (typeof value === "string") {
-        return [value];
-      }
-
-      return Object.entries(value)
-        .filter(([, isEnabled]) => Boolean(isEnabled))
-        .map(([className]) => className);
-    })
-    .join(" ");
+export function cn(...values: ClassValue[]): string {
+  return clsx(values);
 }

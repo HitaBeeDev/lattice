@@ -1,4 +1,4 @@
-import type { TaskEntry } from "../../db/database";
+import type { Task } from "../../types/task";
 import { Badge, Button } from "../ui";
 
 const PRIORITY_VARIANTS = {
@@ -12,7 +12,7 @@ type TaskListItemProps = {
   onDelete: () => void;
   onEdit: () => void;
   onToggle: () => void;
-  task: TaskEntry;
+  task: Task;
 };
 
 export default function TaskListItem({

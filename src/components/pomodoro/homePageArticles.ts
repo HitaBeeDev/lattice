@@ -1,4 +1,9 @@
-const homePageArticles = [
+type Article = {
+  title: string;
+  content: string;
+};
+
+const homePageArticles: Article[] = [
   {
     title: "Maximizing Productivity: The Power of Prioritization",
     content:

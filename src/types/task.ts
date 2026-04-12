@@ -1,6 +1,8 @@
-export type Priority = "low" | "medium" | "high";
+export const TASK_PRIORITIES = ["High", "Medium", "Low"] as const;
+export type Priority = (typeof TASK_PRIORITIES)[number];
 
-export type TaskStatus = "todo" | "in_progress" | "completed" | "cancelled";
+export const TASK_STATUSES = ["pending", "completed"] as const;
+export type TaskStatus = (typeof TASK_STATUSES)[number];
 
 export interface TaskTag {
   id: string;
@@ -19,12 +21,13 @@ export interface Subtask {
 
 export interface Task {
   id: string;
-  title: string;
-  description?: string;
-  dueDate?: string;
-  startTime?: string;
-  endTime?: string;
+  name: string;
+  description: string;
+  date: string;
+  startTime: string;
+  endTime: string;
   priority: Priority;
+  isCompleted: boolean;
   status: TaskStatus;
   tags: TaskTag[];
   subtasks: Subtask[];
