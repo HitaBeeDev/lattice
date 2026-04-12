@@ -57,7 +57,7 @@ export default function DailyHabitsCard({
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-slate-900">Daily Habits</h2>
         <Tooltip content="More habit actions coming soon">
-          <Button size="sm" variant="ghost">
+          <Button aria-label="More habit actions" size="sm" variant="ghost">
             &hellip;
           </Button>
         </Tooltip>
