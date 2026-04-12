@@ -1,4 +1,5 @@
 import React from "react";
+import "./index.css";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -28,8 +29,8 @@ ReactDOM.createRoot(rootElement).render(
               <Route path="/" element={<DashboardPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/habit-tracker" element={<HabitTrackerPage />} />
-              <Route path="/ToDo-List" element={<ToDoListPage />} />
-              <Route path="/Pomodoro-Timer" element={<PomodoroPage />} />
+              <Route path="/tasks" element={<ToDoListPage />} />
+              <Route path="/pomodoro" element={<PomodoroPage />} />
             </Routes>
           </Container>
         </App>
