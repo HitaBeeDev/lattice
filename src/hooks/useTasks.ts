@@ -1,16 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
-import usePersistentState from "./usePersistentState";
-import { PRIORITY_OPTIONS, type Priority, type TaskFormValues } from "../lib/taskSchema";
-
-export interface TaskEntry {
-  id: string;
-  name: string;
-  description: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  priority: Priority;
-}
+import { useLiveQuery } from "dexie-react-hooks";
+import { PRIORITY_OPTIONS, type TaskFormValues } from "../lib/taskSchema";
+import { db, type TaskEntry } from "../db/database";
 
 export interface TaskDraft extends TaskFormValues {
   id?: string;
@@ -28,9 +19,12 @@ export const EMPTY_TASK_FORM: TaskFormValues = {
 export function useTasks() {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [tasks, setTasks] = usePersistentState<TaskEntry[]>("tasks", []);
+  const tasks = useLiveQuery(() => db.tasks.toArray(), [], []) ?? [];
   const [currentTask, setCurrentTask] = useState<TaskDraft | null>(null);
-  const [checkedTasks, setCheckedTasks] = usePersistentState<string[]>("checkedTasks", []);
+  const checkedTasks = useMemo(
+    () => tasks.filter((task) => task.isCompleted).map((task) => task.id),
+    [tasks]
+  );
 
   const getCurrentDate = (): string => {
     const months = [
@@ -63,25 +57,36 @@ export function useTasks() {
 
   const handleTaskAddition = useCallback((task: TaskFormValues) => {
     const uniqueId = `task-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-    const taskWithId: TaskEntry = { ...task, id: uniqueId };
-    setTasks((prev) => [...prev, taskWithId]);
+    const taskWithId: TaskEntry = {
+      ...task,
+      id: uniqueId,
+      isCompleted: false,
+    };
+    void db.tasks.add(taskWithId);
     handleCloseModal();
-  }, [handleCloseModal, setTasks]);
+  }, [handleCloseModal]);
 
   const handleTaskSave = useCallback((task: TaskFormValues) => {
     if (!currentTask?.id) {
       return;
     }
-    const updatedTasks = tasks.map((existingTask) =>
-      existingTask.id === currentTask.id ? { ...task, id: currentTask.id } : existingTask
-    );
-    setTasks(updatedTasks);
+
+    const existingTask = tasks.find((entry) => entry.id === currentTask.id);
+    if (!existingTask) {
+      return;
+    }
+
+    void db.tasks.put({
+      ...existingTask,
+      ...task,
+      id: currentTask.id,
+    });
     handleCloseModal();
-  }, [currentTask?.id, handleCloseModal, setTasks, tasks]);
+  }, [currentTask?.id, handleCloseModal, tasks]);
 
   const handleTaskDelete = useCallback((taskId: string) => {
-    setTasks(tasks.filter((task) => task.id !== taskId));
-  }, [tasks]);
+    void db.tasks.delete(taskId);
+  }, []);
 
   const handleTaskEditClick = useCallback((taskId: string) => {
     const taskToEdit = tasks.find((task) => task.id === taskId);
@@ -96,16 +101,16 @@ export function useTasks() {
   }, []);
 
   const handleCheckboxChange = useCallback((taskIdentifier: string) => {
-    setCheckedTasks((prev) => {
-      if (prev.includes(taskIdentifier)) {
-        return prev.filter((id) => id !== taskIdentifier);
-      }
-      return [...prev, taskIdentifier];
-    });
-  }, []);
+    const task = tasks.find((entry) => entry.id === taskIdentifier);
+    if (!task) {
+      return;
+    }
 
-  const generateTaskIdentifier = (task: TaskEntry, index: number): string =>
-    `${task.name}-${task.description}-${index}`;
+    void db.tasks.put({ ...task, isCompleted: !task.isCompleted });
+  }, [tasks]);
+
+  const generateTaskIdentifier = (task: TaskEntry, _index?: number): string =>
+    task.id;
 
   const groupedTasks = tasks.reduce<Record<string, TaskEntry[]>>((acc, task) => {
     acc[task.date] = [...(acc[task.date] || []), task];
@@ -116,27 +121,23 @@ export function useTasks() {
     return new Date(dateA).getTime() - new Date(dateB).getTime();
   });
 
-  return useMemo(
-    () => ({
-      tasks,
-      showModal,
-      isEditing,
-      currentTask,
-      getCurrentDate,
-      handleAddButtonClick,
-      handleCloseModal,
-      handleTaskAddition,
-      handleTaskSave,
-      handleTaskDelete,
-      handleTaskEditClick,
-      handleTaskCancelClick,
-      groupedTasks,
-      checkedTasks,
-      handleCheckboxChange,
-      sortedTasks,
-      generateTaskIdentifier,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tasks, showModal, isEditing, currentTask, checkedTasks]
-  );
+  return {
+    tasks,
+    showModal,
+    isEditing,
+    currentTask,
+    getCurrentDate,
+    handleAddButtonClick,
+    handleCloseModal,
+    handleTaskAddition,
+    handleTaskSave,
+    handleTaskDelete,
+    handleTaskEditClick,
+    handleTaskCancelClick,
+    groupedTasks,
+    checkedTasks,
+    handleCheckboxChange,
+    sortedTasks,
+    generateTaskIdentifier,
+  };
 }

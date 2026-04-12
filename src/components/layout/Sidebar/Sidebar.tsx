@@ -1,7 +1,12 @@
 import NavList from "./NavList";
 import { mainNavItems } from "./navData";
 
-const Sidebar = ({ isOpen, setIsOpen }) => {
+type SidebarProps = {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   return (
     <div>
 

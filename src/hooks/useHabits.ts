@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import usePersistentState from "./usePersistentState";
+import { useCallback, useEffect, useState } from "react";
+import { useLiveQuery } from "dexie-react-hooks";
 import habitQuotes from "../components/habits/habitQuotes";
 import { useRandomIndex } from "./useRandomIndex";
+import { db } from "../db/database";
 
-export interface HabitEntry {
-  id: string;
-  name: string;
-  days: boolean[];
-}
+export type { HabitEntry } from "../db/database";
 
 const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   weekday: "short",
@@ -18,7 +15,7 @@ const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 const DAY_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = { weekday: "short" };
 
 export function useHabits() {
-  const [habits, setHabits] = usePersistentState<HabitEntry[]>("habits", []);
+  const habits = useLiveQuery(() => db.habits.toArray(), [], []) ?? [];
   const [editIndex, setEditIndex] = useState(-1);
   const quoteIndex = useRandomIndex(habitQuotes.length);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -33,10 +30,7 @@ export function useHabits() {
 
   const addHabit = useCallback((name: string) => {
     const id = `habit-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-    setHabits((prev) => [
-      ...prev,
-      { id, name: name.trim(), days: Array(7).fill(false) },
-    ]);
+    void db.habits.add({ id, name: name.trim(), days: Array(7).fill(false) });
   }, []);
 
   const startEdit = useCallback((index: number) => {
@@ -44,32 +38,38 @@ export function useHabits() {
   }, []);
 
   const saveEdit = useCallback((index: number, name: string) => {
-    setHabits((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], name: name.trim() };
-      return updated;
-    });
+    const habit = habits[index];
+    if (!habit) {
+      return;
+    }
+
+    void db.habits.put({ ...habit, name: name.trim() });
     setEditIndex(-1);
-  }, []);
+  }, [habits]);
 
   const cancelEdit = useCallback(() => {
     setEditIndex(-1);
   }, []);
 
   const deleteHabit = useCallback((index: number) => {
-    setHabits((prev) => prev.filter((_, i) => i !== index));
-  }, []);
+    const habit = habits[index];
+    if (!habit) {
+      return;
+    }
+
+    void db.habits.delete(habit.id);
+  }, [habits]);
 
   const toggleDayMark = useCallback((habitIndex: number, dayIndex: number) => {
-    setHabits((prev) =>
-      prev.map((habit, i) => {
-        if (i !== habitIndex) return habit;
-        const updatedDays = [...habit.days];
-        updatedDays[dayIndex] = !updatedDays[dayIndex];
-        return { ...habit, days: updatedDays };
-      })
-    );
-  }, []);
+    const habit = habits[habitIndex];
+    if (!habit) {
+      return;
+    }
+
+    const updatedDays = [...habit.days];
+    updatedDays[dayIndex] = !updatedDays[dayIndex];
+    void db.habits.put({ ...habit, days: updatedDays });
+  }, [habits]);
 
   const getWeekDates = (): Date[] => {
     const today = new Date();
@@ -145,33 +145,29 @@ export function useHabits() {
 
   const visibleWeekDates = isLargeScreen ? weekDates : [new Date()];
 
-  return useMemo(
-    () => ({
-      habits,
-      editIndex,
-      addHabit,
-      startEdit,
-      saveEdit,
-      cancelEdit,
-      deleteHabit,
-      toggleDayMark,
-      getWeekDates,
-      formatDate,
-      formatDayOfWeek,
-      calculateHabitCompletion,
-      calculateAveragePercentageForWeek,
-      totalHabits,
-      formattedToday,
-      completedHabits,
-      bestDayMessage,
-      bestHabitMessage,
-      averagePercentageForWeek,
-      weekDates,
-      percentages,
-      visibleWeekDates,
-      quoteIndex,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [habits, editIndex, windowWidth]
-  );
+  return {
+    habits,
+    editIndex,
+    addHabit,
+    startEdit,
+    saveEdit,
+    cancelEdit,
+    deleteHabit,
+    toggleDayMark,
+    getWeekDates,
+    formatDate,
+    formatDayOfWeek,
+    calculateHabitCompletion,
+    calculateAveragePercentageForWeek,
+    totalHabits,
+    formattedToday,
+    completedHabits,
+    bestDayMessage,
+    bestHabitMessage,
+    averagePercentageForWeek,
+    weekDates,
+    percentages,
+    visibleWeekDates,
+    quoteIndex,
+  };
 }

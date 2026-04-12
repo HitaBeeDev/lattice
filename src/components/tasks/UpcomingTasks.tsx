@@ -3,11 +3,6 @@ import { useTasks } from "../../context/TasksContext";
 function UpcomingTasks() {
   const { groupedTasks, checkedTasks, generateTaskIdentifier } = useTasks();
 
-  // Function to compare dates
-  const compareDates = (a, b) => {
-    return new Date(a[0]) - new Date(b[0]);
-  };
-
   return (
     <div>
 
@@ -19,19 +14,14 @@ function UpcomingTasks() {
 
       <div>
         {Object.entries(groupedTasks).
-        sort(compareDates).
+        sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime()).
         map(([date, tasks], index) =>
         <div key={date}>
               {index !== 0 && <div></div>}
 
               <ul>
                 {tasks.
-            filter(
-              (task, index) =>
-              !checkedTasks.includes(
-                generateTaskIdentifier(task, index)
-              )
-            ).
+            filter((task) => !checkedTasks.includes(generateTaskIdentifier(task))).
             map((task, index) =>
             <li key={index}>
                       <p>

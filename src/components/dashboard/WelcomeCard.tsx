@@ -39,7 +39,7 @@ function WelcomeCard() {
     }
   }, [currentTime]);
 
-  const formatDate = (date) => {
+  const formatDate = (date: Date) => {
     return {
       time: date.
       toLocaleTimeString("en-US", {

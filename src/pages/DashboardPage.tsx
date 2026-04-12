@@ -1,4 +1,5 @@
 import AddModal from "../components/tasks/AddModal";
+import type { ReactNode } from "react";
 import { useHabits } from "../context/HabitContext";
 import { useTasks } from "../context/TasksContext";
 import { useTimeTracker } from "../context/TimeTrackerContext";
@@ -6,7 +7,7 @@ import { useTimeTracker } from "../context/TimeTrackerContext";
 function DashboardPage() {
   const { tasks, checkedTasks, handleAddButtonClick, showModal } = useTasks();
   const { habits, toggleDayMark, percentages } = useHabits();
-  const { maxSeconds, totalSeconds } = useTimeTracker();
+  const { completedPomodoros, todayFocusSeconds } = useTimeTracker();
 
   const today = new Date();
   const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
@@ -18,8 +19,7 @@ function DashboardPage() {
 
   const completedTasks = Math.min(checkedTasks.length, tasks.length);
   const totalTasks = tasks.length;
-  const focusSeconds = Math.max(maxSeconds - totalSeconds, 0);
-  const focusTime = formatDuration(focusSeconds);
+  const focusTime = formatDuration(todayFocusSeconds);
   const currentStreak = calculateCurrentStreak(percentages);
   const dailyHabits = habits.slice(0, 5);
 
@@ -50,8 +50,8 @@ function DashboardPage() {
           icon={<ClockIcon />}
           label="Focus Time"
           value={focusTime}
-          note="On track with weekly average"
-          notePrefix="- "
+          note={`${completedPomodoros} pomodoros completed`}
+          notePrefix="+ "
         />
         <StatCard
           icon={<FlameIcon />}
@@ -110,7 +110,16 @@ function DashboardPage() {
   );
 }
 
-function StatCard({ icon, label, value, suffix, note, notePrefix }) {
+type StatCardProps = {
+  icon: ReactNode;
+  label: string;
+  value: string | number;
+  suffix?: string;
+  note: string;
+  notePrefix: string;
+};
+
+function StatCard({ icon, label, value, suffix, note, notePrefix }: StatCardProps) {
   return (
     <article>
       <div>
@@ -131,7 +140,7 @@ function StatCard({ icon, label, value, suffix, note, notePrefix }) {
   );
 }
 
-function getGreeting(date) {
+function getGreeting(date: Date) {
   const hour = date.getHours();
 
   if (hour < 12) return "Good morning";
@@ -139,7 +148,7 @@ function getGreeting(date) {
   return "Good evening";
 }
 
-function formatDuration(seconds) {
+function formatDuration(seconds: number) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
 
@@ -150,7 +159,7 @@ function formatDuration(seconds) {
   return `${minutes}m`;
 }
 
-function calculateCurrentStreak(percentages) {
+function calculateCurrentStreak(percentages: number[]) {
   let streak = 0;
 
   for (let index = percentages.length - 1; index >= 0; index -= 1) {

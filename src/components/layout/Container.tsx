@@ -1,7 +1,11 @@
 import { useState } from "react";
 import Sidebar from "./Sidebar/Sidebar";
 
-function Container({ children }) {
+type ContainerProps = {
+  children: React.ReactNode;
+};
+
+function Container({ children }: ContainerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

@@ -1,7 +1,7 @@
 import { useHabits } from "../../context/HabitContext";
 
 export default function WeekDaysHeader() {
-  const { formatDate, formattedToday, visibleWeekDates } = useHabits();
+  const { formatDate, visibleWeekDates } = useHabits();
 
   return (
     <div>

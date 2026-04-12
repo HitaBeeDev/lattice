@@ -1,7 +1,6 @@
 import React from "react";
 import "./index.css";
 import ReactDOM from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import App from "./App";
@@ -13,7 +12,6 @@ import PomodoroPage from "./pages/PomodoroPage";
 
 
 const rootElement = document.getElementById("root");
-const queryClient = new QueryClient();
 
 if (!rootElement) {
   throw new Error("Root element #root was not found.");
@@ -21,21 +19,19 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App>
-          <Container>
-            <Routes>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/habit-tracker" element={<HabitTrackerPage />} />
-              <Route path="/tasks" element={<ToDoListPage />} />
-              <Route path="/pomodoro" element={<PomodoroPage />} />
-            </Routes>
-          </Container>
-        </App>
-        <Toaster />
-      </BrowserRouter>
-    </QueryClientProvider>
+    <BrowserRouter>
+      <App>
+        <Container>
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/habit-tracker" element={<HabitTrackerPage />} />
+            <Route path="/tasks" element={<ToDoListPage />} />
+            <Route path="/pomodoro" element={<PomodoroPage />} />
+          </Routes>
+        </Container>
+      </App>
+      <Toaster />
+    </BrowserRouter>
   </React.StrictMode>
 );

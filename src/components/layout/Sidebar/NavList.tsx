@@ -1,11 +1,21 @@
 // NavList component
 import { Link } from "react-router-dom";
 
-const NavList = ({ navItems, isOpen }) => {
+type NavItem = {
+  label: string;
+  shortLabel: string;
+};
+
+type NavListProps = {
+  navItems: NavItem[];
+  isOpen: boolean;
+};
+
+const NavList = ({ navItems, isOpen }: NavListProps) => {
   return (
     <div>
       <ul>
-        {navItems.map((item, index) =>
+        {navItems.map((item: NavItem, index: number) =>
         <li
 
 

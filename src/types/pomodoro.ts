@@ -16,3 +16,18 @@ export interface PomodoroSession {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface TimerSessionHistoryEntry {
+  id: string;
+  sessionType: "Pomodoro" | "ShortBreak" | "LongBreak";
+  durationSeconds: number;
+  completedAt: string;
+}
+
+export interface TimerAnalytics {
+  sessionHistory: TimerSessionHistoryEntry[];
+  dailyFocusSeconds: Record<string, number>;
+  completedPomodoros: number;
+  shortBreakCount: number;
+  longBreakCount: number;
+}

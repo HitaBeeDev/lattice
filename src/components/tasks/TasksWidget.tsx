@@ -3,20 +3,12 @@ import { useTasks } from "../../context/TasksContext";
 function TasksWidget() {
   const { groupedTasks, checkedTasks, generateTaskIdentifier } = useTasks();
 
-  // Function to compare dates
-  const compareDates = (a, b) => {
-    return new Date(a[0]) - new Date(b[0]);
-  };
-
   const upcomingTasks = Object.entries(groupedTasks).
-  sort(compareDates).
+  sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime()).
   slice(0, 2).
-  map(([date, tasks]) =>
+  map(([, tasks]) =>
   tasks.
-  filter(
-    (task, index) =>
-    !checkedTasks.includes(generateTaskIdentifier(task, index))
-  ).
+  filter((task) => !checkedTasks.includes(generateTaskIdentifier(task))).
   slice(0, 2)
   ).
   flat();
