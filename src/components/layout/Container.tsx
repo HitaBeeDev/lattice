@@ -63,11 +63,7 @@ function Container({ children }: ContainerProps) {
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(217,242,71,0.12),_transparent_20%),linear-gradient(180deg,_rgba(255,255,255,0.34),_transparent_18%)]"
             />
-            <div
-              id="main-content"
-              className="relative min-h-[calc(100vh-1.5rem)]"
-              tabIndex={-1}
-            >
+            <div className="relative min-h-[calc(100vh-1.5rem)]">
               {children}
             </div>
           </div>

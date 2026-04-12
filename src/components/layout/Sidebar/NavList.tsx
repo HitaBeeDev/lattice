@@ -46,7 +46,7 @@ const NavList = ({ navItems, isOpen }: NavListProps) => {
                     "gap-3": isOpen,
                     "justify-center": !isOpen,
                     "bg-[var(--app-accent)] text-slate-950 shadow-[0_18px_30px_rgba(217,242,71,0.28)]": isActive,
-                    "text-white/70 hover:bg-white/8 hover:text-white": !isActive,
+                    "text-white/85 hover:bg-white/8 hover:text-white": !isActive,
                   }
                 )
               }

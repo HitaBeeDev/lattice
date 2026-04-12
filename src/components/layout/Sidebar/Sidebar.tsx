@@ -48,7 +48,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
               </span>
               <span className="text-left">
                 <span className="block text-base font-semibold">NexStep</span>
-                <span className="block text-xs uppercase tracking-[0.22em] text-white/50">
+                <span className="block text-xs uppercase tracking-[0.22em] text-white/80">
                   Productive OS
                 </span>
               </span>
@@ -65,12 +65,12 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       <div className="flex flex-1 flex-col gap-4">
         {isOpen && (
           <div className="space-y-3 px-2 pt-2">
-            <div className="app-pill border-white/10 bg-white/5 text-white/60">
+            <div className="app-pill border-white/10 bg-white/5 text-white/85">
               Daily flow
             </div>
             <div>
               <p className="text-lg font-semibold text-white">Work with clarity</p>
-              <p className="mt-1 text-sm leading-6 text-white/55">
+              <p className="mt-1 text-sm leading-6 text-white/80">
                 Habits, tasks, and focus sessions in one deliberate workspace.
               </p>
             </div>

@@ -8,7 +8,7 @@ export default function SummaryStats() {
     <section className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.9fr)]">
       <article className="app-card">
         <div className="mb-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">
             Weekly check-ins
           </p>
           <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
@@ -22,7 +22,7 @@ export default function SummaryStats() {
               key={date.toISOString()}
               className="rounded-[1.5rem] border border-black/5 bg-white/60 p-4"
             >
-              <p className="text-xs uppercase tracking-[0.22em] text-slate-500">
+              <p className="text-xs uppercase tracking-[0.22em] text-slate-600">
                 {date.toLocaleDateString("en-US", { weekday: "short" })}
               </p>
               <p className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-slate-950">
@@ -44,7 +44,7 @@ export default function SummaryStats() {
         <p className="relative mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">
           Small wins stay visible.
         </p>
-        <p className="relative mt-4 text-sm leading-7 text-white/70">
+        <p className="relative mt-4 text-sm leading-7 text-white/85">
           {habitQuotes[quoteIndex]}
         </p>
       </article>

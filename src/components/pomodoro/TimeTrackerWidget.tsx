@@ -17,7 +17,7 @@ function TimeTrackerWidget() {
       <h3 className="relative mb-2 text-base font-semibold leading-snug text-white">
         {article?.title}
       </h3>
-      <p className="relative text-sm leading-relaxed text-white/70">{article?.content}</p>
+      <p className="relative text-sm leading-relaxed text-white/85">{article?.content}</p>
     </div>
   );
 }

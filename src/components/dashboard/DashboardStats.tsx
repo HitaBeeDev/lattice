@@ -17,7 +17,7 @@ function StatCard({ icon, label, value, suffix, note }: StatCardProps) {
       />
       <div className="relative mb-6 flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{label}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">{label}</p>
           <div className="mt-4 flex items-baseline gap-2">
             <p className="text-4xl font-semibold tracking-[-0.05em] text-slate-950">{value}</p>
             {suffix && <p className="text-sm font-medium text-slate-600">{suffix}</p>}

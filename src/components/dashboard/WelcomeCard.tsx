@@ -43,17 +43,17 @@ function WelcomeCard() {
 
       <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_20rem]">
         <div className="space-y-6">
-          <div className="app-pill border-white/10 bg-white/5 text-white/70">
+          <div className="app-pill border-white/10 bg-white/5 text-white/85">
             Today&apos;s rhythm
           </div>
           <GreetingSection message={message} title={title} />
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-[1.6rem] border border-white/10 bg-white/6 p-4">
-              <p className="text-xs uppercase tracking-[0.22em] text-white/45">Pace</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-white/80">Pace</p>
               <p className="mt-3 text-2xl font-semibold">High focus</p>
             </div>
             <div className="rounded-[1.6rem] border border-white/10 bg-white/6 p-4">
-              <p className="text-xs uppercase tracking-[0.22em] text-white/45">Priority</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-white/80">Priority</p>
               <p className="mt-3 text-2xl font-semibold">Deep work</p>
             </div>
             <div className="rounded-[1.6rem] border border-white/10 bg-[var(--app-accent)]/90 p-4 text-slate-950">

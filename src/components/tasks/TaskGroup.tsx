@@ -20,7 +20,7 @@ export default function TaskGroup({
 }: TaskGroupProps) {
   return (
     <div className="space-y-3">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-600">
         {date}
       </p>
       <ul className="space-y-3">

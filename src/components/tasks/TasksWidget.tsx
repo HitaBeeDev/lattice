@@ -61,7 +61,7 @@ function TasksWidget() {
   return (
     <div className="app-card">
       <div className="mb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">
           Delivery queue
         </p>
         <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-slate-950">
@@ -78,7 +78,7 @@ function TasksWidget() {
             >
               {index !== 0 && <div></div>}
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-600">
                   {task.date}
                 </p>
                 <div className="flex items-center justify-between gap-3 rounded-[1.35rem] border border-black/5 bg-white/55 px-4 py-3">

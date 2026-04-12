@@ -1,20 +1,21 @@
-import { useEffect } from "react";
 import SessionTabs from "../components/pomodoro/SessionTabs";
 import TimerCircle from "../components/pomodoro/TimerCircle";
 import TimerButtons from "../components/pomodoro/TimerButtons";
 import TimerArticles from "../components/pomodoro/TimerArticles";
 
 function PomodoroPage() {
-  useEffect(() => {
-    document.title = "Pomodoro - NexStep";
-  }, []);
-
   return (
-    <main className="space-y-8 p-5 sm:p-6 lg:p-8">
+    <main className="space-y-8 p-5 sm:p-6 lg:p-8" id="main-content" tabIndex={-1}>
+      <header className="sr-only">
+        <h1>Pomodoro focus</h1>
+      </header>
       <section
-        aria-label="Pomodoro timer"
+        aria-labelledby="pomodoro-timer-heading"
         className="app-card space-y-6"
       >
+        <header className="sr-only">
+          <h2 id="pomodoro-timer-heading">Pomodoro timer</h2>
+        </header>
         <SessionTabs />
 
         <TimerCircle />
@@ -22,7 +23,7 @@ function PomodoroPage() {
         <TimerButtons />
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,18rem)_1fr]">
+      <section aria-labelledby="pomodoro-focus-heading" className="grid gap-6 lg:grid-cols-[minmax(0,18rem)_1fr]">
         <header className="app-panel-dark relative overflow-hidden p-6">
           <div
             aria-hidden="true"
@@ -31,10 +32,13 @@ function PomodoroPage() {
           <p className="relative text-xs font-semibold uppercase tracking-[0.22em] text-[var(--app-accent)]">
             Focus mode
           </p>
-          <h1 className="relative mt-3 text-3xl font-semibold tracking-[-0.04em] text-white">
+          <h2
+            className="relative mt-3 text-3xl font-semibold tracking-[-0.04em] text-white"
+            id="pomodoro-focus-heading"
+          >
             Pomodoro focus
-          </h1>
-          <p className="relative mt-2 text-sm leading-6 text-white/65">
+          </h2>
+          <p className="relative mt-2 text-sm leading-6 text-white/80">
             Choose a session, start the timer, and keep your focus visible.
           </p>
         </header>

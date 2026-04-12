@@ -84,7 +84,7 @@ function TimerCircle() {
             y="44%"
             textAnchor="middle"
             dominantBaseline="middle"
-            className="fill-slate-500 text-[8px] uppercase tracking-[0.22em]"
+            className="fill-slate-600 text-[8px] uppercase tracking-[0.22em]"
           >
             {sessionType}
           </text>
@@ -102,7 +102,7 @@ function TimerCircle() {
             y="64%"
             textAnchor="middle"
             dominantBaseline="middle"
-            className="fill-slate-500 text-[7px]"
+            className="fill-slate-600 text-[7px]"
           >
             {completion}% remaining
           </text>
@@ -111,7 +111,7 @@ function TimerCircle() {
 
       <div className="space-y-5">
         <div className="rounded-[1.8rem] border border-black/10 bg-white/60 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">
             Session control
           </p>
           <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
@@ -143,15 +143,15 @@ function TimerCircle() {
         ) : (
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-[1.5rem] border border-black/5 bg-white/55 p-4">
-              <p className="text-xs uppercase tracking-[0.22em] text-slate-500">Minutes</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-slate-600">Minutes</p>
               <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">{minutes}</p>
             </div>
             <div className="rounded-[1.5rem] border border-black/5 bg-white/55 p-4">
-              <p className="text-xs uppercase tracking-[0.22em] text-slate-500">Seconds</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-slate-600">Seconds</p>
               <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">{seconds.toString().padStart(2, "0")}</p>
             </div>
             <div className="rounded-[1.5rem] border border-black/5 bg-white/55 p-4">
-              <p className="text-xs uppercase tracking-[0.22em] text-slate-500">Remaining</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-slate-600">Remaining</p>
               <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">{completion}%</p>
             </div>
           </div>

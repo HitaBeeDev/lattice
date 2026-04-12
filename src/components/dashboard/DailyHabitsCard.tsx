@@ -34,11 +34,11 @@ function DailyHabitItem({ habit, onToggle, todayIndex }: DailyHabitItemProps) {
           >
             {isDone && <CheckIcon />}
           </span>
-          <span className={isDone ? "font-medium text-slate-500 line-through" : "font-medium text-slate-700"}>
+          <span className={isDone ? "font-medium text-slate-600 line-through" : "font-medium text-slate-700"}>
             {habit.name}
           </span>
         </span>
-        <span className="flex items-center gap-1 text-xs text-slate-500">
+        <span className="flex items-center gap-1 text-xs text-slate-600">
           <FlameIcon />
           {habit.days.filter(Boolean).length}
         </span>
@@ -56,7 +56,7 @@ export default function DailyHabitsCard({
     <article className="app-card">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Consistency</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">Consistency</p>
           <h2 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-slate-950">
             Daily habits
           </h2>
@@ -79,7 +79,7 @@ export default function DailyHabitsCard({
             />
           ))
         ) : (
-          <li className="py-4 text-center text-sm text-slate-500">
+          <li className="py-4 text-center text-sm text-slate-600">
             No habits for today.
           </li>
         )}

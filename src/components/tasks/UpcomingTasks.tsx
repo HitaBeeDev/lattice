@@ -12,7 +12,7 @@ function UpcomingTasks() {
       className="app-card"
     >
       <div className="mb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">
           Timeline
         </p>
         <h2 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-slate-950" id="upcoming-tasks-heading">
@@ -32,7 +32,7 @@ function UpcomingTasks() {
                   .filter((task) => !checkedTasks.includes(task.id))
                   .map((task) => (
                     <li key={task.id}>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600">
                         {date}
                       </p>
 

@@ -7,7 +7,10 @@ function ToDoListAndWelcomeSection() {
   const { showModal } = useTasks();
 
   return (
-    <section aria-label="Task overview" className="space-y-6">
+    <section aria-labelledby="task-overview-heading" className="space-y-6">
+      <header className="sr-only">
+        <h2 id="task-overview-heading">Task overview</h2>
+      </header>
       <WelcomeBanner />
 
       {showModal && <AddModal />}

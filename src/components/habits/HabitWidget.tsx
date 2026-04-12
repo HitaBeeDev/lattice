@@ -24,13 +24,13 @@ function HabitWidget() {
   return (
     <div className="app-card">
       <div className="mb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">
           Momentum
         </p>
         <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-slate-950">
           Today&apos;s habits
         </p>
-        <p className="mt-1 text-sm text-slate-500">Keep the repeatable wins visible.</p>
+        <p className="mt-1 text-sm text-slate-600">Keep the repeatable wins visible.</p>
       </div>
 
       {habits.length > 0 ? (

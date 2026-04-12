@@ -6,7 +6,7 @@ function TimerArticles() {
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">
         Reading prompt
       </p>
       <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">

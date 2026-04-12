@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import {
   Bar,
   BarChart,
@@ -90,12 +89,8 @@ function DashboardPage() {
     };
   });
 
-  useEffect(() => {
-    document.title = "Dashboard - NexStep";
-  }, []);
-
   return (
-    <main className="space-y-8 p-5 sm:p-6 lg:p-8">
+    <main className="space-y-8 p-5 sm:p-6 lg:p-8" id="main-content" tabIndex={-1}>
       <DashboardHeader
         formattedDate={formattedDate}
         greeting={greeting}
@@ -131,7 +126,7 @@ function DashboardPage() {
       <section className="app-card overflow-hidden">
         <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">
               Performance snapshot
             </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
@@ -197,16 +192,16 @@ function DashboardPage() {
         </ResponsiveContainer>
         <div className="mt-6 grid gap-4 lg:grid-cols-3">
           <article className="rounded-[1.6rem] border border-black/5 bg-white/55 p-4">
-            <p className="text-xs uppercase tracking-[0.22em] text-slate-500">Today</p>
+            <p className="text-xs uppercase tracking-[0.22em] text-slate-600">Today</p>
             <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
               {completedTodayTasks}/{totalTodayTasks || 0}
             </p>
             <p className="mt-1 text-sm text-slate-600">Tasks completed on schedule.</p>
           </article>
           <article className="rounded-[1.6rem] border border-black/5 bg-slate-950 p-4 text-white">
-            <p className="text-xs uppercase tracking-[0.22em] text-white/50">Focus</p>
+            <p className="text-xs uppercase tracking-[0.22em] text-white/80">Focus</p>
             <p className="mt-3 text-2xl font-semibold tracking-[-0.04em]">{focusTime}</p>
-            <p className="mt-1 text-sm text-white/60">
+            <p className="mt-1 text-sm text-white/80">
               Deep work logged across your active sessions.
             </p>
           </article>
