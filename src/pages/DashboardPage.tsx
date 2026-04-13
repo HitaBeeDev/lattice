@@ -1,500 +1,710 @@
 import {
   Bar,
   BarChart,
-  CartesianGrid,
   ResponsiveContainer,
-  Tooltip as ChartTooltip,
   XAxis,
-  YAxis,
 } from "recharts";
-import { ArrowRight, Check, Flame, Plus, TimerReset } from "lucide-react";
+import {
+  AlarmClock,
+  ArrowUpRight,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Flame,
+  Pause,
+  Play,
+  Plus,
+  RotateCcw,
+} from "lucide-react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import AddModal from "../components/tasks/AddModal";
-import DashboardHeader from "../components/dashboard/DashboardHeader";
-import DashboardStats from "../components/dashboard/DashboardStats";
-import { CheckIcon, ClockIcon, FlameIcon } from "../components/dashboard/dashboardIcons";
 import {
   calculateCurrentStreak,
-  formatDuration,
-  getGreeting,
 } from "../components/dashboard/dashboardUtils";
-import { Button, Skeleton } from "../components/ui";
 import { useHabits } from "../context/HabitContext";
 import { useTasks } from "../context/TasksContext";
 import { useTimeTracker } from "../context/TimeTrackerContext";
-import type { Task } from "../types/task";
 
-const MAX_DAILY_HABITS = 5;
-const MAX_HOME_TASKS = 4;
-const FOCUS_GOAL_MINUTES = 120;
 const TODAY_KEY = new Date().toISOString().slice(0, 10);
-
-const PRIORITY_STYLES = {
-  High: "bg-rose-500",
-  Medium: "bg-amber-400",
-  Low: "bg-emerald-500",
-} as const;
-
-function StatsSkeleton() {
-  return (
-    <div className="grid gap-4 sm:grid-cols-3">
-      {[0, 1, 2].map((i) => (
-        <Skeleton key={i} className="h-36 rounded-[2rem]" />
-      ))}
-    </div>
-  );
-}
-
-function CircleProgress({
-  label,
-  value,
-  sublabel,
-  progress,
-}: {
-  label: string;
-  value: string;
-  sublabel: string;
-  progress: number;
-}) {
-  const size = 188;
-  const strokeWidth = 14;
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const dashOffset = circumference * (1 - Math.max(0, Math.min(1, progress)));
-
-  return (
-    <div className="relative mx-auto flex h-[188px] w-[188px] items-center justify-center">
-      <svg
-        aria-hidden="true"
-        className="-rotate-90"
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        width={size}
-      >
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          fill="none"
-          r={radius}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth={strokeWidth}
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          fill="none"
-          r={radius}
-          stroke="var(--app-accent)"
-          strokeDasharray={circumference}
-          strokeDashoffset={dashOffset}
-          strokeLinecap="round"
-          strokeWidth={strokeWidth}
-        />
-      </svg>
-
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <p className="text-[11px] uppercase tracking-[0.24em] text-white/55">{label}</p>
-        <p className="mt-2 text-4xl font-semibold tracking-[-0.06em] text-white">{value}</p>
-        <p className="mt-1 text-sm text-white/75">{sublabel}</p>
-      </div>
-    </div>
-  );
-}
-
-function MiniTaskCard({ task }: { task: Task }) {
-  return (
-    <div className="rounded-[1.5rem] border border-black/5 bg-white/55 p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-base font-semibold text-slate-950">{task.name}</p>
-          <p className="mt-1 text-sm text-slate-600">
-            {task.startTime} - {task.endTime}
-          </p>
-        </div>
-        <span
-          aria-hidden="true"
-          className={`mt-1 h-2.5 w-2.5 flex-shrink-0 rounded-full ${PRIORITY_STYLES[task.priority]}`}
-        />
-      </div>
-    </div>
-  );
-}
-
-function QuickActions({ onAddTask }: { onAddTask: () => void }) {
-  const actionClassName =
-    "flex items-center justify-between rounded-[1.35rem] border border-white/10 bg-white/6 px-4 py-3 text-sm text-white/85 transition hover:bg-white/10";
-
-  return (
-    <div className="grid gap-3 sm:grid-cols-3">
-      <Button className="justify-between rounded-[1.35rem] bg-[var(--app-accent)] text-slate-950" onClick={onAddTask}>
-        <span className="inline-flex items-center gap-2">
-          <Plus aria-hidden="true" className="h-4 w-4" />
-          Task
-        </span>
-        <ArrowRight aria-hidden="true" className="h-4 w-4" />
-      </Button>
-      <Link className={actionClassName} to="/pomodoro">
-        <span className="inline-flex items-center gap-2">
-          <TimerReset aria-hidden="true" className="h-4 w-4" />
-          Focus
-        </span>
-        <ArrowRight aria-hidden="true" className="h-4 w-4" />
-      </Link>
-      <Link className={actionClassName} to="/habit-tracker">
-        <span className="inline-flex items-center gap-2">
-          <Flame aria-hidden="true" className="h-4 w-4" />
-          Habit
-        </span>
-        <ArrowRight aria-hidden="true" className="h-4 w-4" />
-      </Link>
-    </div>
-  );
-}
+const FOCUS_GOAL_MINUTES = 120;
+const MAX_DAILY_HABITS = 5;
+const MAX_HOME_TASKS = 8;
+const DASHBOARD_CANVAS_WIDTH = 1280;
+const PANEL_CLASS =
+  "rounded-[2rem] border border-white/80 bg-[rgba(255,255,255,0.68)] p-6 shadow-[0_12px_40px_rgba(6,182,212,0.13)] backdrop-blur-xl";
+const DARK_PANEL_CLASS =
+  "relative row-span-2 flex min-h-[340px] flex-col justify-between overflow-hidden rounded-[2rem] border border-[rgba(6,182,212,0.18)] bg-[radial-gradient(circle_at_top,rgba(6,182,212,0.14),transparent_38%),linear-gradient(160deg,#0d1f30_0%,#152a3e_100%)] p-6 text-white shadow-[0_24px_80px_rgba(0,0,0,0.32)]";
+const MUTED_TEXT_CLASS = "text-[#4a6b82]";
+const PRIMARY_TEXT_CLASS = "text-[#0a1929]";
+const BORDER_CLASS = "border-[rgba(6,182,212,0.14)]";
+const ICON_LINK_CLASS = "text-[#4a6b82] transition-colors hover:text-[#0a1929]";
+const OUTLINE_ICON_BUTTON_CLASS =
+  "flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(6,182,212,0.14)] bg-white/60 text-[#4a6b82] transition-colors hover:text-[#0a1929]";
 
 function DashboardPage() {
   const {
     groupedTasks,
     handleAddButtonClick,
     showModal,
-    isLoading: isTasksLoading,
   } = useTasks();
+
   const {
     habits,
     toggleDayMark,
     percentages,
     weekDates,
-    isLoading: isHabitsLoading,
   } = useHabits();
-  const { completedPomodoros, todayFocusSeconds, dailyFocusSeconds } =
-    useTimeTracker();
+
+  const {
+    completedPomodoros,
+    todayFocusSeconds,
+    dailyFocusSeconds,
+    totalSeconds,
+    isTimerActive,
+    handleStart,
+    handlePause,
+    handleReset,
+    circumference,
+    strokeDashoffset,
+    radius,
+  } = useTimeTracker();
+
+  const [expandedHabitId, setExpandedHabitId] = useState<string | null>(null);
+  const viewportRef = useRef<HTMLElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const [dashboardScale, setDashboardScale] = useState(1);
+  const [scaledHeight, setScaledHeight] = useState<number | null>(null);
 
   const today = new Date();
   const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
-  const greeting = getGreeting(today);
-  const formattedDate = today.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-  });
 
   const todayTasks = groupedTasks[TODAY_KEY] ?? [];
   const completedTodayTasks = todayTasks.filter((t) => t.isCompleted).length;
   const totalTodayTasks = todayTasks.length;
-  const openTodayTasks = todayTasks.filter((task) => !task.isCompleted).slice(0, MAX_HOME_TASKS);
+  const allTodayTasks = todayTasks.slice(0, MAX_HOME_TASKS);
 
-  const focusTime = formatDuration(todayFocusSeconds);
-  const currentStreak = calculateCurrentStreak(percentages);
   const dailyHabits = habits.slice(0, MAX_DAILY_HABITS);
-  const completedHabitsToday = dailyHabits.filter((habit) => Boolean(habit.days[todayIndex])).length;
-
-  const isStatsLoading = isTasksLoading || isHabitsLoading;
-
-  const chartData = weekDates.map((date, index) => {
-    const dateKey = date.toISOString().slice(0, 10);
-    return {
-      day: date.toLocaleDateString("en-US", { weekday: "short" }),
-      habits: percentages[index] ?? 0,
-      focus: Math.round((dailyFocusSeconds[dateKey] ?? 0) / 60),
-    };
-  });
-
-  const taskProgress = totalTodayTasks === 0 ? 0 : completedTodayTasks / totalTodayTasks;
-  const habitProgress = dailyHabits.length === 0 ? 0 : completedHabitsToday / dailyHabits.length;
+  const completedHabitsToday = dailyHabits.filter((h) =>
+    Boolean(h.days[todayIndex])
+  ).length;
+  const currentStreak = calculateCurrentStreak(percentages);
   const focusMinutes = Math.round(todayFocusSeconds / 60);
-  const focusProgress = Math.min(focusMinutes / FOCUS_GOAL_MINUTES, 1);
-  const overallProgress = (taskProgress + habitProgress + focusProgress) / 3;
+  const focusHours = (focusMinutes / 60).toFixed(1);
+
+  const taskPct =
+    totalTodayTasks === 0
+      ? 0
+      : Math.round((completedTodayTasks / totalTodayTasks) * 100);
+  const habitPct =
+    dailyHabits.length === 0
+      ? 0
+      : Math.round((completedHabitsToday / dailyHabits.length) * 100);
+  const focusPct = Math.min(
+    Math.round((focusMinutes / FOCUS_GOAL_MINUTES) * 100),
+    100
+  );
+
+  const chartData = weekDates.map((date, index) => ({
+    day: ["S", "M", "T", "W", "T", "F", "S"][date.getDay()],
+    habits: percentages[index] ?? 0,
+    focus: Math.round(
+      (dailyFocusSeconds[date.toISOString().slice(0, 10)] ?? 0) / 60
+    ),
+  }));
+
+  const svgSize = (radius + 10) * 2;
+  const cx = svgSize / 2;
+  const timerMins = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+  const timerSecs = (totalSeconds % 60).toString().padStart(2, "0");
+  const timerDisplay = `${timerMins}:${timerSecs}`;
+  const weeklyGoalAverage = Math.round((habitPct + taskPct + focusPct) / 3);
+
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current;
+    const content = contentRef.current;
+
+    if (!viewport || !content) {
+      return;
+    }
+
+    const updateScale = () => {
+      const availableWidth = viewport.clientWidth;
+      const availableHeight = viewport.clientHeight;
+      const naturalHeight = content.scrollHeight;
+
+      if (!availableWidth || !availableHeight || !naturalHeight) {
+        return;
+      }
+
+      const nextScale = Math.min(
+        availableWidth / DASHBOARD_CANVAS_WIDTH,
+        availableHeight / naturalHeight,
+        1
+      );
+
+      setDashboardScale(nextScale);
+      setScaledHeight(naturalHeight * nextScale);
+    };
+
+    const resizeObserver = new ResizeObserver(updateScale);
+    resizeObserver.observe(viewport);
+    resizeObserver.observe(content);
+    updateScale();
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   return (
-    <main className="space-y-8 p-5 sm:p-6 lg:p-8" id="main-content" tabIndex={-1}>
-      <DashboardHeader
-        formattedDate={formattedDate}
-        greeting={greeting}
-        onAddTask={handleAddButtonClick}
-      />
-
-      <section className="app-panel-dark relative overflow-hidden p-6 sm:p-8">
+    <main
+      ref={viewportRef}
+      className="h-full overflow-hidden"
+      id="main-content"
+      tabIndex={-1}
+    >
+      <div
+        className="mx-auto flex h-full w-full items-start justify-center overflow-hidden"
+        style={{ height: scaledHeight ? `${scaledHeight}px` : "100%" }}
+      >
         <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(217,242,71,0.24),_transparent_28%),radial-gradient(circle_at_bottom_left,_rgba(255,255,255,0.08),_transparent_24%)]"
-        />
+          ref={contentRef}
+          className="space-y-4"
+          style={{
+            transform: `scale(${dashboardScale})`,
+            transformOrigin: "top center",
+            width: `${DASHBOARD_CANVAS_WIDTH}px`,
+          }}
+        >
+          {/* ── Row 1: Welcome + Stats ───────────────────────────────────────── */}
+          <div className="flex items-start justify-between pt-2">
+        {/* Left: welcome + stat pills */}
+        <div>
+          <h1 className={`text-[2.6rem] font-bold leading-none tracking-tight ${PRIMARY_TEXT_CLASS}`}>
+            Welcome in, Alex
+          </h1>
 
-        <div className="relative grid gap-8 xl:grid-cols-[16rem_minmax(0,1fr)]">
-          <CircleProgress
-            label="Today"
-            progress={overallProgress}
-            sublabel={`${Math.round(overallProgress * 100)}%`}
-            value={`${completedTodayTasks + completedHabitsToday + completedPomodoros}`}
-          />
-
-          <div className="space-y-6">
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-[1.6rem] border border-white/10 bg-white/6 p-4">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">Tasks</p>
-                <p className="mt-3 text-3xl font-semibold text-white">
-                  {completedTodayTasks}
-                  <span className="ml-1 text-lg text-white/55">/ {totalTodayTasks}</span>
-                </p>
-              </div>
-              <div className="rounded-[1.6rem] border border-white/10 bg-white/6 p-4">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">Habits</p>
-                <p className="mt-3 text-3xl font-semibold text-white">
-                  {completedHabitsToday}
-                  <span className="ml-1 text-lg text-white/55">/ {dailyHabits.length}</span>
-                </p>
-              </div>
-              <div className="rounded-[1.6rem] border border-black/5 bg-[var(--app-accent)]/90 p-4 text-slate-950">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-slate-700">Focus</p>
-                <p className="mt-3 text-3xl font-semibold">{focusMinutes}</p>
-                <p className="mt-1 text-sm text-slate-700">min</p>
-              </div>
+          <div className="mt-4 flex flex-wrap items-center gap-5">
+            {/* Habits pill — dark */}
+            <div className="flex items-center gap-2">
+              <span className={`text-sm ${MUTED_TEXT_CLASS}`}>Habits</span>
+              <span className="rounded-full bg-[#0a1929] px-3 py-1 text-xs font-semibold text-white">
+                {habitPct}%
+              </span>
             </div>
 
-            <QuickActions onAddTask={handleAddButtonClick} />
+            {/* Tasks pill — cyan */}
+            <div className="flex items-center gap-2">
+              <span className={`text-sm ${MUTED_TEXT_CLASS}`}>Tasks</span>
+              <span className="rounded-full bg-[#06b6d4] px-3 py-1 text-xs font-semibold text-white">
+                {taskPct}%
+              </span>
+            </div>
+
+            {/* Focus — inline bar */}
+            <div className="flex items-center gap-2">
+              <span className={`text-sm ${MUTED_TEXT_CLASS}`}>Focus</span>
+              <div className="relative h-2 w-28 overflow-hidden rounded-full bg-white/60">
+                <div
+                  className="absolute inset-y-0 left-0 rounded-full bg-[#cbd5e1]"
+                  style={{ width: `${focusPct}%` }}
+                />
+              </div>
+              <span className={`rounded-full border ${BORDER_CLASS} bg-white/60 px-3 py-1 text-xs font-semibold ${PRIMARY_TEXT_CLASS}`}>
+                {focusMinutes}m
+              </span>
+            </div>
+
+            {/* Streak pill */}
+            <div className="flex items-center gap-2">
+              <span className={`text-sm ${MUTED_TEXT_CLASS}`}>Streak</span>
+              <span className={`rounded-full border ${BORDER_CLASS} bg-white/60 px-3 py-1 text-xs font-semibold ${PRIMARY_TEXT_CLASS}`}>
+                {currentStreak}d
+              </span>
+            </div>
           </div>
         </div>
-      </section>
 
-      {isStatsLoading ? (
-        <StatsSkeleton />
-      ) : (
-        <DashboardStats
-          completedPomodoros={completedPomodoros}
-          completedTasks={completedTodayTasks}
-          currentStreak={currentStreak}
-          focusIcon={<ClockIcon />}
-          focusTime={focusTime}
-          streakIcon={<FlameIcon />}
-          taskIcon={<CheckIcon />}
-          totalTasks={totalTodayTasks}
-        />
-      )}
+        {/* Right: big numbers */}
+        <div className="flex items-start gap-8 pr-1">
+          <div className="text-right">
+            <p className={`text-5xl font-bold leading-none tracking-tighter ${PRIMARY_TEXT_CLASS}`}>
+              {habits.length}
+            </p>
+            <p className={`mt-1 text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}>
+              Habits
+            </p>
+          </div>
+          <div className="text-right">
+            <p className={`text-5xl font-bold leading-none tracking-tighter ${PRIMARY_TEXT_CLASS}`}>
+              {completedTodayTasks}
+            </p>
+            <p className={`mt-1 text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}>
+              Done
+            </p>
+          </div>
+          <div className="text-right">
+            <p className={`text-5xl font-bold leading-none tracking-tighter ${PRIMARY_TEXT_CLASS}`}>
+              {completedPomodoros}
+            </p>
+            <p className={`mt-1 text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}>
+              Sessions
+            </p>
+          </div>
+        </div>
+          </div>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-        <article className="app-card">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">Queue</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
-                Today
-              </h2>
+          {/* ── Row 2: 4-card bento grid ─────────────────────────────────────── */}
+          {/*
+          Layout:
+          col 1          col 2       col 3     col 4
+          [Profile ↕2]  [Progress]  [Timer]   [Goals ↕2]
+          [Profile ↕2]  [Calendar ←→ 2 cols]  [Goals ↕2]
+      */}
+          <div className="grid grid-cols-4 grid-rows-[auto_auto] gap-4">
+
+        {/* ── Card 1: Profile (tall, row-span-2) ── */}
+        <div className={DARK_PANEL_CLASS}>
+          {/* decorative blobs */}
+          <div className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-[#06b6d4]/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-[#06b6d4]/10 blur-2xl" />
+
+          {/* Avatar */}
+          <div className="relative z-10">
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#06b6d4] to-[#0891b2] text-2xl font-bold text-white">
+              A
             </div>
-            <Link className="text-sm font-medium text-slate-600 transition hover:text-slate-950" to="/tasks">
-              All
+          </div>
+
+          {/* Bottom info */}
+          <div className="relative z-10">
+            <p className="text-lg font-bold text-white">Alex</p>
+            <p className="mt-0.5 text-xs text-white/50">Productivity Dashboard</p>
+
+            <div className="mt-3 flex flex-col gap-2">
+              <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white">
+                <Flame aria-hidden="true" className="h-3 w-3 text-orange-400" />
+                {currentStreak} day streak
+              </span>
+
+              <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                <p className="text-[10px] uppercase tracking-widest text-white/40">
+                  Focus today
+                </p>
+                <p className="mt-0.5 text-xl font-bold text-white">
+                  {focusHours}
+                  <span className="ml-1 text-sm font-normal text-white/50">h</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Card 2: Activity chart ── */}
+        <div className={`${PANEL_CLASS} flex min-h-[160px] flex-col`}>
+          <div className="mb-3 flex items-start justify-between">
+            <div>
+              <p className={`text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}>
+                Progress
+              </p>
+              <p className={`mt-0.5 text-2xl font-bold ${PRIMARY_TEXT_CLASS}`}>
+                {focusHours}
+                <span className={`ml-1 text-sm font-normal ${MUTED_TEXT_CLASS}`}>h</span>
+              </p>
+            </div>
+            <Link
+              aria-label="View habit tracker"
+              className={ICON_LINK_CLASS}
+              to="/habit-tracker"
+            >
+              <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="flex-1">
+            <ResponsiveContainer height={100} width="100%">
+              <BarChart barCategoryGap="20%" barGap={2} data={chartData}>
+                <XAxis
+                  axisLine={false}
+                  dataKey="day"
+                  tick={{ fill: "#8ab4c8", fontSize: 10 }}
+                  tickLine={false}
+                />
+                <Bar dataKey="habits" fill="#0a1929" name="Habits" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="focus" fill="#06b6d4" name="Focus" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* ── Card 3: Pomodoro timer ── */}
+        <div className={`${PANEL_CLASS} flex min-h-[160px] flex-col items-center justify-between`}>
+          <div className="flex w-full items-center justify-between">
+            <p className={`text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}>
+              Time tracker
+            </p>
+            <Link
+              aria-label="Open Pomodoro page"
+              className={ICON_LINK_CLASS}
+              to="/pomodoro"
+            >
+              <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
             </Link>
           </div>
 
-          {openTodayTasks.length > 0 ? (
-            <div className="grid gap-3 md:grid-cols-2">
-              {openTodayTasks.map((task) => (
-                <MiniTaskCard key={task.id} task={task} />
-              ))}
+          {/* Circular timer */}
+          <div className="relative flex items-center justify-center">
+            <svg
+              aria-hidden="true"
+              height={svgSize}
+              viewBox={`0 0 ${svgSize} ${svgSize}`}
+              width={svgSize}
+            >
+              <circle
+                cx={cx}
+                cy={cx}
+                fill="none"
+                r={radius}
+                stroke="rgba(6,182,212,0.12)"
+                strokeWidth={10}
+              />
+              <circle
+                cx={cx}
+                cy={cx}
+                fill="none"
+                r={radius}
+                stroke="#06b6d4"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                strokeWidth={10}
+                transform={`rotate(-90 ${cx} ${cx})`}
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <p className={`text-2xl font-bold leading-none tracking-tight ${PRIMARY_TEXT_CLASS}`}>
+                {timerDisplay}
+              </p>
+              <p className={`mt-0.5 text-[10px] ${MUTED_TEXT_CLASS}`}>Work time</p>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center gap-2">
+            <button
+              aria-label={isTimerActive ? "Pause timer" : "Start timer"}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#06b6d4] text-white transition-colors hover:bg-[#06b6d4]/80"
+              onClick={isTimerActive ? handlePause : handleStart}
+              type="button"
+            >
+              {isTimerActive ? (
+                <Pause aria-hidden="true" className="h-4 w-4" />
+              ) : (
+                <Play aria-hidden="true" className="h-4 w-4" />
+              )}
+            </button>
+            <button
+              aria-label="Reset timer"
+              className={OUTLINE_ICON_BUTTON_CLASS}
+              onClick={handleReset}
+              type="button"
+            >
+              <RotateCcw aria-hidden="true" className="h-4 w-4" />
+            </button>
+            <Link
+              aria-label="Open full timer"
+              className={OUTLINE_ICON_BUTTON_CLASS}
+              to="/pomodoro"
+            >
+              <AlarmClock aria-hidden="true" className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+
+        {/* ── Card 4: Goals (tall, row-span-2) ── */}
+        <div className={`${PANEL_CLASS} row-span-2 flex flex-col`}>
+          <div className="mb-4 flex items-start justify-between">
+            <div>
+              <p className={`text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}>
+              Weekly Goals
+              </p>
+              <p className={`mt-0.5 text-2xl font-bold ${PRIMARY_TEXT_CLASS}`}>
+                {weeklyGoalAverage}%
+              </p>
+            </div>
+            <Link
+              aria-label="View all habits"
+              className={ICON_LINK_CLASS}
+              to="/habit-tracker"
+            >
+              <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
+            </Link>
+          </div>
+
+          {/* Progress bars */}
+          <div className="space-y-3">
+            {[
+              { label: "Habits", value: habitPct, color: "bg-[#06b6d4]" },
+              { label: "Tasks", value: taskPct, color: "bg-[#0a1929]" },
+              { label: "Focus", value: focusPct, color: "bg-[#94a3b8]" },
+            ].map(({ label, value, color }) => (
+              <div key={label}>
+                <div className="mb-1 flex justify-between text-xs">
+                  <span className={MUTED_TEXT_CLASS}>{label}</span>
+                  <span className={`font-semibold ${PRIMARY_TEXT_CLASS}`}>{value}%</span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#06b6d4]/10">
+                  <div
+                    className={`h-full rounded-full transition-all ${color}`}
+                    style={{ width: `${value}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Dark mini-card: task summary */}
+          <div className="mt-4 rounded-2xl bg-[#0a1929] p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-[10px] uppercase tracking-widest text-white/40">
+                Today
+              </p>
+              <span className="rounded-full bg-[#06b6d4]/20 px-2.5 py-0.5 text-sm font-bold text-white">
+                {completedTodayTasks}/{totalTodayTasks}
+              </span>
+            </div>
+
+            <div className="space-y-2 max-h-[160px] overflow-y-auto">
+              {allTodayTasks.length === 0 ? (
+                <p className="text-xs text-white/30">Nothing scheduled</p>
+              ) : (
+                allTodayTasks.slice(0, 6).map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex items-center gap-2.5 rounded-xl border border-white/[0.07] bg-white/5 px-3 py-2"
+                  >
+                    <span
+                      className={`h-2 w-2 flex-shrink-0 rounded-full ${
+                        task.isCompleted ? "bg-[#06b6d4]" : "bg-white/20"
+                      }`}
+                    />
+                    <p
+                      className={`flex-1 truncate text-xs font-medium ${
+                        task.isCompleted
+                          ? "line-through text-white/30"
+                          : "text-white/85"
+                      }`}
+                    >
+                      {task.name}
+                    </p>
+                    {task.isCompleted && (
+                      <div className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#06b6d4]">
+                        <Check aria-hidden="true" className="h-2.5 w-2.5 text-white" />
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+
+            <Link
+              className="mt-3 block text-center text-[11px] font-semibold text-[#06b6d4] transition-colors hover:text-white"
+              to="/tasks"
+            >
+              View all tasks →
+            </Link>
+          </div>
+        </div>
+
+        {/* ── Card 5: Calendar / Today's schedule (cols 2-3) ── */}
+        <div className={`${PANEL_CLASS} col-span-2`}>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className={`text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}>
+                Schedule
+              </p>
+              <h2 className={`mt-0.5 text-base font-bold ${PRIMARY_TEXT_CLASS}`}>
+                {today.toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </h2>
+            </div>
+            <button
+              className="flex items-center gap-1.5 rounded-full bg-[#0a1929] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#152a3e]"
+              onClick={handleAddButtonClick}
+              type="button"
+            >
+              <Plus aria-hidden="true" className="h-3 w-3" />
+              Add Task
+            </button>
+          </div>
+
+          {allTodayTasks.length === 0 ? (
+            <div className="flex h-32 flex-col items-center justify-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#06b6d4]/10">
+                <Check aria-hidden="true" className="h-5 w-5 text-[#06b6d4]" />
+              </div>
+              <p className={`text-sm ${MUTED_TEXT_CLASS}`}>All clear for today</p>
             </div>
           ) : (
-            <div className="rounded-[1.6rem] border border-dashed border-black/10 bg-white/40 px-6 py-10 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-[var(--app-accent)]">
-                <Check aria-hidden="true" className="h-5 w-5" />
-              </div>
-              <p className="mt-4 text-sm font-medium text-slate-700">Clear</p>
+            <div className="space-y-2">
+              {allTodayTasks.map((task) => (
+                <div
+                  key={task.id}
+                  className={`flex items-center gap-3 rounded-xl border ${BORDER_CLASS} bg-white/60 px-4 py-3`}
+                >
+                  <span
+                    className={`h-2.5 w-2.5 flex-shrink-0 rounded-full ${
+                      task.isCompleted ? "bg-[#06b6d4]" : "bg-[#0a1929]"
+                    }`}
+                  />
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <p
+                      className={`truncate text-sm font-medium ${
+                        task.isCompleted
+                          ? `line-through ${MUTED_TEXT_CLASS}`
+                          : PRIMARY_TEXT_CLASS
+                      }`}
+                    >
+                      {task.name}
+                    </p>
+                    {(task.startTime || task.endTime) && (
+                      <p className={`mt-0.5 text-xs ${MUTED_TEXT_CLASS}`}>
+                        {task.startTime}
+                        {task.startTime && task.endTime ? " – " : ""}
+                        {task.endTime}
+                      </p>
+                    )}
+                  </div>
+                  {task.isCompleted && (
+                    <Check
+                      aria-hidden="true"
+                      className="h-4 w-4 flex-shrink-0 text-[#06b6d4]"
+                    />
+                  )}
+                </div>
+              ))}
             </div>
           )}
-        </article>
-
-        <article className="app-card">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">Habits</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
-                Check-in
-              </h2>
-            </div>
-            <Link className="text-sm font-medium text-slate-600 transition hover:text-slate-950" to="/habit-tracker">
-              All
-            </Link>
+        </div>
           </div>
 
-          <div className="space-y-3">
-            {dailyHabits.length > 0 ? (
-              dailyHabits.map((habit, index) => {
-                const streakCount = habit.days.filter(Boolean).length;
-                const isDone = Boolean(habit.days[todayIndex]);
+          {/* ── Row 3: Habits accordion (full-width) ─────────────────────────── */}
+          <div className={PANEL_CLASS}>
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <p className={`text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}>
+              Daily
+            </p>
+            <h2 className={`mt-0.5 text-base font-bold ${PRIMARY_TEXT_CLASS}`}>
+              Habit Check-in
+            </h2>
+          </div>
+          <Link
+            className="text-xs font-semibold text-[#06b6d4] transition-colors hover:text-[#0a1929]"
+            to="/habit-tracker"
+          >
+            All habits →
+          </Link>
+        </div>
 
-                return (
+        {dailyHabits.length === 0 ? (
+          <div className="flex h-20 items-center justify-center">
+            <p className={`text-sm ${MUTED_TEXT_CLASS}`}>
+              No habits yet —{" "}
+              <Link className="text-[#06b6d4]" to="/habit-tracker">
+                add some
+              </Link>
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-x-6 divide-y divide-[rgba(6,182,212,0.14)]/40 lg:grid-cols-3 xl:grid-cols-5">
+            {dailyHabits.map((habit, index) => {
+              const isExpanded = expandedHabitId === habit.id;
+              const streakCount = habit.days.filter(Boolean).length;
+              const isDoneToday = Boolean(habit.days[todayIndex]);
+
+              return (
+                <div key={habit.id} className="col-span-1">
                   <button
-                    key={habit.id}
-                    className="flex w-full items-center justify-between rounded-[1.35rem] border border-black/5 bg-white/55 px-4 py-3 text-left transition hover:border-black/10 hover:bg-white"
-                    onClick={() => toggleDayMark(index, todayIndex)}
+                    className="flex w-full items-center justify-between py-3 text-left"
+                    onClick={() =>
+                      setExpandedHabitId(isExpanded ? null : habit.id)
+                    }
                     type="button"
                   >
-                    <div className="min-w-0">
-                      <p className={`truncate text-sm font-semibold ${isDone ? "text-slate-500 line-through" : "text-slate-900"}`}>
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span
+                        className={`h-2 w-2 flex-shrink-0 rounded-full ${
+                          isDoneToday ? "bg-[#06b6d4]" : "bg-[rgba(6,182,212,0.14)]"
+                        }`}
+                      />
+                      <span className={`truncate text-sm font-medium ${PRIMARY_TEXT_CLASS}`}>
                         {habit.name}
-                      </p>
-                      <div className="mt-2 flex gap-1.5">
-                        {habit.days.map((day, dayIndex) => (
-                          <span
-                            key={`${habit.id}-${dayIndex}`}
-                            className={`h-2.5 w-2.5 rounded-full ${
-                              day
-                                ? dayIndex === todayIndex
-                                  ? "bg-slate-950"
-                                  : "bg-[var(--app-accent)]"
-                                : "bg-slate-200"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <div className="ml-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-[var(--app-accent)]">
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold">
-                        <Flame aria-hidden="true" className="h-3.5 w-3.5" />
-                        {streakCount}
                       </span>
                     </div>
-                  </button>
-                );
-              })
-            ) : (
-              <div className="rounded-[1.6rem] border border-dashed border-black/10 bg-white/40 px-6 py-10 text-center">
-                <p className="text-sm font-medium text-slate-700">No habits</p>
-              </div>
-            )}
-          </div>
-        </article>
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.75fr)]">
-        <section className="app-card overflow-hidden">
-          <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">Week</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
-                Activity
-              </h2>
-            </div>
-            <div className="rounded-[1.3rem] border border-black/10 bg-white/60 px-4 py-3 text-sm text-slate-600">
-              % + min
-            </div>
-          </div>
-          <ResponsiveContainer height={220} width="100%">
-            <BarChart barCategoryGap="30%" barGap={4} data={chartData}>
-              <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" />
-              <XAxis
-                axisLine={false}
-                dataKey="day"
-                tick={{ fill: "#94a3b8", fontSize: 12 }}
-                tickLine={false}
-              />
-              <YAxis
-                axisLine={false}
-                tick={{ fill: "#94a3b8", fontSize: 12 }}
-                tickLine={false}
-                unit="%"
-                yAxisId="habits"
-                domain={[0, 100]}
-              />
-              <YAxis
-                axisLine={false}
-                orientation="right"
-                tick={{ fill: "#94a3b8", fontSize: 12 }}
-                tickLine={false}
-                unit="m"
-                yAxisId="focus"
-              />
-              <ChartTooltip
-                contentStyle={{
-                  borderRadius: "20px",
-                  border: "1px solid rgba(15, 23, 42, 0.08)",
-                  boxShadow: "0 18px 35px rgba(15, 23, 42, 0.14)",
-                  backgroundColor: "rgba(255, 252, 245, 0.96)",
-                }}
-                cursor={{ fill: "#f8fafc" }}
-              />
-              <Bar
-                dataKey="habits"
-                fill="#18181b"
-                name="Habits"
-                radius={[10, 10, 0, 0]}
-                yAxisId="habits"
-              />
-              <Bar
-                dataKey="focus"
-                fill="#d9f247"
-                name="Focus"
-                radius={[10, 10, 0, 0]}
-                yAxisId="focus"
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </section>
-
-        <article className="app-card">
-          <div className="mb-5 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">Focus</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
-                Strip
-              </h2>
-            </div>
-            <Link className="text-sm font-medium text-slate-600 transition hover:text-slate-950" to="/pomodoro">
-              Timer
-            </Link>
-          </div>
-
-          <div className="space-y-4">
-            <div className="rounded-[1.6rem] bg-slate-950 p-5 text-white">
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-white/55">Today</p>
-                  <p className="mt-3 text-4xl font-semibold tracking-[-0.05em]">{focusMinutes}</p>
-                </div>
-                <p className="text-sm text-white/65">min</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-7 gap-2">
-              {chartData.map((entry) => {
-                const height = Math.max(18, Math.min(100, entry.focus));
-
-                return (
-                  <div key={entry.day} className="flex flex-col items-center gap-2">
-                    <div className="flex h-28 w-full items-end rounded-[1.25rem] bg-slate-100 p-2">
-                      <div
-                        className="w-full rounded-[0.9rem] bg-slate-950"
-                        style={{ height: `${height}%` }}
+                    {isExpanded ? (
+                      <ChevronUp
+                        aria-hidden="true"
+                        className={`ml-2 h-3.5 w-3.5 flex-shrink-0 ${MUTED_TEXT_CLASS}`}
                       />
+                    ) : (
+                      <ChevronDown
+                        aria-hidden="true"
+                        className={`ml-2 h-3.5 w-3.5 flex-shrink-0 ${MUTED_TEXT_CLASS}`}
+                      />
+                    )}
+                  </button>
+
+                  {isExpanded && (
+                    <div className="pb-3 pl-4">
+                      <div className="mb-2 flex items-center justify-between">
+                        <div className="flex gap-0.5">
+                          {habit.days.map((done, di) => (
+                            <span
+                              key={di}
+                              className={`h-2 w-2 rounded-full ${
+                                done ? "bg-[#06b6d4]" : "bg-[rgba(6,182,212,0.14)]"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className={`flex items-center gap-1 text-xs ${MUTED_TEXT_CLASS}`}>
+                          <Flame
+                            aria-hidden="true"
+                            className="h-3 w-3 text-orange-400"
+                          />
+                          {streakCount}d
+                        </span>
+                      </div>
+                      <button
+                        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                          isDoneToday
+                            ? "bg-[#06b6d4]/10 text-[#06b6d4]"
+                            : "bg-[#0a1929] text-white"
+                        }`}
+                        onClick={() => toggleDayMark(index, todayIndex)}
+                        type="button"
+                      >
+                        {isDoneToday ? "✓ Done today" : "Mark today"}
+                      </button>
                     </div>
-                    <span className="text-[11px] uppercase tracking-[0.14em] text-slate-500">
-                      {entry.day}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-[1.35rem] border border-black/5 bg-white/55 p-4">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">Sessions</p>
-                <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
-                  {completedPomodoros}
-                </p>
-              </div>
-              <div className="rounded-[1.35rem] border border-black/5 bg-white/55 p-4">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">Tasks</p>
-                <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
-                  {completedTodayTasks}
-                </p>
-              </div>
-              <div className="rounded-[1.35rem] border border-black/5 bg-white/55 p-4">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">Open</p>
-                <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
-                  {Math.max(totalTodayTasks - completedTodayTasks, 0)}
-                </p>
-              </div>
-            </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        </article>
-      </section>
+        )}
+          </div>
 
-      {showModal && <AddModal />}
+          {showModal && <AddModal />}
+        </div>
+      </div>
     </main>
   );
 }

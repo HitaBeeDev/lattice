@@ -1,53 +1,34 @@
 import type { Task } from "../../types/task";
 import { Badge, Button } from "../ui";
-
 const PRIORITY_VARIANTS = {
-  High: "high",
-  Medium: "medium",
-  Low: "low",
+    High: "high",
+    Medium: "medium",
+    Low: "low",
 } as const;
-
 type TaskListItemProps = {
-  isChecked: boolean;
-  onDelete: () => void;
-  onEdit: () => void;
-  onToggle: () => void;
-  task: Task;
+    isChecked: boolean;
+    onDelete: () => void;
+    onEdit: () => void;
+    onToggle: () => void;
+    task: Task;
 };
+export default function TaskListItem({ isChecked, onDelete, onEdit, onToggle, task, }: TaskListItemProps) {
+    const checkboxId = `task-complete-${task.id}`;
+    return (<li>
+      <div>
+        <div>
+          <div>
+            <input id={checkboxId} type="checkbox" checked={isChecked} onChange={onToggle}/>
 
-export default function TaskListItem({
-  isChecked,
-  onDelete,
-  onEdit,
-  onToggle,
-  task,
-}: TaskListItemProps) {
-  const checkboxId = `task-complete-${task.id}`;
-
-  return (
-    <li className="rounded-[1.8rem] border border-black/10 bg-white/75 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.06)] backdrop-blur-sm">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-3">
-          <div className="flex items-start gap-3">
-            <input
-              className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-300"
-              id={checkboxId}
-              type="checkbox"
-              checked={isChecked}
-              onChange={onToggle}
-            />
-
-            <div className="space-y-1">
-              <label className="font-semibold text-slate-900" htmlFor={checkboxId}>
+            <div>
+              <label htmlFor={checkboxId}>
                 {task.name}
               </label>
-              {task.description ? (
-                <p className="text-sm text-slate-600">{task.description}</p>
-              ) : null}
+              {task.description ? (<p>{task.description}</p>) : null}
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 text-sm text-slate-600">
+          <div>
             <p>{task.date}</p>
             {task.startTime ? <p>{task.startTime}</p> : null}
             <Badge variant={PRIORITY_VARIANTS[task.priority]}>
@@ -56,7 +37,7 @@ export default function TaskListItem({
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div>
           <Button onClick={onEdit} size="sm" variant="ghost">
             Edit
           </Button>
@@ -65,6 +46,5 @@ export default function TaskListItem({
           </Button>
         </div>
       </div>
-    </li>
-  );
+    </li>);
 }

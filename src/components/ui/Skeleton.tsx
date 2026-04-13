@@ -1,14 +1,6 @@
-import { cn } from "./cn";
-
 type SkeletonProps = {
-  className?: string;
+    className?: string;
 };
-
-export function Skeleton({ className }: SkeletonProps) {
-  return (
-    <div
-      aria-hidden="true"
-      className={cn("animate-pulse rounded-md bg-slate-200", className)}
-    />
-  );
+export function Skeleton({}: SkeletonProps) {
+    return (<div aria-hidden="true"/>);
 }

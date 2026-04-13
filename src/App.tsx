@@ -25,13 +25,26 @@ function App({ children }: AppProps): JSX.Element {
   }, []);
 
   useEffect(() => {
+    const previousMargin = document.body.style.margin;
+    document.body.style.margin = "0";
+
+    return () => {
+      document.body.style.margin = previousMargin;
+    };
+  }, []);
+
+  useEffect(() => {
     document.title = routeTitles[location.pathname] ?? "Lattice";
   }, [location.pathname]);
 
   return (
     <HabitProvider>
       <TaskProvider>
-        <TimeTrackerProvider>{children}</TimeTrackerProvider>
+        <TimeTrackerProvider>
+          <div className="min-h-screen bg-[linear-gradient(135deg,#eef1f1_0%,#edf4f4_38%,#def3f6_72%,#8ee4f2_100%)] text-[#0a1929]">
+            {children}
+          </div>
+        </TimeTrackerProvider>
       </TaskProvider>
     </HabitProvider>
   );

@@ -3,81 +3,16 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    color-scheme: light;
-    --app-bg: #d7d7cf;
-    --app-surface: rgba(255, 252, 244, 0.78);
-    --app-surface-strong: #fffdf7;
-    --app-border: rgba(50, 54, 58, 0.1);
-    --app-shadow: 0 24px 80px rgba(28, 30, 32, 0.12);
-    --app-text: #171a1d;
-    --app-muted: #5e666f;
-    --app-accent: #d9f247;
-    --app-accent-deep: #1d2118;
-    --app-accent-soft: rgba(217, 242, 71, 0.22);
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
-    min-height: 100vh;
-    background:
-      radial-gradient(circle at top left, rgba(255, 244, 199, 0.75), transparent 30%),
-      radial-gradient(circle at top right, rgba(214, 230, 155, 0.4), transparent 28%),
-      linear-gradient(180deg, #efeee9 0%, #d6d5ce 100%);
-    color: var(--app-text);
-    font-family: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
   }
 
-  ::selection {
-    background: rgba(217, 242, 71, 0.4);
-    color: #111827;
-  }
-}
-
-@layer components {
-  .app-skip-link {
-    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-slate-950 focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-white;
-  }
-
-  .app-panel {
-    border: 1px solid var(--app-border);
-    background: linear-gradient(180deg, rgba(255, 253, 247, 0.92), rgba(248, 244, 235, 0.88));
-    box-shadow: var(--app-shadow);
-    @apply rounded-[2rem] backdrop-blur-xl;
-  }
-
-  .app-panel-dark {
-    background:
-      radial-gradient(circle at top, rgba(217, 242, 71, 0.18), transparent 34%),
-      linear-gradient(180deg, #171819 0%, #101112 100%);
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
-    @apply rounded-[2rem] border border-white/10 text-white;
-  }
-
-  .app-card {
-    @apply app-panel p-6;
-  }
-
-  .app-pill {
-    @apply inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em];
-    border-color: rgba(23, 26, 29, 0.08);
-    background: rgba(255, 255, 255, 0.55);
-    color: #4b5563;
-  }
-
-  .app-grid-glow {
-    background-image:
-      linear-gradient(rgba(23, 26, 29, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(23, 26, 29, 0.04) 1px, transparent 1px);
-    background-size: 24px 24px;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Sora", "Inter", "Avenir Next", "Segoe UI", sans-serif;
   }
 }

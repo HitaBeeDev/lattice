@@ -1,48 +1,21 @@
 import { useTasks } from "../../context/TasksContext";
 import TaskGroup from "./TaskGroup";
 import { EmptyState } from "../ui";
-
 function ToDoList() {
-  const {
-    handleTaskDelete,
-    handleTaskEditClick,
-    checkedTasks,
-    handleCheckboxChange,
-    sortedTasks,
-  } = useTasks();
-
-  if (sortedTasks.length === 0) {
-    return (
-      <EmptyState
-        description="Looks like you&apos;re all caught up. There are no to-dos on the list right now."
-        title="Nothing scheduled"
-      />
-    );
-  }
-
-  return (
-    <section className="app-card space-y-6">
+    const { handleTaskDelete, handleTaskEditClick, checkedTasks, handleCheckboxChange, sortedTasks, } = useTasks();
+    if (sortedTasks.length === 0) {
+        return (<EmptyState description="Looks like you&apos;re all caught up. There are no to-dos on the list right now." title="Nothing scheduled"/>);
+    }
+    return (<section>
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">
+        <p>
           Active board
         </p>
-        <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
+        <h2>
           Scheduled tasks
         </h2>
       </div>
-      {sortedTasks.map(([date, tasks]) => (
-        <TaskGroup
-          key={date}
-          checkedTasks={checkedTasks}
-          date={date}
-          onDeleteTask={handleTaskDelete}
-          onEditTask={handleTaskEditClick}
-          onToggleTask={handleCheckboxChange}
-          tasks={tasks}
-        />
-      ))}
-    </section>
-  );
+      {sortedTasks.map(([date, tasks]) => (<TaskGroup key={date} checkedTasks={checkedTasks} date={date} onDeleteTask={handleTaskDelete} onEditTask={handleTaskEditClick} onToggleTask={handleCheckboxChange} tasks={tasks}/>))}
+    </section>);
 }
-
 export default ToDoList;

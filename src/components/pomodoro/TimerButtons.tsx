@@ -1,18 +1,8 @@
 import { Button } from "../ui";
 import { useTimeTracker } from "../../context/TimeTrackerContext";
-
 function TimerButtons() {
-  const {
-    handleStart,
-    handlePause,
-    handleReset,
-    toggleEdit,
-    editButtonText,
-    isTimerActive,
-  } = useTimeTracker();
-
-  return (
-    <div className="flex flex-wrap gap-3">
+    const { handleStart, handlePause, handleReset, toggleEdit, editButtonText, isTimerActive, } = useTimeTracker();
+    return (<div>
       <Button onClick={handleStart} type="button">
         {isTimerActive ? "Running" : "Start"}
       </Button>
@@ -25,8 +15,6 @@ function TimerButtons() {
       <Button onClick={toggleEdit} type="button" variant="ghost">
         {editButtonText}
       </Button>
-    </div>
-  );
+    </div>);
 }
-
 export default TimerButtons;

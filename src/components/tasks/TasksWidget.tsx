@@ -1,90 +1,70 @@
 import type { Task } from "../../types/task";
 import { useTasks } from "../../context/TasksContext";
 import { Badge, EmptyState, Skeleton } from "../ui";
-
 const PRIORITY_VARIANTS = {
-  High: "high",
-  Medium: "medium",
-  Low: "low",
+    High: "high",
+    Medium: "medium",
+    Low: "low",
 } as const;
-
 const MAX_GROUPS = 2;
 const MAX_TASKS_PER_GROUP = 2;
-
-const byDate = ([dateA]: [string, Task[]], [dateB]: [string, Task[]]) =>
-  new Date(dateA).getTime() - new Date(dateB).getTime();
-
-const getUpcomingTasks = (
-  groupedTasks: Record<string, Task[]>,
-  checkedTasks: string[]
-) =>
-  Object.entries(groupedTasks)
+const byDate = ([dateA]: [
+    string,
+    Task[]
+], [dateB]: [
+    string,
+    Task[]
+]) => new Date(dateA).getTime() - new Date(dateB).getTime();
+const getUpcomingTasks = (groupedTasks: Record<string, Task[]>, checkedTasks: string[]) => Object.entries(groupedTasks)
     .sort(byDate)
     .slice(0, MAX_GROUPS)
-    .flatMap(([, tasks]) =>
-      tasks
-        .filter((task) => !checkedTasks.includes(task.id))
-        .slice(0, MAX_TASKS_PER_GROUP)
-    );
-
+    .flatMap(([, tasks]) => tasks
+    .filter((task) => !checkedTasks.includes(task.id))
+    .slice(0, MAX_TASKS_PER_GROUP));
 function TasksWidgetSkeleton() {
-  return (
-    <div className="app-card">
-      <Skeleton className="mb-4 h-5 w-36" />
-      <div className="space-y-4">
-        {[0, 1].map((i) => (
-          <div key={i} className="space-y-2 border-b border-slate-100 pb-4 last:border-b-0">
-            <Skeleton className="h-3 w-20" />
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex-1 space-y-1.5">
-                <Skeleton className="h-4 w-40" />
-                <Skeleton className="h-3 w-24" />
+    return (<div>
+      <Skeleton />
+      <div>
+        {[0, 1].map((i) => (<div key={i}>
+            <Skeleton />
+            <div>
+              <div>
+                <Skeleton />
+                <Skeleton />
               </div>
-              <Skeleton className="h-6 w-16 rounded-full" />
+              <Skeleton />
             </div>
-          </div>
-        ))}
+          </div>))}
       </div>
-    </div>
-  );
+    </div>);
 }
-
 function TasksWidget() {
-  const { groupedTasks, checkedTasks, isLoading } = useTasks();
-
-  if (isLoading) {
-    return <TasksWidgetSkeleton />;
-  }
-
-  const upcomingTasks = getUpcomingTasks(groupedTasks, checkedTasks);
-
-  return (
-    <div className="app-card">
-      <div className="mb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">
+    const { groupedTasks, checkedTasks, isLoading } = useTasks();
+    if (isLoading) {
+        return <TasksWidgetSkeleton />;
+    }
+    const upcomingTasks = getUpcomingTasks(groupedTasks, checkedTasks);
+    return (<div>
+      <div>
+        <p>
           Delivery queue
         </p>
-        <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-slate-950">
+        <p>
           Upcoming plans
         </p>
       </div>
 
       <div>
-        {upcomingTasks.length > 0 ? (
-          upcomingTasks.map((task, index) => (
-            <div
-              className="border-b border-black/5 py-4 last:border-b-0"
-              key={task.id}
-            >
+        {upcomingTasks.length > 0 ? (upcomingTasks.map((task, index) => (<div key={task.id}>
               {index !== 0 && <div></div>}
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-600">
+              <div>
+                <p>
                   {task.date}
                 </p>
-                <div className="flex items-center justify-between gap-3 rounded-[1.35rem] border border-black/5 bg-white/55 px-4 py-3">
+                <div>
                   <div>
-                    <p className="font-semibold text-slate-900">{task.name}</p>
-                    <p className="text-sm text-slate-600">
+                    <p>{task.name}</p>
+                    <p>
                       {task.startTime} - {task.endTime}
                     </p>
                   </div>
@@ -93,17 +73,8 @@ function TasksWidget() {
                   </Badge>
                 </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <EmptyState
-            description="Everything's all set. There are no upcoming tasks right now."
-            title="No tasks ahead"
-          />
-        )}
+            </div>))) : (<EmptyState description="Everything's all set. There are no upcoming tasks right now." title="No tasks ahead"/>)}
       </div>
-    </div>
-  );
+    </div>);
 }
-
 export default TasksWidget;
