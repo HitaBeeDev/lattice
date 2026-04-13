@@ -34,12 +34,14 @@ function Container({ children }: ContainerProps) {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.75),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(217,242,71,0.16),_transparent_24%)]"
       />
 
-      <div className="relative mx-auto flex min-h-screen max-w-[1600px] gap-4 p-3 sm:p-4 lg:p-6">
+      <div className="relative mx-auto flex min-h-screen max-w-[1600px] gap-4 p-2 pt-16 sm:p-4 sm:pt-20 lg:p-6 lg:pt-6">
         <button
           aria-controls="primary-sidebar"
           aria-expanded={isOpen}
           aria-label="Open navigation"
-          className="fixed right-4 top-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-black/10 bg-white/80 text-slate-900 shadow-lg backdrop-blur lg:hidden"
+          className={`fixed right-4 top-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-black/10 bg-white/80 text-slate-900 shadow-lg backdrop-blur transition lg:hidden ${
+            isOpen ? "pointer-events-none opacity-0" : "opacity-100"
+          }`}
           onClick={() => setIsOpen(true)}
           type="button"
         >

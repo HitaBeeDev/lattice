@@ -17,20 +17,20 @@ export default function PrioritySelector({
 }: PrioritySelectorProps) {
   return (
     <div className="space-y-3">
-      <p className="text-sm font-medium text-slate-700">Please choose a priority tag:</p>
+      <p className="text-sm font-medium text-slate-700">Priority</p>
       <input type="hidden" {...register("priority")} />
       <div className="flex flex-wrap gap-2">
         {PRIORITY_OPTIONS.map((priority) => (
           <Button
             key={priority}
-            className="min-w-28"
+            className="min-w-24 rounded-full"
             onClick={() => setValue("priority", priority, { shouldValidate: true })}
             aria-pressed={selectedPriority === priority}
             size="sm"
             type="button"
             variant={selectedPriority === priority ? "primary" : "secondary"}
           >
-            {priority} Priority
+            {priority}
           </Button>
         ))}
       </div>

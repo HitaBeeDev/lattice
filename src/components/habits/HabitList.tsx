@@ -24,22 +24,24 @@ export default function HabitList() {
   }
 
   return (
-    <section aria-label="Habit list" className="space-y-3">
-      {habits.map((habit, index) => (
-        <HabitRow
-          key={habit.id}
-          editIndex={editIndex}
-          habit={habit}
-          habits={habits}
-          index={index}
-          startEdit={startEdit}
-          saveEdit={saveEdit}
-          cancelEdit={cancelEdit}
-          deleteHabit={deleteHabit}
-          toggleDayMark={toggleDayMark}
-          visibleWeekDates={visibleWeekDates}
-        />
-      ))}
+    <section aria-label="Habit list" className="overflow-x-auto">
+      <div className="min-w-[840px] space-y-3">
+        {habits.map((habit, index) => (
+          <HabitRow
+            key={habit.id}
+            editIndex={editIndex}
+            habit={habit}
+            habits={habits}
+            index={index}
+            startEdit={startEdit}
+            saveEdit={saveEdit}
+            cancelEdit={cancelEdit}
+            deleteHabit={deleteHabit}
+            toggleDayMark={toggleDayMark}
+            visibleWeekDates={visibleWeekDates}
+          />
+        ))}
+      </div>
     </section>
   );
 }

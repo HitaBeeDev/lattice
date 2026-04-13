@@ -1,14 +1,15 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from "lucide-react";
 import { useTasks } from "../../context/TasksContext";
-import { EMPTY_TASK_FORM } from "../../hooks/useTasks";
+import { getEmptyTaskForm } from "../../hooks/useTasks";
 import {
   taskSchema,
   type TaskFormValues,
 } from "../../lib/taskSchema";
 import AddModalFormFields from "./AddModalFormFields";
-import { Button, IconButton, Modal, Tooltip } from "../ui";
+import { Button, IconButton, Modal } from "../ui";
 
 function AddModal() {
   const {
@@ -28,11 +29,11 @@ function AddModal() {
     watch,
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
-    defaultValues: EMPTY_TASK_FORM,
+    defaultValues: getEmptyTaskForm(),
   });
 
   useEffect(() => {
-    reset(currentTask ?? EMPTY_TASK_FORM);
+    reset(currentTask ?? getEmptyTaskForm());
   }, [currentTask, reset]);
 
   const selectedPriority = watch("priority");
@@ -48,20 +49,23 @@ function AddModal() {
 
   return (
     <Modal
-      description="Create a new task or update an existing one with schedule and priority details."
+      className="sm:max-w-xl"
       onClose={handleCloseModal}
       open
-      title={isEditing ? "Edit task" : "Add a new task"}
+      title={isEditing ? "Edit task" : "New task"}
     >
-      <div className="mb-4 flex justify-end">
-        <Tooltip content="Close dialog">
-          <IconButton aria-label="Close task dialog" onClick={handleCloseModal} size="sm">
-            <span aria-hidden="true">×</span>
-          </IconButton>
-        </Tooltip>
+      <div className="-mt-1 mb-5 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-sm text-slate-500">
+            {isEditing ? "Update details" : "Quick add"}
+          </p>
+        </div>
+        <IconButton aria-label="Close task dialog" onClick={handleCloseModal} size="sm">
+          <X aria-hidden="true" className="h-4 w-4" />
+        </IconButton>
       </div>
 
-      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <form className="flex flex-1 flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <AddModalFormFields
           errors={errors}
           register={register}
@@ -69,9 +73,12 @@ function AddModal() {
           setValue={setValue}
         />
 
-        <div className="flex justify-end">
+        <div className="mt-auto flex justify-end gap-3 pt-2">
+          <Button onClick={handleCloseModal} type="button" variant="ghost">
+            Cancel
+          </Button>
           <Button type="submit">
-            {isEditing ? "Save Changes" : "Add Task"}
+            {isEditing ? "Save" : "Create"}
           </Button>
         </div>
       </form>

@@ -56,9 +56,9 @@ export default function DailyHabitsCard({
     <article className="app-card">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">Consistency</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">Habits</p>
           <h2 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-slate-950">
-            Daily habits
+            Today
           </h2>
         </div>
         <Tooltip content="More habit actions coming soon">
@@ -79,9 +79,7 @@ export default function DailyHabitsCard({
             />
           ))
         ) : (
-          <li className="py-4 text-center text-sm text-slate-600">
-            No habits for today.
-          </li>
+          <li className="py-4 text-center text-sm text-slate-600">No habits yet.</li>
         )}
       </ul>
     </article>

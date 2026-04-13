@@ -3,15 +3,19 @@ import type { TaskFormValues } from "../../lib/taskSchema";
 import { Input } from "../ui";
 
 type TaskInputFieldProps = {
+  className?: string;
   error?: FieldError;
   id: keyof TaskFormValues;
   label: string;
   placeholder?: string;
   register: UseFormRegister<TaskFormValues>;
   type: "date" | "text" | "time";
+  autoFocus?: boolean;
 };
 
 export function TaskInputField({
+  autoFocus,
+  className,
   error,
   id,
   label,
@@ -25,6 +29,8 @@ export function TaskInputField({
         {label}
       </label>
       <Input
+        autoFocus={autoFocus}
+        className={className}
         id={id}
         error={error?.message}
         placeholder={placeholder}

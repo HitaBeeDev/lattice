@@ -10,11 +10,11 @@ type AppProps = {
 };
 
 const routeTitles: Record<string, string> = {
-  "/": "Dashboard — NexStep",
-  "/dashboard": "Dashboard — NexStep",
-  "/habit-tracker": "Habit Tracker — NexStep",
-  "/tasks": "Tasks — NexStep",
-  "/pomodoro": "Pomodoro — NexStep",
+  "/": "Dashboard — Lattice",
+  "/dashboard": "Dashboard — Lattice",
+  "/habit-tracker": "Habit Tracker — Lattice",
+  "/tasks": "Tasks — Lattice",
+  "/pomodoro": "Pomodoro — Lattice",
 };
 
 function App({ children }: AppProps): JSX.Element {
@@ -25,7 +25,7 @@ function App({ children }: AppProps): JSX.Element {
   }, []);
 
   useEffect(() => {
-    document.title = routeTitles[location.pathname] ?? "NexStep";
+    document.title = routeTitles[location.pathname] ?? "Lattice";
   }, [location.pathname]);
 
   return (

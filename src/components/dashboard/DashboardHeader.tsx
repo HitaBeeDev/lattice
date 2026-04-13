@@ -17,15 +17,13 @@ export default function DashboardHeader({
       <div className="space-y-3">
         <div className="app-pill">
           <Sparkles aria-hidden="true" className="mr-2 h-3.5 w-3.5" />
-          Focus command center
+          Dashboard
         </div>
         <div>
           <h1 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl">
             {greeting}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-            A deliberate overview of habits, tasks, and focus time for {formattedDate}.
-          </p>
+          <p className="mt-2 text-sm text-slate-600 sm:text-base">{formattedDate}</p>
         </div>
       </div>
 

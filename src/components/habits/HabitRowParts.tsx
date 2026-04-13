@@ -23,7 +23,7 @@ export function HabitNameEditor({
         Habit name
       </label>
       <Input
-        className="min-w-60"
+        className="w-full min-w-0 sm:min-w-60"
         error={error}
         id="edit-habit-name"
         type="text"
@@ -45,5 +45,5 @@ export function HabitNameEditor({
 }
 
 export function HabitProgress({ value }: { value: number }) {
-  return <ProgressBar className="w-40" value={value} />;
+  return <ProgressBar className="w-full sm:w-40" value={value} />;
 }

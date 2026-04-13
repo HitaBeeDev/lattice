@@ -28,14 +28,14 @@ export interface TasksContextValue {
   sortedTasks: [string, Task[]][];
 }
 
-export const EMPTY_TASK_FORM: TaskFormValues = {
+export const getEmptyTaskForm = (): TaskFormValues => ({
   name: "",
   description: "",
-  date: "",
+  date: new Date().toISOString().slice(0, 10),
   startTime: "",
   endTime: "",
   priority: PRIORITY_OPTIONS[1],
-};
+});
 
 const createTaskRecord = (task: TaskFormValues): Task => {
   const timestamp = new Date().toISOString();

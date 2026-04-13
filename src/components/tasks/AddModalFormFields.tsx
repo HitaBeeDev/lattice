@@ -17,49 +17,45 @@ export default function AddModalFormFields({
   setValue,
 }: AddModalFormFieldsProps) {
   return (
-    <div>
+    <div className="space-y-5">
       <TaskInputField
         error={errors.name}
         id="name"
-        label="Let's Get Started on a New To-Do!"
-        placeholder="ToDo name:"
+        autoFocus
+        label="Task"
+        placeholder="What needs to get done?"
         register={register}
         type="text"
       />
-      <TaskInputField
-        error={errors.description}
-        id="description"
-        label="Description of your to-do list:"
-        placeholder="Enter Description"
-        register={register}
-        type="text"
-      />
-      <TaskInputField
-        error={errors.date}
-        id="date"
-        label="When are you planning to handle this?"
-        register={register}
-        type="date"
-      />
-      <TaskInputField
-        error={errors.startTime}
-        id="startTime"
-        label="When will you begin?"
-        register={register}
-        type="time"
-      />
-      <TaskInputField
-        error={errors.endTime}
-        id="endTime"
-        label="When will you be done?"
-        register={register}
-        type="time"
-      />
+      <div className="grid gap-3 sm:grid-cols-3">
+        <TaskInputField
+          error={errors.date}
+          id="date"
+          label="Date"
+          register={register}
+          type="date"
+        />
+        <TaskInputField
+          error={errors.startTime}
+          id="startTime"
+          label="Start"
+          register={register}
+          type="time"
+        />
+      </div>
       <PrioritySelector
         error={errors.priority}
         register={register}
         selectedPriority={selectedPriority}
         setValue={setValue}
+      />
+      <TaskInputField
+        error={errors.description}
+        id="description"
+        label="Notes"
+        placeholder="Optional"
+        register={register}
+        type="text"
       />
     </div>
   );

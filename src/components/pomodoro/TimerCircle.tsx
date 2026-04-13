@@ -49,12 +49,12 @@ function TimerCircle() {
   const completion = maxSeconds === 0 ? 0 : Math.round((totalSeconds / maxSeconds) * 100);
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-center">
-      <div className="relative mx-auto flex w-full max-w-[24rem] items-center justify-center">
-        <div className="absolute h-56 w-56 rounded-full bg-[var(--app-accent-soft)] blur-3xl" />
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-center xl:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
+      <div className="relative mx-auto flex w-full max-w-[18rem] items-center justify-center sm:max-w-[20rem] lg:max-w-[22rem] xl:max-w-[24rem]">
+        <div className="absolute aspect-square w-[72%] rounded-full bg-[var(--app-accent-soft)] blur-3xl" />
         <svg
           aria-label={`${sessionType} timer showing ${minutes} minutes and ${seconds} seconds remaining`}
-          className="relative h-auto w-full max-w-[24rem]"
+          className="relative aspect-square h-auto w-full"
           viewBox="0 0 200 200"
         >
           <circle

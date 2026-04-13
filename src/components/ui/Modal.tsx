@@ -105,7 +105,7 @@ export default function Modal({
   return createPortal(
     <div
       aria-label="Close dialog"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-8 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-stretch justify-center bg-slate-950/50 backdrop-blur-sm sm:items-center sm:px-4 sm:py-8"
       onClick={onClose}
       onKeyDown={handleBackdropKeyDown}
       role="button"
@@ -118,7 +118,7 @@ export default function Modal({
         aria-modal="true"
         role="dialog"
         className={cn(
-          "w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl",
+          "flex min-h-screen w-full flex-col overflow-y-auto bg-white p-5 shadow-2xl sm:min-h-0 sm:max-h-[calc(100vh-4rem)] sm:max-w-2xl sm:rounded-3xl sm:p-6",
           className
         )}
         onClick={(event: MouseEvent<HTMLDivElement>) => event.stopPropagation()}

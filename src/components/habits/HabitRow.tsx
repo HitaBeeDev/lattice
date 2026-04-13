@@ -66,7 +66,7 @@ export default function HabitRow({
 
   return (
     <div className="rounded-[1.8rem] border border-black/10 bg-white/78 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.06)] backdrop-blur-sm">
-      <div className="grid gap-4 lg:grid-cols-[minmax(16rem,1fr)_repeat(7,minmax(2.5rem,1fr))_auto_auto_10rem] lg:items-center">
+      <div className="grid grid-cols-[minmax(16rem,1fr)_repeat(7,minmax(2.5rem,1fr))_auto_auto_10rem] items-center gap-4">
         <div>
           {isEditing ? (
             <HabitNameEditor

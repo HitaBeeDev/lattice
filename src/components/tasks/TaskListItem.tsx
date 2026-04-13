@@ -41,15 +41,15 @@ export default function TaskListItem({
               <label className="font-semibold text-slate-900" htmlFor={checkboxId}>
                 {task.name}
               </label>
-              <p className="text-sm text-slate-600">{task.description}</p>
+              {task.description ? (
+                <p className="text-sm text-slate-600">{task.description}</p>
+              ) : null}
             </div>
           </div>
 
           <div className="flex flex-wrap gap-3 text-sm text-slate-600">
             <p>{task.date}</p>
-            <p>
-              {task.startTime} - {task.endTime}
-            </p>
+            {task.startTime ? <p>{task.startTime}</p> : null}
             <Badge variant={PRIORITY_VARIANTS[task.priority]}>
               {task.priority}
             </Badge>

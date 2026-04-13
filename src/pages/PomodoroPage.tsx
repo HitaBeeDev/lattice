@@ -23,7 +23,7 @@ function PomodoroPage() {
         <TimerButtons />
       </section>
 
-      <section aria-labelledby="pomodoro-focus-heading" className="grid gap-6 lg:grid-cols-[minmax(0,18rem)_1fr]">
+      <section aria-labelledby="pomodoro-focus-heading" className="grid gap-6 xl:grid-cols-[minmax(0,18rem)_1fr]">
         <header className="app-panel-dark relative overflow-hidden p-6">
           <div
             aria-hidden="true"

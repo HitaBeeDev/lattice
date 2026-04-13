@@ -5,7 +5,7 @@ type StatCardProps = {
   label: string;
   value: string | number;
   suffix?: string;
-  note: string;
+  note?: string;
 };
 
 function StatCard({ icon, label, value, suffix, note }: StatCardProps) {
@@ -27,7 +27,7 @@ function StatCard({ icon, label, value, suffix, note }: StatCardProps) {
           {icon}
         </span>
       </div>
-      <p className="relative text-sm leading-6 text-slate-600">{note}</p>
+      {note ? <p className="relative text-sm text-slate-600">{note}</p> : null}
     </article>
   );
 }
@@ -57,22 +57,22 @@ export default function DashboardStats({
     <section className="grid gap-4 sm:grid-cols-3">
       <StatCard
         icon={taskIcon}
-        label="Tasks Completed Today"
+        label="Tasks"
         value={completedTasks}
         suffix={`/ ${totalTasks}`}
-        note={totalTasks === 0 ? "No tasks scheduled for today" : `${totalTasks - completedTasks} remaining`}
+        note={totalTasks === 0 ? "Nothing scheduled" : `${totalTasks - completedTasks} left`}
       />
       <StatCard
         icon={focusIcon}
-        label="Focus Time Today"
+        label="Focus"
         value={focusTime}
-        note={`${completedPomodoros} ${completedPomodoros === 1 ? "pomodoro" : "pomodoros"} completed`}
+        note={`${completedPomodoros} ${completedPomodoros === 1 ? "session" : "sessions"}`}
       />
       <StatCard
         icon={streakIcon}
-        label="Current Streak"
+        label="Streak"
         value={`${currentStreak} ${currentStreak === 1 ? "Day" : "Days"}`}
-        note={currentStreak > 0 ? "Keep it up!" : "Start your streak today"}
+        note={currentStreak > 0 ? "Active" : "Start today"}
       />
     </section>
   );

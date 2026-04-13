@@ -1,5 +1,5 @@
 
-# NexStep: Enhanced React Productivity Dashboard: Habit Tracker, To-Do List & Pomodoro Timer
+# Lattice: Enhanced React Productivity Dashboard: Habit Tracker, To-Do List & Pomodoro Timer
 
 Enhanced React Productivity Dashboard combines a Habit Tracker, To-Do List, and Pomodoro Timer into a single, streamlined application. Designed for efficiency and ease of use, it's the perfect tool for anyone looking to improve their productivity and focus. 
 
@@ -40,11 +40,11 @@ Enhanced React Productivity Dashboard combines a Habit Tracker, To-Do List, and 
   
 ## Installation
 
-To get started with NexStep:
+To get started with Lattice:
 
 ```bash
 git clone https://github.com/HitaBeeDev/wellNest.git
-cd NexStep
+cd Lattice
 npm install
 ```
     

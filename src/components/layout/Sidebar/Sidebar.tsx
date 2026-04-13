@@ -9,6 +9,12 @@ type SidebarProps = {
 };
 
 const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+  const handleMobileNavigate = () => {
+    if (window.innerWidth < 1024) {
+      setIsOpen(false);
+    }
+  };
+
   return (
     <aside
       aria-label="Sidebar"
@@ -47,7 +53,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                 <Sparkles aria-hidden="true" className="h-5 w-5" />
               </span>
               <span className="text-left">
-                <span className="block text-base font-semibold">NexStep</span>
+                <span className="block text-base font-semibold">Lattice</span>
                 <span className="block text-xs uppercase tracking-[0.22em] text-white/80">
                   Productive OS
                 </span>
@@ -83,7 +89,11 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           id="primary-sidebar-navigation"
           role="navigation"
         >
-          <NavList navItems={mainNavItems} isOpen={isOpen} />
+          <NavList
+            navItems={mainNavItems}
+            isOpen={isOpen}
+            onNavigate={handleMobileNavigate}
+          />
         </nav>
       </div>
     </aside>

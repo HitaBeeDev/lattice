@@ -5,9 +5,9 @@ type GreetingSectionProps = {
 
 export function GreetingSection({ message, title }: GreetingSectionProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <p className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">{title}</p>
-      <p className="max-w-xl text-sm leading-6 text-white/85 sm:text-base">{message}</p>
+      <p className="max-w-lg text-sm text-white/80 sm:text-base">{message}</p>
     </div>
   );
 }
@@ -27,11 +27,9 @@ export function DateTimeSection({
 }: DateTimeSectionProps) {
   return (
     <div className="flex h-full flex-col justify-between gap-10">
-      <div>
-        <p className="text-sm text-white/85">
-          Oh hey, it&apos;s <span className="font-semibold text-white">{dayOfWeek}</span> already!
-        </p>
-        <p className="mt-1 text-sm text-white/80">{currentDate}</p>
+      <div className="space-y-1">
+        <p className="text-xs uppercase tracking-[0.22em] text-white/45">{dayOfWeek}</p>
+        <p className="text-sm text-white/80">{currentDate}</p>
       </div>
 
       <div>
@@ -52,7 +50,7 @@ type QuoteSectionProps = {
 export function QuoteSection({ quote }: QuoteSectionProps) {
   return (
     <div className="border-t border-white/10 pt-4">
-      <p className="text-sm italic leading-6 text-white/85">&quot;{quote}&quot;</p>
+      <p className="text-sm italic text-white/85">&quot;{quote}&quot;</p>
     </div>
   );
 }

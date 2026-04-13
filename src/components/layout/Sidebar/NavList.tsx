@@ -6,9 +6,10 @@ import type { NavItem } from "./navData";
 type NavListProps = {
   navItems: NavItem[];
   isOpen: boolean;
+  onNavigate?: () => void;
 };
 
-const NavList = ({ navItems, isOpen }: NavListProps) => {
+const NavList = ({ navItems, isOpen, onNavigate }: NavListProps) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -27,6 +28,7 @@ const NavList = ({ navItems, isOpen }: NavListProps) => {
 
     event.preventDefault();
     navigate(path);
+    onNavigate?.();
   };
 
   return (
@@ -51,6 +53,7 @@ const NavList = ({ navItems, isOpen }: NavListProps) => {
                 )
               }
               end
+              onClick={() => onNavigate?.()}
               onKeyDown={(event) => handleKeyDown(event, item.path)}
               to={item.path}
             >

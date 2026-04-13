@@ -5,7 +5,7 @@ export default function SummaryStats() {
   const { percentages, quoteIndex, weekDates } = useHabits();
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.9fr)]">
+    <section className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.9fr)]">
       <article className="app-card">
         <div className="mb-5">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">

@@ -27,30 +27,29 @@ export default function WelcomeBanner() {
 
   return (
     <div className="app-card">
-      <div className="space-y-3">
-        <div className="app-pill">Habit system</div>
-        <p className="text-3xl font-semibold tracking-[-0.04em] text-slate-950">
-          Build repeatable momentum.
-        </p>
-        <p className="max-w-2xl text-sm leading-6 text-slate-600">
-          Keep the weekly grid simple, visible, and satisfying enough that checking in becomes automatic.
-        </p>
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <div>
+          <div className="app-pill">Habits</div>
+          <p className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-slate-950">
+            Quick add
+          </p>
+        </div>
+        <p className="text-sm text-slate-500">{habits.length}</p>
       </div>
 
-      <form className="mt-6 flex flex-col gap-3 lg:flex-row lg:items-start" onSubmit={handleSubmit(onSubmit)}>
+      <form className="flex flex-col gap-3 sm:flex-row sm:items-start" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex-1">
-          <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="new-habit-name">
-            Habit name
-          </label>
           <Input
             error={errors.name?.message}
             id="new-habit-name"
-            placeholder="Add a new habit..."
+            placeholder="Habit name"
             type="text"
             {...register("name")}
           />
         </div>
-        <Button type="submit">Add Habit</Button>
+        <Button className="sm:min-w-[8.5rem]" type="submit">
+          Add habit
+        </Button>
       </form>
     </div>
   );

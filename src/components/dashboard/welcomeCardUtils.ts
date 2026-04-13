@@ -7,28 +7,28 @@ export function getGreetingContent(date: Date) {
 
   if (hour < MORNING_END_HOUR) {
     return {
-      title: "Rise and shine!",
-      message: "Today's a blank page, let's fill it with color!",
+      title: "Morning reset",
+      message: "Start clean. Protect your best hour.",
     };
   }
 
   if (hour < AFTERNOON_END_HOUR) {
     return {
-      title: "Warm wishes for the afternoon!",
-      message: "You're doing great, keep the momentum going!",
+      title: "Afternoon push",
+      message: "Stay narrow. Finish what matters most.",
     };
   }
 
   if (hour < EVENING_END_HOUR) {
     return {
-      title: "Embrace the evening's calm!",
-      message: "Reflect on the day's wins and relax, you've earned it.",
+      title: "Evening review",
+      message: "Close loops. Keep tomorrow lighter.",
     };
   }
 
   return {
-    title: "Enough working!",
-    message: "Time to rest and recharge for another day ahead.",
+    title: "Day complete",
+    message: "Power down and reset for tomorrow.",
   };
 }
 
