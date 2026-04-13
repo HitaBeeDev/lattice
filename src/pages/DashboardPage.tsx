@@ -8,15 +8,12 @@ import {
   AlarmClock,
   ArrowUpRight,
   Check,
-  ChevronDown,
-  ChevronUp,
   Flame,
   Pause,
   Play,
   Plus,
   RotateCcw,
 } from "lucide-react";
-import { useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import AddModal from "../components/tasks/AddModal";
 import {
@@ -30,7 +27,6 @@ const TODAY_KEY = new Date().toISOString().slice(0, 10);
 const FOCUS_GOAL_MINUTES = 120;
 const MAX_DAILY_HABITS = 5;
 const MAX_HOME_TASKS = 8;
-const DASHBOARD_CANVAS_WIDTH = 1280;
 const PANEL_CLASS =
   "rounded-[2rem] border border-white/80 bg-[rgba(255,255,255,0.68)] p-6 shadow-[0_12px_40px_rgba(6,182,212,0.13)] backdrop-blur-xl";
 const DARK_PANEL_CLASS =
@@ -51,7 +47,6 @@ function DashboardPage() {
 
   const {
     habits,
-    toggleDayMark,
     percentages,
     weekDates,
   } = useHabits();
@@ -69,12 +64,6 @@ function DashboardPage() {
     strokeDashoffset,
     radius,
   } = useTimeTracker();
-
-  const [expandedHabitId, setExpandedHabitId] = useState<string | null>(null);
-  const viewportRef = useRef<HTMLElement | null>(null);
-  const contentRef = useRef<HTMLDivElement | null>(null);
-  const [dashboardScale, setDashboardScale] = useState(1);
-  const [scaledHeight, setScaledHeight] = useState<number | null>(null);
 
   const today = new Date();
   const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
@@ -120,65 +109,11 @@ function DashboardPage() {
   const timerDisplay = `${timerMins}:${timerSecs}`;
   const weeklyGoalAverage = Math.round((habitPct + taskPct + focusPct) / 3);
 
-  useLayoutEffect(() => {
-    const viewport = viewportRef.current;
-    const content = contentRef.current;
-
-    if (!viewport || !content) {
-      return;
-    }
-
-    const updateScale = () => {
-      const availableWidth = viewport.clientWidth;
-      const availableHeight = viewport.clientHeight;
-      const naturalHeight = content.scrollHeight;
-
-      if (!availableWidth || !availableHeight || !naturalHeight) {
-        return;
-      }
-
-      const nextScale = Math.min(
-        availableWidth / DASHBOARD_CANVAS_WIDTH,
-        availableHeight / naturalHeight,
-        1
-      );
-
-      setDashboardScale(nextScale);
-      setScaledHeight(naturalHeight * nextScale);
-    };
-
-    const resizeObserver = new ResizeObserver(updateScale);
-    resizeObserver.observe(viewport);
-    resizeObserver.observe(content);
-    updateScale();
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
   return (
-    <main
-      ref={viewportRef}
-      className="h-full overflow-hidden"
-      id="main-content"
-      tabIndex={-1}
-    >
-      <div
-        className="mx-auto flex h-full w-full items-start justify-center overflow-hidden"
-        style={{ height: scaledHeight ? `${scaledHeight}px` : "100%" }}
-      >
-        <div
-          ref={contentRef}
-          className="space-y-4"
-          style={{
-            transform: `scale(${dashboardScale})`,
-            transformOrigin: "top center",
-            width: `${DASHBOARD_CANVAS_WIDTH}px`,
-          }}
-        >
+    <main className="h-full overflow-hidden" id="main-content" tabIndex={-1}>
+      <div className="min-w-[1280px] space-y-4">
           {/* ── Row 1: Welcome + Stats ───────────────────────────────────────── */}
-          <div className="flex items-start justify-between pt-2">
+          <div className="flex items-start justify-between">
         {/* Left: welcome + stat pills */}
         <div>
           <h1 className={`text-[2.6rem] font-bold leading-none tracking-tight ${PRIMARY_TEXT_CLASS}`}>
@@ -594,116 +529,119 @@ function DashboardPage() {
         </div>
           </div>
 
-          {/* ── Row 3: Habits accordion (full-width) ─────────────────────────── */}
+          {/*
+            Row 3: Daily habit check-in card
+            Removed for now to keep the homepage within the viewport without a scrollbar.
+
           <div className={PANEL_CLASS}>
-        <div className="mb-3 flex items-center justify-between">
-          <div>
-            <p className={`text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}>
-              Daily
-            </p>
-            <h2 className={`mt-0.5 text-base font-bold ${PRIMARY_TEXT_CLASS}`}>
-              Habit Check-in
-            </h2>
-          </div>
-          <Link
-            className="text-xs font-semibold text-[#06b6d4] transition-colors hover:text-[#0a1929]"
-            to="/habit-tracker"
-          >
-            All habits →
-          </Link>
-        </div>
-
-        {dailyHabits.length === 0 ? (
-          <div className="flex h-20 items-center justify-center">
-            <p className={`text-sm ${MUTED_TEXT_CLASS}`}>
-              No habits yet —{" "}
-              <Link className="text-[#06b6d4]" to="/habit-tracker">
-                add some
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <p className={`text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}>
+                  Daily
+                </p>
+                <h2 className={`mt-0.5 text-base font-bold ${PRIMARY_TEXT_CLASS}`}>
+                  Habit Check-in
+                </h2>
+              </div>
+              <Link
+                className="text-xs font-semibold text-[#06b6d4] transition-colors hover:text-[#0a1929]"
+                to="/habit-tracker"
+              >
+                All habits →
               </Link>
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-x-6 divide-y divide-[rgba(6,182,212,0.14)]/40 lg:grid-cols-3 xl:grid-cols-5">
-            {dailyHabits.map((habit, index) => {
-              const isExpanded = expandedHabitId === habit.id;
-              const streakCount = habit.days.filter(Boolean).length;
-              const isDoneToday = Boolean(habit.days[todayIndex]);
+            </div>
 
-              return (
-                <div key={habit.id} className="col-span-1">
-                  <button
-                    className="flex w-full items-center justify-between py-3 text-left"
-                    onClick={() =>
-                      setExpandedHabitId(isExpanded ? null : habit.id)
-                    }
-                    type="button"
-                  >
-                    <div className="flex min-w-0 items-center gap-2">
-                      <span
-                        className={`h-2 w-2 flex-shrink-0 rounded-full ${
-                          isDoneToday ? "bg-[#06b6d4]" : "bg-[rgba(6,182,212,0.14)]"
-                        }`}
-                      />
-                      <span className={`truncate text-sm font-medium ${PRIMARY_TEXT_CLASS}`}>
-                        {habit.name}
-                      </span>
-                    </div>
-                    {isExpanded ? (
-                      <ChevronUp
-                        aria-hidden="true"
-                        className={`ml-2 h-3.5 w-3.5 flex-shrink-0 ${MUTED_TEXT_CLASS}`}
-                      />
-                    ) : (
-                      <ChevronDown
-                        aria-hidden="true"
-                        className={`ml-2 h-3.5 w-3.5 flex-shrink-0 ${MUTED_TEXT_CLASS}`}
-                      />
-                    )}
-                  </button>
+            {dailyHabits.length === 0 ? (
+              <div className="flex h-20 items-center justify-center">
+                <p className={`text-sm ${MUTED_TEXT_CLASS}`}>
+                  No habits yet —{" "}
+                  <Link className="text-[#06b6d4]" to="/habit-tracker">
+                    add some
+                  </Link>
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-x-6 divide-y divide-[rgba(6,182,212,0.14)]/40 lg:grid-cols-3 xl:grid-cols-5">
+                {dailyHabits.map((habit, index) => {
+                  const isExpanded = expandedHabitId === habit.id;
+                  const streakCount = habit.days.filter(Boolean).length;
+                  const isDoneToday = Boolean(habit.days[todayIndex]);
 
-                  {isExpanded && (
-                    <div className="pb-3 pl-4">
-                      <div className="mb-2 flex items-center justify-between">
-                        <div className="flex gap-0.5">
-                          {habit.days.map((done, di) => (
-                            <span
-                              key={di}
-                              className={`h-2 w-2 rounded-full ${
-                                done ? "bg-[#06b6d4]" : "bg-[rgba(6,182,212,0.14)]"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className={`flex items-center gap-1 text-xs ${MUTED_TEXT_CLASS}`}>
-                          <Flame
-                            aria-hidden="true"
-                            className="h-3 w-3 text-orange-400"
-                          />
-                          {streakCount}d
-                        </span>
-                      </div>
+                  return (
+                    <div key={habit.id} className="col-span-1">
                       <button
-                        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
-                          isDoneToday
-                            ? "bg-[#06b6d4]/10 text-[#06b6d4]"
-                            : "bg-[#0a1929] text-white"
-                        }`}
-                        onClick={() => toggleDayMark(index, todayIndex)}
+                        className="flex w-full items-center justify-between py-3 text-left"
+                        onClick={() =>
+                          setExpandedHabitId(isExpanded ? null : habit.id)
+                        }
                         type="button"
                       >
-                        {isDoneToday ? "✓ Done today" : "Mark today"}
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span
+                            className={`h-2 w-2 flex-shrink-0 rounded-full ${
+                              isDoneToday ? "bg-[#06b6d4]" : "bg-[rgba(6,182,212,0.14)]"
+                            }`}
+                          />
+                          <span className={`truncate text-sm font-medium ${PRIMARY_TEXT_CLASS}`}>
+                            {habit.name}
+                          </span>
+                        </div>
+                        {isExpanded ? (
+                          <ChevronUp
+                            aria-hidden="true"
+                            className={`ml-2 h-3.5 w-3.5 flex-shrink-0 ${MUTED_TEXT_CLASS}`}
+                          />
+                        ) : (
+                          <ChevronDown
+                            aria-hidden="true"
+                            className={`ml-2 h-3.5 w-3.5 flex-shrink-0 ${MUTED_TEXT_CLASS}`}
+                          />
+                        )}
                       </button>
+
+                      {isExpanded && (
+                        <div className="pb-3 pl-4">
+                          <div className="mb-2 flex items-center justify-between">
+                            <div className="flex gap-0.5">
+                              {habit.days.map((done, di) => (
+                                <span
+                                  key={di}
+                                  className={`h-2 w-2 rounded-full ${
+                                    done ? "bg-[#06b6d4]" : "bg-[rgba(6,182,212,0.14)]"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className={`flex items-center gap-1 text-xs ${MUTED_TEXT_CLASS}`}>
+                              <Flame
+                                aria-hidden="true"
+                                className="h-3 w-3 text-orange-400"
+                              />
+                              {streakCount}d
+                            </span>
+                          </div>
+                          <button
+                            className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                              isDoneToday
+                                ? "bg-[#06b6d4]/10 text-[#06b6d4]"
+                                : "bg-[#0a1929] text-white"
+                            }`}
+                            onClick={() => toggleDayMark(index, todayIndex)}
+                            type="button"
+                          >
+                            {isDoneToday ? "✓ Done today" : "Mark today"}
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
-          </div>
+          */}
 
           {showModal && <AddModal />}
-        </div>
       </div>
     </main>
   );
