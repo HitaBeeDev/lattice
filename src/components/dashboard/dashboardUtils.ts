@@ -23,10 +23,10 @@ export function formatDuration(seconds: number) {
   return `${minutes}m`;
 }
 
-export function calculateCurrentStreak(percentages: number[]) {
+export function calculateCurrentStreak(percentages: number[], todayIndex: number) {
   let streak = 0;
 
-  for (let index = percentages.length - 1; index >= 0; index -= 1) {
+  for (let index = todayIndex; index >= 0; index -= 1) {
     if (percentages[index] <= 0) {
       break;
     }

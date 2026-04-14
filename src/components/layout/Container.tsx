@@ -14,8 +14,8 @@ function Container({ children }: ContainerProps) {
     <div
       className={
         isDashboardRoute
-          ? "flex h-[100dvh] flex-col gap-10 overflow-hidden p-10"
-          : "flex min-h-screen flex-col gap-10 p-10"
+          ? "flex h-[100dvh] flex-col overflow-hidden p-8"
+          : "flex min-h-screen flex-col"
       }
     >
       <a

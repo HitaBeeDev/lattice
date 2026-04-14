@@ -13,6 +13,7 @@ import {
 import { Link } from "react-router-dom";
 import AddModal from "../components/tasks/AddModal";
 import { calculateCurrentStreak } from "../components/dashboard/dashboardUtils";
+import StatsBar from "../components/dashboard/StatsBar";
 import { useHabits } from "../context/HabitContext";
 import { useTasks } from "../context/TasksContext";
 import { useTimeTracker } from "../context/TimeTrackerContext";
@@ -63,7 +64,7 @@ function DashboardPage() {
   const completedHabitsToday = dailyHabits.filter((h) =>
     Boolean(h.days[todayIndex]),
   ).length;
-  const currentStreak = calculateCurrentStreak(percentages);
+  const currentStreak = calculateCurrentStreak(percentages, todayIndex);
   const focusMinutes = Math.round(todayFocusSeconds / 60);
   const focusHours = (focusMinutes / 60).toFixed(1);
 
@@ -95,17 +96,34 @@ function DashboardPage() {
     .padStart(2, "0");
   const timerSecs = (totalSeconds % 60).toString().padStart(2, "0");
   const timerDisplay = `${timerMins}:${timerSecs}`;
-  const weeklyGoalAverage = Math.round((habitPct + taskPct + focusPct) / 3);
+  const weeklyGoalAverage = 28;
 
   // #6F757B
+  // #72e1ee
 
   return (
     <main className="h-full overflow-hidden" id="main-content" tabIndex={-1}>
-      <div className="min-w-[1280px] space-y-4">
+      <div className="min-w-[1280px]">
         {/* Row 1: Welcome Section */}
-        <div>
-          <p>Welcome in, {mockUser.name}</p>
+        <div className="mt-2">
+          <p className="font-['Inter'] font-[300] text-[2.1rem] text-[#060a0f]">
+            Welcome in, {mockUser.name}
+          </p>
         </div>
+
+        {/* Stats Bar */}
+        <StatsBar
+          completedTodayTasks={completedTodayTasks}
+          totalTodayTasks={totalTodayTasks}
+          completedHabitsToday={completedHabitsToday}
+          totalDailyHabits={dailyHabits.length}
+          habitPct={habitPct}
+          focusMinutes={focusMinutes}
+          weeklyGoalAverage={weeklyGoalAverage}
+          currentStreak={currentStreak}
+          totalHabits={habits.length}
+          completedPomodoros={completedPomodoros}
+        />
       </div>
     </main>
   );

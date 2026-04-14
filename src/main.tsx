@@ -9,6 +9,14 @@ import DashboardPage from "./pages/DashboardPage";
 import HabitTrackerPage from "./pages/HabitTrackerPage";
 import ToDoListPage from "./pages/ToDoListPage";
 import PomodoroPage from "./pages/PomodoroPage";
+// Clear stale timer analytics once so the mock defaults in mockData.ts take effect.
+// Bump the version string whenever mockTimerAnalytics changes.
+const ANALYTICS_RESET_VERSION = "nexstep:analytics-reset:v1";
+if (localStorage.getItem(ANALYTICS_RESET_VERSION) !== "true") {
+  localStorage.removeItem("timer-session-analytics");
+  localStorage.setItem(ANALYTICS_RESET_VERSION, "true");
+}
+
 const rootElement = document.getElementById("root");
 if (!rootElement) {
     throw new Error("Root element #root was not found.");

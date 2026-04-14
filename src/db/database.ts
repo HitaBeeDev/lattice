@@ -212,31 +212,26 @@ export async function migrateLocalStorageData(): Promise<void> {
   localStorage.setItem(LEGACY_MIGRATION_KEY, "true");
 }
 
-const MOCK_SEED_KEY = "nexstep:mock-seeded:v1";
+// Bump this version string whenever the mock data changes — it clears
+// the old data and re-seeds so the UI always reflects the latest mock.
+const MOCK_SEED_VERSION = "nexstep:mock-seeded:v2";
 
 export async function seedMockData(): Promise<void> {
   if (typeof window === "undefined") {
     return;
   }
 
-  if (localStorage.getItem(MOCK_SEED_KEY) === "true") {
-    return;
-  }
-
-  const [habitCount, taskCount] = await Promise.all([
-    db.habits.count(),
-    db.tasks.count(),
-  ]);
-
-  if (habitCount > 0 || taskCount > 0) {
-    localStorage.setItem(MOCK_SEED_KEY, "true");
+  if (localStorage.getItem(MOCK_SEED_VERSION) === "true") {
     return;
   }
 
   await db.transaction("rw", db.habits, db.tasks, async () => {
+    await db.habits.clear();
+    await db.tasks.clear();
     await db.habits.bulkPut(mockHabits);
     await db.tasks.bulkPut(mockTasks);
   });
 
-  localStorage.setItem(MOCK_SEED_KEY, "true");
+  localStorage.setItem(MOCK_SEED_VERSION, "true");
 }
+

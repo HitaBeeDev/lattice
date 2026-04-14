@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import articles from "../components/pomodoro/articles";
 import type { TimerAnalytics, TimerSessionHistoryEntry } from "../types/pomodoro";
+import { mockTimerAnalytics } from "../lib/mockData";
 import usePersistentState from "./usePersistentState";
 import { useRandomIndex } from "./useRandomIndex";
 
@@ -80,13 +81,6 @@ const createInitialTimerState = (): PersistedTimerState => ({
   runStartedRemainingSeconds: null,
 });
 
-const EMPTY_ANALYTICS: TimerAnalytics = {
-  sessionHistory: [],
-  dailyFocusSeconds: {},
-  completedPomodoros: 0,
-  shortBreakCount: 0,
-  longBreakCount: 0,
-};
 
 const buildProjectRemainingTimes = (
   projectRemainingTimes: Record<string, number>,
@@ -117,7 +111,7 @@ export function useTimer(): TimeTrackerContextValue {
   );
   const [analytics, setAnalytics] = usePersistentState<TimerAnalytics>(
     TIMER_ANALYTICS_STORAGE_KEY,
-    EMPTY_ANALYTICS
+    mockTimerAnalytics
   );
   const [timerId, setTimerId] = useState<ReturnType<typeof setInterval> | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);

@@ -1,12 +1,25 @@
 import type { Habit } from "../types/habit";
 import type { Task } from "../types/task";
+import type { TimerAnalytics } from "../types/pomodoro";
 
 // Today: 2026-04-14 (Tuesday). Week: Mon=0 … Sun=6, so today = index 1.
 // days[i] = true  → habit was completed on that day this week
 // days[i] = false → not completed
 
 export const mockUser = {
-  name: "Anahita",
+  name: "Layla",
+};
+
+const TODAY = new Date().toISOString().slice(0, 10);
+
+export const mockTimerAnalytics: TimerAnalytics = {
+  completedPomodoros: 12,
+  shortBreakCount: 8,
+  longBreakCount: 3,
+  sessionHistory: [],
+  dailyFocusSeconds: {
+    [TODAY]: 5400, // 90 minutes today
+  },
 };
 
 export const mockHabits: Habit[] = [
