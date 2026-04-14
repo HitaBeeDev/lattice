@@ -1,113 +1,154 @@
-import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts";
-import { mockUser } from "../lib/mockUser";
-import {
-  AlarmClock,
-  ArrowUpRight,
-  Check,
-  Flame,
-  Pause,
-  Play,
-  Plus,
-  RotateCcw,
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import AddModal from "../components/tasks/AddModal";
-import { calculateCurrentStreak } from "../components/dashboard/dashboardUtils";
+import { mockDashboardMonth } from "../lib/mockDashboardMonth";
+import { ArrowUpRight, Pause, Play } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import StatsBar from "../components/dashboard/StatsBar";
-import { useHabits } from "../context/HabitContext";
-import { useTasks } from "../context/TasksContext";
+import DashboardCalendar from "../components/dashboard/DashboardCalendar";
+import ProgressCard from "../components/dashboard/ProgressCard";
 import { useTimeTracker } from "../context/TimeTrackerContext";
+const WEEKLY_OUTPUT_TARGET_MINUTES = 3200;
 
-const TODAY_KEY = new Date().toISOString().slice(0, 10);
-const FOCUS_GOAL_MINUTES = 120;
-const MAX_DAILY_HABITS = 5;
-const MAX_HOME_TASKS = 8;
-const PANEL_CLASS =
-  "rounded-[2rem] border border-white/80 bg-[rgba(255,255,255,0.68)] p-6 shadow-[0_12px_40px_rgba(6,182,212,0.13)] backdrop-blur-xl";
-const DARK_PANEL_CLASS =
-  "relative row-span-2 flex min-h-[340px] flex-col justify-between overflow-hidden rounded-[2rem] border border-[rgba(6,182,212,0.18)] bg-[radial-gradient(circle_at_top,rgba(6,182,212,0.14),transparent_38%),linear-gradient(160deg,#0d1f30_0%,#152a3e_100%)] p-6 text-white shadow-[0_24px_80px_rgba(0,0,0,0.32)]";
-const MUTED_TEXT_CLASS = "text-[#4a6b82]";
-const PRIMARY_TEXT_CLASS = "text-[#0a1929]";
-const BORDER_CLASS = "border-[rgba(6,182,212,0.14)]";
-const ICON_LINK_CLASS = "text-[#4a6b82] transition-colors hover:text-[#0a1929]";
-const OUTLINE_ICON_BUTTON_CLASS =
-  "flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(6,182,212,0.14)] bg-white/60 text-[#4a6b82] transition-colors hover:text-[#0a1929]";
+const formatFocusLabel = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (hours === 0) {
+    return `${remainingMinutes}m`;
+  }
+
+  if (remainingMinutes === 0) {
+    return `${hours}h`;
+  }
+
+  return `${hours}h ${remainingMinutes}m`;
+};
+
+const calculateHabitStreak = (completionDays: boolean[]): number => {
+  let streak = 0;
+
+  for (let index = completionDays.length - 1; index >= 0; index -= 1) {
+    if (!completionDays[index]) {
+      break;
+    }
+
+    streak += 1;
+  }
+
+  return streak;
+};
+
+const SESSION_TYPE_LABELS: Record<string, string> = {
+  Pomodoro: "Work time",
+  ShortBreak: "Short break",
+  LongBreak: "Long break",
+};
+
+const getLocalIsoDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
 
 function DashboardPage() {
-  const { groupedTasks, handleAddButtonClick, showModal } = useTasks();
-
-  const { habits, percentages, weekDates } = useHabits();
-
+  const navigate = useNavigate();
   const {
-    completedPomodoros,
-    todayFocusSeconds,
-    dailyFocusSeconds,
-    totalSeconds,
+    totalSeconds: liveTimerSeconds,
+    maxSeconds: liveTimerMax,
     isTimerActive,
+    sessionType,
     handleStart,
     handlePause,
-    handleReset,
-    circumference,
-    strokeDashoffset,
-    radius,
   } = useTimeTracker();
 
-  const today = new Date();
-  const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
+  const liveTimerMinutes = Math.floor(liveTimerSeconds / 60);
+  const liveTimerSecs = liveTimerSeconds % 60;
+  const liveTimerDisplay = `${liveTimerMinutes}:${String(liveTimerSecs).padStart(2, "0")}`;
+  const liveTimerRadius = 44;
+  const liveTimerCircumference = 2 * Math.PI * liveTimerRadius;
+  const liveTimerStrokeOffset =
+    liveTimerMax === 0
+      ? 0
+      : (1 - liveTimerSeconds / liveTimerMax) * liveTimerCircumference;
+  const sessionLabel = SESSION_TYPE_LABELS[sessionType] ?? "Work time";
+  const realTodayDate = getLocalIsoDate(new Date());
 
-  const todayTasks = groupedTasks[TODAY_KEY] ?? [];
-  const completedTodayTasks = todayTasks.filter((t) => t.isCompleted).length;
-  const totalTodayTasks = todayTasks.length;
-  const allTodayTasks = todayTasks.slice(0, MAX_HOME_TASKS);
+  const activeWeek =
+    mockDashboardMonth.weeks.find((week) =>
+      week.days.some((day) => day.date === realTodayDate),
+    ) ?? mockDashboardMonth.weeks[mockDashboardMonth.weeks.length - 1];
+  const selectedDay =
+    activeWeek.days.find((day) => day.date === realTodayDate) ??
+    activeWeek.days[0];
 
-  const dailyHabits = habits.slice(0, MAX_DAILY_HABITS);
-  const completedHabitsToday = dailyHabits.filter((h) =>
-    Boolean(h.days[todayIndex]),
+  const totalTodayTasks = selectedDay.todos.length;
+  const completedTodayTasks = selectedDay.todos.filter(
+    (todo) => todo.done,
   ).length;
-  const currentStreak = calculateCurrentStreak(percentages, todayIndex);
-  const focusMinutes = Math.round(todayFocusSeconds / 60);
-  const focusHours = (focusMinutes / 60).toFixed(1);
-
-  const taskPct =
-    totalTodayTasks === 0
-      ? 0
-      : Math.round((completedTodayTasks / totalTodayTasks) * 100);
+  const completedHabitsToday = selectedDay.habits.filter(
+    (habit) => habit.completed,
+  ).length;
+  const totalDailyHabits = selectedDay.habits.length;
   const habitPct =
-    dailyHabits.length === 0
+    totalDailyHabits === 0
       ? 0
-      : Math.round((completedHabitsToday / dailyHabits.length) * 100);
-  const focusPct = Math.min(
-    Math.round((focusMinutes / FOCUS_GOAL_MINUTES) * 100),
-    100,
+      : Math.round((completedHabitsToday / totalDailyHabits) * 100);
+  const focusMinutes = selectedDay.focusTimeMinutes;
+  const sampleFocusHours = (focusMinutes / 60).toFixed(1);
+
+  const focusChartData = activeWeek.days.map((day) => {
+    const focusTimeMinutes = day.focusTimeMinutes;
+
+    return {
+      day: day.day.slice(0, 1),
+      focusMinutes: focusTimeMinutes,
+      label: formatFocusLabel(focusTimeMinutes),
+      isToday: day.date === selectedDay.date,
+      isMuted: focusTimeMinutes <= 70,
+    };
+  });
+  const weeklyFocusMinutes = activeWeek.days.reduce(
+    (total, day) => total + day.focusTimeMinutes,
+    0,
   );
-
-  const chartData = weekDates.map((date, index) => ({
-    day: ["S", "M", "T", "W", "T", "F", "S"][date.getDay()],
-    habits: percentages[index] ?? 0,
-    focus: Math.round(
-      (dailyFocusSeconds[date.toISOString().slice(0, 10)] ?? 0) / 60,
+  const weeklyGoalAverage = Math.round(
+    Math.min((weeklyFocusMinutes / WEEKLY_OUTPUT_TARGET_MINUTES) * 100, 100),
+  );
+  const uniqueHabitNames = new Set(
+    mockDashboardMonth.weeks.flatMap((week) =>
+      week.days.flatMap((day) => day.habits.map((habit) => habit.name)),
     ),
-  }));
-
-  const svgSize = (radius + 10) * 2;
-  const cx = svgSize / 2;
-  const timerMins = Math.floor(totalSeconds / 60)
-    .toString()
-    .padStart(2, "0");
-  const timerSecs = (totalSeconds % 60).toString().padStart(2, "0");
-  const timerDisplay = `${timerMins}:${timerSecs}`;
-  const weeklyGoalAverage = 28;
+  );
+  const completionDays = activeWeek.days.map((day) =>
+    day.habits.some((habit) => habit.completed),
+  );
+  const currentStreak = calculateHabitStreak(completionDays);
+  const completedPomodoros = Math.round(weeklyFocusMinutes / 25);
 
   // #6F757B
   // #72e1ee
+  // #f4f9fb
+
+  const handleCalendarCardNavigate = (): void => {
+    navigate("/tasks");
+  };
+
+  const handleCalendarCardKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+  ): void => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      navigate("/tasks");
+    }
+  };
 
   return (
     <main className="h-full overflow-hidden" id="main-content" tabIndex={-1}>
-      <div className="min-w-[1280px]">
+      <div className="h-full min-w-[1280px] flex flex-col">
         {/* Row 1: Welcome Section */}
         <div className="mt-2">
           <p className="font-['Inter'] font-[300] text-[2.1rem] text-[#060a0f]">
-            Welcome in, {mockUser.name}
+            Welcome in, {mockDashboardMonth.name}
           </p>
         </div>
 
@@ -116,14 +157,152 @@ function DashboardPage() {
           completedTodayTasks={completedTodayTasks}
           totalTodayTasks={totalTodayTasks}
           completedHabitsToday={completedHabitsToday}
-          totalDailyHabits={dailyHabits.length}
+          totalDailyHabits={totalDailyHabits}
           habitPct={habitPct}
           focusMinutes={focusMinutes}
           weeklyGoalAverage={weeklyGoalAverage}
           currentStreak={currentStreak}
-          totalHabits={habits.length}
+          totalHabits={uniqueHabitNames.size}
           completedPomodoros={completedPomodoros}
         />
+
+        {/* Content Grid */}
+        <div
+          className="grid flex-1 min-h-0 grid-cols-4 gap-3 mt-6"
+          style={{ gridTemplateRows: "repeat(4, minmax(0, 1fr))" }}
+        >
+          <ProgressCard
+            sampleFocusHours={sampleFocusHours}
+            focusChartData={focusChartData}
+          />
+
+          {/* Todos + Calendar view */}
+          <div
+            className="w-full h-full col-span-2 row-span-3 row-start-1 rounded-[1.2rem] bg-[#cee2e9]/40 p-5 cursor-pointer transition-colors duration-200 hover:bg-[#cee2e9]/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0a1929]/20"
+            role="link"
+            tabIndex={0}
+            aria-label="Open tasks page"
+            onClick={handleCalendarCardNavigate}
+            onKeyDown={handleCalendarCardKeyDown}
+          >
+            <DashboardCalendar
+              activeWeek={activeWeek}
+              weeks={mockDashboardMonth.weeks}
+              todayDate={realTodayDate}
+              multiDayTasks={[]}
+              maxMultiDayRows={0}
+            />
+          </div>
+
+          <div className="w-full h-full col-span-1 col-start-4 row-span-4 row-start-1 rounded-[1.2rem] bg-[#cee2e9]/40">
+            x
+          </div>
+
+          {/* Time Tracker Card */}
+          <div className="col-span-1 col-start-1 row-span-2 row-start-3 flex h-full w-full flex-col rounded-[1.2rem] bg-[#cee2e9]/40 p-5">
+            <div className="flex flex-row items-start justify-between">
+              <p className="text-[0.85rem] mt-2 leading-none font-[400] text-[#3d454b]">
+                Time Tracker
+              </p>
+
+              <Link
+                to="/pomodoro"
+                className="cursor-pointer rounded-full bg-white p-[0.4rem] transition-all duration-300
+               hover:bg-[#f4f5f5]"
+                aria-label="Open Pomodoro page"
+              >
+                <ArrowUpRight
+                  className="h-6 w-6 text-[#0a1929]"
+                  strokeWidth={1.25}
+                />
+              </Link>
+            </div>
+
+            <div className="flex flex-1 items-center justify-center">
+              <div className="relative h-[10.5rem] w-[10.5rem] pointer-events-none">
+                {/* SVG BACKGROUND */}
+                <svg
+                  viewBox="0 0 140 140"
+                  className="absolute inset-0 w-full h-full -rotate-90"
+                  aria-label={`${sessionLabel} — ${liveTimerDisplay} remaining`}
+                >
+                  {/* OUTER DASH */}
+                  <circle
+                    cx="70"
+                    cy="70"
+                    r={liveTimerRadius + 3}
+                    fill="none"
+                    stroke="#a0a6ab"
+                    strokeWidth="0.5"
+                    strokeDasharray="4 4"
+                  />
+
+                  {/* INNER DASH */}
+                  <circle
+                    cx="70"
+                    cy="70"
+                    r={liveTimerRadius - 3}
+                    fill="none"
+                    stroke="#a0a6ab"
+                    strokeWidth="0.5"
+                    strokeDasharray="4 4"
+                  />
+
+                  <circle
+                    cx="70"
+                    cy="70"
+                    r={liveTimerRadius}
+                    fill="none"
+                    stroke="#72e1ee"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={liveTimerCircumference}
+                    strokeDashoffset={liveTimerStrokeOffset}
+                  />
+                </svg>
+
+                {/* CENTER TEXT */}
+                <div className="relative z-10 flex h-full flex-col items-center justify-center text-center">
+                  <p className="text-[2.4rem] font-light leading-none tracking-[-0.04em] text-[#161c22]">
+                    {liveTimerDisplay}
+                  </p>
+
+                  <p className="mt-1.5 text-[0.65rem] leading-none text-[#6f757b]">
+                    {sessionLabel}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-row items-center justify-between mt-auto">
+              <div className="flex flex-row items-center gap-2">
+                <button
+                  type="button"
+                  onClick={isTimerActive ? undefined : handleStart}
+                  aria-label={isTimerActive ? "Timer running" : "Start timer"}
+                  className="cursor-pointer rounded-full bg-white p-[0.65rem] text-[#0a1929] transition-all duration-300 hover:bg-[#f4f5f5] disabled:opacity-50"
+                  disabled={isTimerActive}
+                >
+                  <Play className="w-4 h-4" strokeWidth={1.25} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handlePause}
+                  aria-label="Pause timer"
+                  className="cursor-pointer rounded-full bg-white p-[0.65rem] text-[#0a1929] transition-all duration-300 hover:bg-[#f4f5f5] disabled:opacity-50"
+                  disabled={!isTimerActive}
+                >
+                  <Pause className="w-4 h-4" strokeWidth={1.25} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full h-full col-span-2 row-span-1 row-start-4 rounded-[1.2rem] bg-[#cee2e9]/40">
+            z
+          </div>
+        </div>
       </div>
     </main>
   );

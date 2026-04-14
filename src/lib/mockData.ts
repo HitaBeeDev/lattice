@@ -10,16 +10,31 @@ export const mockUser = {
   name: "Layla",
 };
 
-const TODAY = new Date().toISOString().slice(0, 10);
+const buildCurrentWeekFocusSeconds = (): Record<string, number> => {
+  const today = new Date();
+  const currentDay = today.getDay();
+  const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + mondayOffset);
+
+  const focusHours = [1.1, 6.1, 5.4, 4.6, 5.8, 5.4, 1.2];
+
+  return Object.fromEntries(
+    focusHours.map((hours, index) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + index);
+
+      return [date.toISOString().slice(0, 10), Math.round(hours * 3600)];
+    }),
+  );
+};
 
 export const mockTimerAnalytics: TimerAnalytics = {
   completedPomodoros: 12,
   shortBreakCount: 8,
   longBreakCount: 3,
   sessionHistory: [],
-  dailyFocusSeconds: {
-    [TODAY]: 5400, // 90 minutes today
-  },
+  dailyFocusSeconds: buildCurrentWeekFocusSeconds(),
 };
 
 export const mockHabits: Habit[] = [

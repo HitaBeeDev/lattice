@@ -37,7 +37,6 @@ function DashboardPage() {
   const { habits, percentages, weekDates } = useHabits();
 
   const {
-    completedPomodoros,
     todayFocusSeconds,
     dailyFocusSeconds,
     totalSeconds,
@@ -99,102 +98,6 @@ function DashboardPage() {
   return (
     <main className="h-full overflow-hidden" id="main-content" tabIndex={-1}>
       <div className="min-w-[1280px] space-y-4">
-        {/* ── Row 1: Welcome + Stats ───────────────────────────────────────── */}
-        <div className="flex items-start justify-between">
-          {/* Left: welcome + stat pills */}
-          <div>
-            <h1
-              className={`text-[2.6rem] font-bold leading-none tracking-tight ${PRIMARY_TEXT_CLASS}`}
-            >
-              Welcome in, Alex
-            </h1>
-
-            <div className="flex flex-wrap items-center gap-5 mt-6">
-              {/* Habits pill — dark */}
-              <div className="flex items-center gap-2">
-                <span className={`text-sm ${MUTED_TEXT_CLASS}`}>Habits</span>
-                <span className="rounded-full bg-[#0a1929] px-3 py-1 text-xs font-semibold text-white">
-                  {habitPct}%
-                </span>
-              </div>
-
-              {/* Tasks pill — cyan */}
-              <div className="flex items-center gap-2">
-                <span className={`text-sm ${MUTED_TEXT_CLASS}`}>Tasks</span>
-                <span className="rounded-full bg-[#06b6d4] px-3 py-1 text-xs font-semibold text-white">
-                  {taskPct}%
-                </span>
-              </div>
-
-              {/* Focus — inline bar */}
-              <div className="flex items-center gap-2">
-                <span className={`text-sm ${MUTED_TEXT_CLASS}`}>Focus</span>
-                <div className="relative h-2 overflow-hidden rounded-full w-28 bg-white/60">
-                  <div
-                    className="absolute inset-y-0 left-0 rounded-full bg-[#cbd5e1]"
-                    style={{ width: `${focusPct}%` }}
-                  />
-                </div>
-                <span
-                  className={`rounded-full border ${BORDER_CLASS} bg-white/60 px-3 py-1 text-xs font-semibold ${PRIMARY_TEXT_CLASS}`}
-                >
-                  {focusMinutes}m
-                </span>
-              </div>
-
-              {/* Streak pill */}
-              <div className="flex items-center gap-2">
-                <span className={`text-sm ${MUTED_TEXT_CLASS}`}>Streak</span>
-                <span
-                  className={`rounded-full border ${BORDER_CLASS} bg-white/60 px-3 py-1 text-xs font-semibold ${PRIMARY_TEXT_CLASS}`}
-                >
-                  {currentStreak}d
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: big numbers */}
-          <div className="flex items-start gap-8 pr-1">
-            <div className="text-right">
-              <p
-                className={`text-5xl font-bold leading-none tracking-tighter ${PRIMARY_TEXT_CLASS}`}
-              >
-                {habits.length}
-              </p>
-              <p
-                className={`mt-1 text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}
-              >
-                Habits
-              </p>
-            </div>
-            <div className="text-right">
-              <p
-                className={`text-5xl font-bold leading-none tracking-tighter ${PRIMARY_TEXT_CLASS}`}
-              >
-                {completedTodayTasks}
-              </p>
-              <p
-                className={`mt-1 text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}
-              >
-                Done
-              </p>
-            </div>
-            <div className="text-right">
-              <p
-                className={`text-5xl font-bold leading-none tracking-tighter ${PRIMARY_TEXT_CLASS}`}
-              >
-                {completedPomodoros}
-              </p>
-              <p
-                className={`mt-1 text-[10px] uppercase tracking-widest ${MUTED_TEXT_CLASS}`}
-              >
-                Sessions
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* ── Row 2: 4-card bento grid ─────────────────────────────────────── */}
         {/*
           Layout:

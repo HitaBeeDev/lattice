@@ -46,7 +46,7 @@ function StatsBar({
         {/* Habits pill */}
         <div>
           <p className="text-[0.6rem] font-[500] text-[#a0a6ab] ml-3 mb-[0.3rem]">
-            Today's Progress
+            Habits
           </p>
 
           <div
@@ -85,7 +85,7 @@ function StatsBar({
 
           <div className="relative h-[2.6rem] w-[25rem] overflow-hidden rounded-full border border-white">
             <div
-              className="absolute inset-y-0 left-0 bg-[#aceef5]"
+              className="absolute inset-y-0 left-0 bg-[#72e1ee]"
               style={{ width: `${weeklyGoalAverage}%` }}
             />
             <div
@@ -111,7 +111,7 @@ function StatsBar({
             {currentStreak}
           </p>
 
-          <p className="text-[0.6rem] leading-none font-[500] text-[#a0a6ab] mt-3">
+          <p className="text-[0.6rem] leading-none font-[500] text-[#a0a6ab] mt-[0.3rem]">
             Day Streak
           </p>
         </div>
@@ -122,7 +122,7 @@ function StatsBar({
             {totalHabits}
           </p>
 
-          <p className="text-[0.6rem] leading-none font-[500] text-[#a0a6ab] mt-3">
+          <p className="text-[0.6rem] leading-none font-[500] text-[#a0a6ab] mt-[0.3rem]">
             Active Habits
           </p>
         </div>
@@ -133,7 +133,7 @@ function StatsBar({
             {completedPomodoros}
           </p>
 
-          <p className="text-[0.6rem] leading-none font-[500] text-[#a0a6ab] mt-3">
+          <p className="text-[0.6rem] leading-none font-[500] text-[#a0a6ab] mt-[0.3rem]">
             Pomodoros
           </p>
         </div>
