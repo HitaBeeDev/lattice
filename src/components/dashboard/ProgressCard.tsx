@@ -11,6 +11,7 @@ interface ProgressChartItem {
   label: string;
   isToday: boolean;
   isMuted: boolean;
+  isFuture: boolean;
 }
 
 interface ProgressCardProps {
@@ -51,7 +52,7 @@ function ProgressCard({
           </p>
 
           <p className="text-[2.2rem] leading-none font-[200] text-[#161c22] mt-3">
-            {sampleFocusHours} h
+            {sampleFocusHours}
           </p>
         </div>
 
@@ -83,6 +84,8 @@ function ProgressCard({
                   className={`flex w-max items-center justify-center whitespace-nowrap rounded-full px-[0.4rem] py-[0.2rem] text-[0.5rem] font-[400] leading-none transition-all duration-200 ${
                     item.isToday
                       ? "bg-[#72e1ee] text-[#50585e] opacity-100 shadow-[0_6px_18px_rgba(114,225,238,0.22)]"
+                      : item.isFuture
+                        ? "opacity-0"
                       : "bg-[#161c22] text-white opacity-0 translate-y-1 group-hover:translate-y-0 group-hover:opacity-100"
                   }`}
                 >
@@ -91,30 +94,34 @@ function ProgressCard({
               </div>
 
               <div className="flex items-end">
-                <div
-                  className={`rounded-full transition-transform duration-200 group-hover:scale-y-[1.04] ${
+                {!item.isFuture && (
+                  <div
+                    className={`rounded-full transition-transform duration-200 group-hover:scale-y-[1.04] ${
+                      item.isToday
+                        ? "bg-[#72e1ee] shadow-[0_0_0_1px_rgba(114,225,238,0.08)]"
+                        : item.isMuted
+                          ? "bg-[#d3d6d9]"
+                          : "bg-[#12171b]"
+                    }`}
+                    style={{
+                      height: `${barHeight}px`,
+                      width: item.isToday ? "7px" : "6px",
+                    }}
+                  />
+                )}
+              </div>
+
+              {!item.isFuture && (
+                <span
+                  className={`h-[0.38rem] w-[0.38rem] rounded-full ${
                     item.isToday
-                      ? "bg-[#72e1ee] shadow-[0_0_0_1px_rgba(114,225,238,0.08)]"
+                      ? "bg-[#72e1ee]"
                       : item.isMuted
                         ? "bg-[#d3d6d9]"
                         : "bg-[#12171b]"
                   }`}
-                  style={{
-                    height: `${barHeight}px`,
-                    width: item.isToday ? "7px" : "6px",
-                  }}
                 />
-              </div>
-
-              <span
-                className={`h-[0.38rem] w-[0.38rem] rounded-full ${
-                  item.isToday
-                    ? "bg-[#72e1ee]"
-                    : item.isMuted
-                      ? "bg-[#d3d6d9]"
-                      : "bg-[#12171b]"
-                }`}
-              />
+              )}
 
               <span className="text-[0.55rem] font-[400] uppercase leading-none tracking-[0.08em] text-[#a0a6ab]">
                 {item.day}

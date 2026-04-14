@@ -1,8 +1,8 @@
 import { mockDashboardMonth } from "../lib/mockDashboardMonth";
-import { ArrowUpRight, Pause, Play } from "lucide-react";
+import { ArrowUpRight, Pause, Play, RotateCw } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import StatsBar from "../components/dashboard/StatsBar";
-import DashboardCalendar from "../components/dashboard/DashboardCalendar";
+import CalendarCard from "../components/dashboard/CalendarCard";
 import ProgressCard from "../components/dashboard/ProgressCard";
 import { useTimeTracker } from "../context/TimeTrackerContext";
 const WEEKLY_OUTPUT_TARGET_MINUTES = 3200;
@@ -59,6 +59,7 @@ function DashboardPage() {
     sessionType,
     handleStart,
     handlePause,
+    handleReset,
   } = useTimeTracker();
 
   const liveTimerMinutes = Math.floor(liveTimerSeconds / 60);
@@ -94,10 +95,11 @@ function DashboardPage() {
       ? 0
       : Math.round((completedHabitsToday / totalDailyHabits) * 100);
   const focusMinutes = selectedDay.focusTimeMinutes;
-  const sampleFocusHours = (focusMinutes / 60).toFixed(1);
+  const sampleFocusHours = formatFocusLabel(focusMinutes);
 
   const focusChartData = activeWeek.days.map((day) => {
     const focusTimeMinutes = day.focusTimeMinutes;
+    const isFuture = day.date > realTodayDate;
 
     return {
       day: day.day.slice(0, 1),
@@ -105,6 +107,7 @@ function DashboardPage() {
       label: formatFocusLabel(focusTimeMinutes),
       isToday: day.date === selectedDay.date,
       isMuted: focusTimeMinutes <= 70,
+      isFuture,
     };
   });
   const weeklyFocusMinutes = activeWeek.days.reduce(
@@ -128,19 +131,6 @@ function DashboardPage() {
   // #6F757B
   // #72e1ee
   // #f4f9fb
-
-  const handleCalendarCardNavigate = (): void => {
-    navigate("/tasks");
-  };
-
-  const handleCalendarCardKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>,
-  ): void => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      navigate("/tasks");
-    }
-  };
 
   return (
     <main className="h-full overflow-hidden" id="main-content" tabIndex={-1}>
@@ -176,23 +166,12 @@ function DashboardPage() {
             focusChartData={focusChartData}
           />
 
-          {/* Todos + Calendar view */}
-          <div
-            className="w-full h-full col-span-2 row-span-3 row-start-1 rounded-[1.2rem] bg-[#cee2e9]/40 p-5 cursor-pointer transition-colors duration-200 hover:bg-[#cee2e9]/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0a1929]/20"
-            role="link"
-            tabIndex={0}
-            aria-label="Open tasks page"
-            onClick={handleCalendarCardNavigate}
-            onKeyDown={handleCalendarCardKeyDown}
-          >
-            <DashboardCalendar
-              activeWeek={activeWeek}
-              weeks={mockDashboardMonth.weeks}
-              todayDate={realTodayDate}
-              multiDayTasks={[]}
-              maxMultiDayRows={0}
-            />
-          </div>
+          <CalendarCard
+            activeWeek={activeWeek}
+            weeks={mockDashboardMonth.weeks}
+            todayDate={realTodayDate}
+            multiDayTasks={[]}
+          />
 
           <div className="w-full h-full col-span-1 col-start-4 row-span-4 row-start-1 rounded-[1.2rem] bg-[#cee2e9]/40">
             x
@@ -218,8 +197,8 @@ function DashboardPage() {
               </Link>
             </div>
 
-            <div className="flex flex-1 items-center justify-center">
-              <div className="relative h-[10.5rem] w-[10.5rem] pointer-events-none">
+            <div className="flex items-center justify-center flex-1">
+              <div className="fixed h-[13.6rem] w-[13.6rem] pointer-events-none">
                 {/* SVG BACKGROUND */}
                 <svg
                   viewBox="0 0 140 140"
@@ -262,7 +241,7 @@ function DashboardPage() {
                 </svg>
 
                 {/* CENTER TEXT */}
-                <div className="relative z-10 flex h-full flex-col items-center justify-center text-center">
+                <div className="relative z-10 flex flex-col items-center justify-center h-full text-center">
                   <p className="text-[2.4rem] font-light leading-none tracking-[-0.04em] text-[#161c22]">
                     {liveTimerDisplay}
                   </p>
@@ -296,6 +275,15 @@ function DashboardPage() {
                   <Pause className="w-4 h-4" strokeWidth={1.25} />
                 </button>
               </div>
+
+              <button
+                type="button"
+                onClick={handleReset}
+                aria-label="Reset timer"
+                className="cursor-pointer rounded-full bg-white p-[0.65rem] text-[#0a1929] transition-all duration-300 hover:bg-[#f4f5f5]"
+              >
+                <RotateCw className="w-4 h-4" strokeWidth={1.25} />
+              </button>
             </div>
           </div>
 
