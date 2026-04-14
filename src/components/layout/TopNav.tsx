@@ -23,9 +23,13 @@ export default function TopNav() {
       >
         {/* Logo */}
         <div>
-          <p className="font-heading text-[#242c32] text-[1.1rem] font-[500] tracking-wider">
+          <NavLink
+            to="/"
+            className="font-heading cursor-pointer text-[#242c32] text-[1.1rem] font-[500] tracking-wider transition-colors duration-200 hover:text-[#50585e]"
+            aria-label="Go to home page"
+          >
             Lattice
-          </p>
+          </NavLink>
         </div>
 
         {/* Nav links */}
