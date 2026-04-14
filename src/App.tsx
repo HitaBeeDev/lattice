@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { HabitProvider } from "./context/HabitContext";
 import { TaskProvider } from "./context/TasksContext";
 import { TimeTrackerProvider } from "./context/TimeTrackerContext";
-import { migrateLocalStorageData } from "./db/database";
+import { migrateLocalStorageData, seedMockData } from "./db/database";
 
 type AppProps = {
   children: React.ReactNode;
@@ -21,7 +21,7 @@ function App({ children }: AppProps): JSX.Element {
   const location = useLocation();
 
   useEffect(() => {
-    void migrateLocalStorageData();
+    void migrateLocalStorageData().then(() => seedMockData());
   }, []);
 
   useEffect(() => {

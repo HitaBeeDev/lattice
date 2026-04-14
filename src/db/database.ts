@@ -1,6 +1,7 @@
 import Dexie, { type Table } from "dexie";
 import type { Habit } from "../types/habit";
 import type { Task } from "../types/task";
+import { mockHabits, mockTasks } from "../lib/mockData";
 
 export type HabitEntry = Habit;
 export type TaskEntry = Task;
@@ -209,4 +210,33 @@ export async function migrateLocalStorageData(): Promise<void> {
   });
 
   localStorage.setItem(LEGACY_MIGRATION_KEY, "true");
+}
+
+const MOCK_SEED_KEY = "nexstep:mock-seeded:v1";
+
+export async function seedMockData(): Promise<void> {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (localStorage.getItem(MOCK_SEED_KEY) === "true") {
+    return;
+  }
+
+  const [habitCount, taskCount] = await Promise.all([
+    db.habits.count(),
+    db.tasks.count(),
+  ]);
+
+  if (habitCount > 0 || taskCount > 0) {
+    localStorage.setItem(MOCK_SEED_KEY, "true");
+    return;
+  }
+
+  await db.transaction("rw", db.habits, db.tasks, async () => {
+    await db.habits.bulkPut(mockHabits);
+    await db.tasks.bulkPut(mockTasks);
+  });
+
+  localStorage.setItem(MOCK_SEED_KEY, "true");
 }
