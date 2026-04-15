@@ -21,12 +21,14 @@ export default function TaskGroup({
   tasks,
 }: TaskGroupProps) {
   return (
-    <section className="rounded-[2rem] border border-white/70 bg-[rgba(242,249,249,0.8)] p-5 shadow-[0_18px_55px_rgba(80,111,122,0.1)] backdrop-blur-xl">
-      <div className="mb-4 rounded-[1.35rem] bg-white/70 px-4 py-3">
-        <p className="text-sm font-medium text-[#1b2830]">{date}</p>
+    <section className="mx-5 mt-3 bg-white rounded-[1rem] overflow-hidden">
+      <div className="flex items-center px-5 py-3 border-b border-[#f0f5f6]">
+        <p className="text-[0.65rem] font-[400] text-[#a0a5ab] uppercase tracking-widest">
+          {date}
+        </p>
       </div>
 
-      <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <ul>
         {tasks.map((task) => (
           <TaskListItem
             key={task.id}

@@ -167,7 +167,7 @@ export default function HabitList() {
                 type="button"
                 aria-label={`Delete ${habit.name}`}
                 onClick={() => deleteHabit(index)}
-                className="text-[#a0a5ab] hover:text-red-400 transition"
+                className="text-[#ef4444] transition"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

@@ -23,17 +23,8 @@ function ToDoList() {
   }
 
   return (
-    <section className="space-y-6">
+    <section>
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7d929c]">
-          Active board
-        </p>
-        <h2 className="mt-2 font-['Sora'] text-[1.8rem] font-[500] text-[#101820]">
-          Scheduled tasks
-        </h2>
-      </div>
-
-      <div className="space-y-6">
         {sortedTasks.map(([date, tasks]) => (
           <TaskGroup
             key={date}
@@ -48,6 +39,7 @@ function ToDoList() {
         ))}
       </div>
     </section>
+
   );
 }
 

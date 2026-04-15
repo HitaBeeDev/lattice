@@ -1,5 +1,13 @@
 import { Clock3 } from "lucide-react";
 import { useTasks } from "../../context/TasksContext";
+import { cn } from "../ui/cn";
+import type { Priority } from "../../types/task";
+
+const PRIORITY_COLORS: Record<Priority, string> = {
+  High: "#ef4444",
+  Medium: "#f59e0b",
+  Low: "#22c55e",
+};
 
 const byDate = ([dateA]: [string, unknown], [dateB]: [string, unknown]) =>
   new Date(dateA).getTime() - new Date(dateB).getTime();
@@ -7,65 +15,77 @@ const byDate = ([dateA]: [string, unknown], [dateB]: [string, unknown]) =>
 function UpcomingTasks() {
   const { groupedTasks, checkedTasks } = useTasks();
 
+  const entries = Object.entries(groupedTasks)
+    .sort(byDate)
+    .map(([date, tasks]) => ({
+      date,
+      tasks: tasks.filter((t) => !checkedTasks.includes(t.id)),
+    }))
+    .filter(({ tasks }) => tasks.length > 0);
+
+  if (entries.length === 0) return null;
+
   return (
-    <section aria-labelledby="upcoming-tasks-heading" className="space-y-6">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7d929c]">
-          Timeline
-        </p>
-        <h2
-          className="mt-2 font-['Sora'] text-[1.8rem] font-[500] text-[#101820]"
-          id="upcoming-tasks-heading"
-        >
-          Upcoming tasks
-        </h2>
-      </div>
+    <section aria-labelledby="upcoming-tasks-heading" className="px-5 mt-3">
+      <p
+        className="text-[0.65rem] font-[300] text-[#a0a5ab] uppercase tracking-widest mb-3"
+        id="upcoming-tasks-heading"
+      >
+        Upcoming
+      </p>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {Object.entries(groupedTasks)
-          .sort(byDate)
-          .map(([date, tasks]) => (
-            <section
-              className="rounded-[2rem] border border-white/70 bg-[rgba(242,249,249,0.8)] p-5 shadow-[0_18px_55px_rgba(80,111,122,0.1)] backdrop-blur-xl"
-              key={date}
-            >
-              <div className="mb-4 rounded-[1.35rem] bg-white/70 px-4 py-3">
-                <p className="text-sm font-medium text-[#1b2830]">{date}</p>
-              </div>
+      <div className="bg-white rounded-[1rem] overflow-hidden">
+        {entries.map(({ date, tasks }, groupIndex) => (
+          <div
+            key={date}
+            className={cn(groupIndex > 0 && "border-t border-[#f0f5f6]")}
+          >
+            <div className="flex items-center px-5 py-3 border-b border-[#f0f5f6]">
+              <p className="text-[0.65rem] font-[400] text-[#a0a5ab] uppercase tracking-widest">
+                {date}
+              </p>
+            </div>
 
-              <ul className="grid gap-4">
-                {tasks
-                  .filter((task) => !checkedTasks.includes(task.id))
-                  .map((task) => (
-                    <li key={task.id}>
-                      <article className="flex h-full flex-col gap-4 rounded-[1.5rem] border border-white/80 bg-white/75 p-4 shadow-[0_12px_28px_rgba(96,120,130,0.08)]">
-                        <div className="flex items-start justify-between gap-4">
-                          <h3 className="font-['Sora'] text-lg font-[500] text-[#101820]">
-                            {task.name}
-                          </h3>
-                        </div>
+            <ul>
+              {tasks.map((task) => (
+                <li
+                  key={task.id}
+                  className="flex items-center gap-4 px-5 py-4 border-b border-[#f0f5f6] last:border-0"
+                >
+                  {/* Priority dot */}
+                  <div
+                    className="flex-shrink-0 h-2 w-2 rounded-full"
+                    style={{ backgroundColor: PRIORITY_COLORS[task.priority] }}
+                    title={task.priority}
+                  />
 
-                        {task.description ? (
-                          <p className="text-sm leading-6 text-[#637983]">
-                            {task.description}
-                          </p>
-                        ) : null}
+                  {/* Name + description */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[0.85rem] font-[500] leading-none text-[#161c22] truncate">
+                      {task.name}
+                    </p>
+                    {task.description ? (
+                      <p className="text-[0.7rem] font-[300] text-[#a0a5ab] mt-1 truncate">
+                        {task.description}
+                      </p>
+                    ) : null}
+                  </div>
 
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-[#607680]">
-                          <div className="inline-flex items-center gap-2 rounded-full bg-[#f2f7f8] px-3 py-2">
-                            <Clock3 className="h-4 w-4" />
-                            <span>
-                              {task.startTime}
-                              {task.endTime ? ` - ${task.endTime}` : ""}
-                            </span>
-                          </div>
-                        </div>
-                      </article>
-                    </li>
-                  ))}
-              </ul>
-            </section>
-          ))}
+                  {/* Time chip */}
+                  {task.startTime ? (
+                    <div className="flex items-center gap-1.5 text-[0.65rem] text-[#a0a5ab] bg-[#f5f8f9] rounded-full px-2.5 py-1 flex-shrink-0">
+                      <Clock3 className="w-3 h-3" />
+                      <span>
+                        {task.startTime}
+                        {task.endTime ? ` – ${task.endTime}` : ""}
+                      </span>
+                    </div>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </section>
   );
