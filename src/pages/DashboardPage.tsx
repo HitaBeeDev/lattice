@@ -4,6 +4,9 @@ import CalendarCard from "../components/dashboard/CalendarCard";
 import ProgressCard from "../components/dashboard/ProgressCard";
 import TimeTrackerCard from "../components/dashboard/TimeTrackerCard";
 import TodoOverviewCard from "../components/dashboard/TodoOverviewCard";
+import HabitConsistencyCard, {
+  buildMockHabitHeatmapEntries,
+} from "../components/dashboard/HabitConsistencyCard";
 import { useTasks } from "../context/TasksContext";
 const WEEKLY_OUTPUT_TARGET_MINUTES = 3200;
 
@@ -102,6 +105,7 @@ function DashboardPage() {
   );
   const currentStreak = calculateHabitStreak(completionDays);
   const completedPomodoros = Math.round(weeklyFocusMinutes / 25);
+  const habitHeatmapEntries = buildMockHabitHeatmapEntries();
 
   // #6F757B
   // #72e1ee
@@ -152,9 +156,7 @@ function DashboardPage() {
 
           <TimeTrackerCard />
 
-          <div className="w-full h-full col-span-2 row-span-1 row-start-4 rounded-[1.2rem] bg-[#cee2e9]/40">
-            z
-          </div>
+          <HabitConsistencyCard entries={habitHeatmapEntries} />
         </div>
       </div>
     </main>
