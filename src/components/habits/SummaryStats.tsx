@@ -6,57 +6,62 @@ export default function SummaryStats() {
   const strongestDay = Math.max(...percentages, 0);
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.8fr)]">
-      <article className="rounded-[2rem] border border-white/70 bg-[rgba(242,249,249,0.8)] p-6 shadow-[0_18px_55px_rgba(80,111,122,0.1)] backdrop-blur-xl">
-        <div className="flex items-end justify-between gap-4">
+    <section className="grid h-full grid-cols-5 gap-3 mt-4">
+      <div className="col-span-3 p-8 bg-white rounded-[1.7rem] min-h-[13.5rem] flex flex-col justify-start">
+        <div className="flex flex-row items-start justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7d929c]">
+            <p className="text-[0.7rem] leading-none font-[300] text-[#a0a5ab] ml-1">
               Weekly check-ins
             </p>
-            <h2 className="mt-2 font-['Sora'] text-[1.8rem] font-[500] text-[#101820]">
+
+            <p className="text-[1.4rem] leading-none font-[200] text-[#161c22] mt-5">
               Daily completion rhythm
-            </h2>
+            </p>
           </div>
-          <div className="rounded-full bg-white/75 px-4 py-2 text-sm font-medium text-[#1b2830]">
-            Peak: {strongestDay}%
+
+          <div className="h-[1.6rem] rounded-[0.5rem] bg-[#edfdfe] flex justify-center items-center pl-[0.9rem] pr-[0.9rem]">
+            <p className="text-[0.8rem] leading-none font-[300] text-[#161c22]">
+              Peak: {strongestDay}%
+            </p>
           </div>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-7">
+        <div className="grid items-end grid-cols-7 gap-[1rem] mt-auto mb-1">
           {weekDates.map((date, index) => (
-            <div className="rounded-[1.5rem] bg-white/70 p-4" key={date.toISOString()}>
-              <p className="text-xs uppercase tracking-[0.16em] text-[#8ca0a9]">
+            <div
+              className="flex flex-col justify-center col-span-1 mt-8"
+              key={date.toISOString()}
+            >
+              <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">
                 {date.toLocaleDateString("en-US", { weekday: "long" })}
               </p>
-              <p className="mt-3 text-3xl font-[300] text-[#101820]">
+
+              <p className="text-[1.2rem] leading-none font-[400] text-[#161c22] mt-2">
                 {percentages[index]}%
               </p>
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#d9e8eb]">
+
+              <div className="mt-4 h-[0.3rem] overflow-hidden rounded-full bg-[#e6e8ea]">
                 <div
-                  className="h-full rounded-full bg-[#72e1ee]"
+                  className="h-full rounded-full bg-[#06090f]"
                   style={{ width: `${percentages[index]}%` }}
                 />
               </div>
             </div>
           ))}
         </div>
-      </article>
+      </div>
 
-      <article className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-[#161c22] p-6 text-white shadow-[0_22px_60px_rgba(18,24,29,0.2)]">
-        <div
-          aria-hidden="true"
-          className="absolute right-0 top-0 h-44 w-44 rounded-full bg-[#72e1ee]/20 blur-3xl"
-        />
-        <p className="relative text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
+      <div className="col-span-2 p-8 bg-[#242b32] rounded-[1.7rem] min-h-[13.5rem] flex flex-col">
+        <p className="text-[0.7rem] leading-none font-[300] text-[#f9fafb] ml-1">
           Reflection
         </p>
-        <p className="relative mt-4 font-['Sora'] text-[1.8rem] font-[500] leading-tight">
-          Small wins stay visible.
-        </p>
-        <p className="relative mt-4 text-sm leading-7 text-white/74">
-          {habitQuotes[quoteIndex]}
-        </p>
-      </article>
+
+        <div className="flex items-center justify-center flex-1">
+          <p className="text-[1.8rem] leading-none font-[300] text-[#e6e8ea] text-center">
+            {habitQuotes[quoteIndex]}
+          </p>
+        </div>
+      </div>
     </section>
   );
 }
