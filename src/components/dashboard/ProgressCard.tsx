@@ -86,7 +86,7 @@ function ProgressCard({
                       ? "bg-[#72e1ee] text-[#50585e] opacity-100 shadow-[0_6px_18px_rgba(114,225,238,0.22)]"
                       : item.isFuture
                         ? "opacity-0"
-                      : "bg-[#161c22] text-white opacity-0 translate-y-1 group-hover:translate-y-0 group-hover:opacity-100"
+                        : "bg-[#161c22] text-white opacity-0 translate-y-1 group-hover:translate-y-0 group-hover:opacity-100"
                   }`}
                 >
                   {item.label}
