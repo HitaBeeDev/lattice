@@ -20,6 +20,18 @@ const formatTooltipDate = (date: string): string =>
     day: "numeric",
   }).format(new Date(`${date}T12:00:00`));
 
+const parseLocalDate = (date: string): Date => {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(year, month - 1, day, 12, 0, 0, 0);
+};
+
+const formatLocalDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 const getCompletionRatio = (entry: HabitHeatmapEntry): number =>
   entry.totalHabits > 0 ? entry.completedHabits / entry.totalHabits : 0;
 
@@ -57,26 +69,36 @@ const calculateCurrentStreak = (entries: HabitHeatmapEntry[]): number => {
   return streak;
 };
 
-const calculateBestStreak = (entries: HabitHeatmapEntry[]): number => {
-  let best = 0;
-  let active = 0;
-
-  entries.forEach((entry) => {
-    if (getCompletionRatio(entry) > 0) {
-      active += 1;
-      best = Math.max(best, active);
-      return;
-    }
-
-    active = 0;
-  });
-
-  return best;
-};
-
 const getSeededRandom = (seed: number): number => {
   const value = Math.sin(seed) * 10000;
   return value - Math.floor(value);
+};
+
+const buildBackfilledMockEntry = (date: Date): HabitHeatmapEntry => {
+  const totalHabits = 7;
+  const dateKey = formatLocalDate(date);
+  const daySeed = Number(dateKey.replaceAll("-", ""));
+  const weekday = date.getDay();
+  const weekdayBias = weekday === 0 ? -0.28 : weekday === 6 ? -0.14 : 0.05;
+  const slowTrend = Math.sin(daySeed / 17) * 0.1;
+  const mediumTrend = Math.cos(daySeed / 7) * 0.08;
+  const noise = (getSeededRandom(daySeed + 41) - 0.5) * 0.18;
+  let completionRatio = Math.max(
+    0,
+    Math.min(1, 0.46 + slowTrend + mediumTrend + weekdayBias + noise),
+  );
+
+  if (getSeededRandom(daySeed + 73) < (weekday === 0 ? 0.32 : 0.12)) {
+    completionRatio = 0;
+  } else if (completionRatio < 0.16) {
+    completionRatio = 0;
+  }
+
+  return {
+    date: dateKey,
+    completedHabits: Math.round(completionRatio * totalHabits),
+    totalHabits,
+  };
 };
 
 export function buildMockHabitHeatmapEntries(): HabitHeatmapEntry[] {
@@ -85,26 +107,44 @@ export function buildMockHabitHeatmapEntries(): HabitHeatmapEntry[] {
   today.setHours(12, 0, 0, 0);
   const startDate = new Date(today);
   startDate.setDate(today.getDate() - (MOCK_HISTORY_DAYS - 1));
+  let previousRatio = 0.52;
 
   return Array.from({ length: MOCK_HISTORY_DAYS }, (_, index) => {
     const entryDate = new Date(startDate);
     entryDate.setDate(startDate.getDate() + index);
 
-    const year = entryDate.getFullYear();
-    const month = String(entryDate.getMonth() + 1).padStart(2, "0");
-    const day = String(entryDate.getDate()).padStart(2, "0");
-    const daySeed = Number(`${year}${month}${day}`);
-    const completionNoise = getSeededRandom(daySeed);
+    const dateKey = formatLocalDate(entryDate);
+    const daySeed = Number(dateKey.replaceAll("-", ""));
+    const weekday = entryDate.getDay();
     const weekdayBias =
-      entryDate.getDay() === 0 || entryDate.getDay() === 6 ? -0.18 : 0.08;
-    const completionRatio = Math.max(
-      0,
-      Math.min(1, 0.18 + completionNoise * 0.78 + weekdayBias),
-    );
+      weekday === 0 ? -0.32 : weekday === 6 ? -0.18 : 0.06;
+    const slowTrend = Math.sin(index / 8) * 0.11;
+    const mediumTrend = Math.cos(index / 3.7) * 0.08;
+    const noise = (getSeededRandom(daySeed) - 0.5) * 0.24;
+    const driftedRatio =
+      previousRatio * 0.58 + 0.34 + slowTrend + mediumTrend + weekdayBias + noise;
+    const recoveryBoost =
+      index > 0 && previousRatio === 0 && weekday !== 0 ? 0.16 : 0;
+    let completionRatio = Math.max(0, Math.min(1, driftedRatio + recoveryBoost));
+
+    // Sprinkle a few real off-days so the heatmap doesn't look uniformly active.
+    if (getSeededRandom(daySeed + 17) < (weekday === 0 ? 0.42 : 0.14)) {
+      completionRatio = 0;
+    } else if (completionRatio < 0.14) {
+      completionRatio = 0;
+    }
+
+    // Keep the current week looking active enough to feel intentional.
+    const daysFromToday = MOCK_HISTORY_DAYS - 1 - index;
+    if (daysFromToday < 7 && completionRatio === 0 && weekday !== 0) {
+      completionRatio = 0.32 + getSeededRandom(daySeed + 29) * 0.22;
+    }
+
     const completedHabits = Math.round(completionRatio * totalHabits);
+    previousRatio = completedHabits === 0 ? 0 : completedHabits / totalHabits;
 
     return {
-      date: `${year}-${month}-${day}`,
+      date: dateKey,
       completedHabits,
       totalHabits,
     };
@@ -120,27 +160,33 @@ export default function HabitConsistencyCard({
     () =>
       [...entries].sort(
         (left, right) =>
-          new Date(`${left.date}T12:00:00`).getTime() -
-          new Date(`${right.date}T12:00:00`).getTime(),
+          parseLocalDate(left.date).getTime() -
+          parseLocalDate(right.date).getTime(),
       ),
     [entries],
-  );
-  const weeklyEntries = React.useMemo(
-    () => sortedEntries.slice(-7),
-    [sortedEntries],
   );
   const currentStreak = React.useMemo(
     () => calculateCurrentStreak(sortedEntries),
     [sortedEntries],
   );
-  const bestStreak = React.useMemo(
-    () => calculateBestStreak(sortedEntries),
-    [sortedEntries],
-  );
-  const activeDaysThisWeek = React.useMemo(
-    () => weeklyEntries.filter((entry) => getCompletionRatio(entry) > 0).length,
-    [weeklyEntries],
-  );
+  const activeDaysThisWeek = React.useMemo(() => {
+    const latestEntry = sortedEntries[sortedEntries.length - 1];
+    const today = latestEntry ? parseLocalDate(latestEntry.date) : new Date();
+    today.setHours(12, 0, 0, 0);
+
+    const weekday = today.getDay();
+    const daysSinceMonday = weekday === 0 ? 6 : weekday - 1;
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - daysSinceMonday);
+
+    const entriesThisWeek = sortedEntries.filter((entry) => {
+      const entryDate = parseLocalDate(entry.date);
+      return entryDate >= startOfWeek && entryDate <= today;
+    });
+
+    return entriesThisWeek.filter((entry) => getCompletionRatio(entry) > 0)
+      .length;
+  }, [sortedEntries]);
 
   React.useEffect(() => {
     if (!gridRef.current) {
@@ -183,17 +229,28 @@ export default function HabitConsistencyCard({
   const cellSize = Math.max(MIN_CELL_SIZE, Math.min(cellWidth, cellHeight));
   const totalGridCells = columnsUsed * rowsUsed;
   const emptyCellCount = Math.max(0, totalGridCells - visibleEntries.length);
-  const paddedEntries = [
-    ...Array.from({ length: emptyCellCount }, () => null),
-    ...visibleEntries,
-  ];
+  const paddedEntries = React.useMemo(() => {
+    if (emptyCellCount === 0 || visibleEntries.length === 0) {
+      return visibleEntries;
+    }
+
+    const firstVisibleDate = parseLocalDate(visibleEntries[0].date);
+    const leadingEntries = Array.from({ length: emptyCellCount }, (_, index) => {
+      const entryDate = new Date(firstVisibleDate);
+      entryDate.setDate(firstVisibleDate.getDate() - (emptyCellCount - index));
+
+      return buildBackfilledMockEntry(entryDate);
+    });
+
+    return [...leadingEntries, ...visibleEntries];
+  }, [emptyCellCount, visibleEntries]);
   const newestEntryDate =
     visibleEntries.length > 0
       ? visibleEntries[visibleEntries.length - 1].date
       : null;
 
   return (
-    <section className="relative col-span-2 row-span-1 row-start-4 flex h-full w-full overflow-hidden rounded-[1.2rem] bg-[#cee2e9]/40 p-4">
+    <section className="relative col-span-2 row-span-1 row-start-4 flex h-full w-full overflow-visible rounded-[1.2rem] bg-[#cee2e9]/40 p-4">
       <div className="relative flex flex-col w-full h-full">
         <div className="flex items-center justify-between w-full">
           <div className="flex flex-row items-center gap-2">
@@ -212,11 +269,7 @@ export default function HabitConsistencyCard({
             </p>
 
             <p className="text-[0.55rem] font-[400] leading-none text-[#6f757b]">
-              Best {bestStreak} days
-            </p>
-
-            <p className="text-[0.55rem] font-[400] leading-none text-[#6f757b]">
-              {activeDaysThisWeek}/{weeklyEntries.length} active days
+              {activeDaysThisWeek}/7 active days
             </p>
           </div>
         </div>
@@ -230,21 +283,6 @@ export default function HabitConsistencyCard({
             }}
           >
             {paddedEntries.map((entry, index) => {
-              if (!entry) {
-                return (
-                  <div key={`empty-${index}`} className="relative">
-                    <div
-                      className="rounded-[0.24rem] bg-[#f7fbfc] ring-1 ring-[#d9edf2]"
-                      style={{
-                        width: `${cellSize}px`,
-                        height: `${cellSize}px`,
-                      }}
-                      aria-hidden="true"
-                    />
-                  </div>
-                );
-              }
-
               const completionRatio = getCompletionRatio(entry);
               const isNewestDay = entry.date === newestEntryDate;
 
@@ -261,7 +299,12 @@ export default function HabitConsistencyCard({
                     aria-label={`${formatTooltipDate(entry.date)} — ${entry.completedHabits}/${entry.totalHabits} habits completed`}
                   />
 
-                  <div className="pointer-events-none absolute bottom-[calc(100%+0.45rem)] left-1/2 z-10 w-max -translate-x-1/2 rounded-[0.85rem] bg-[#151b20] text-[0.62rem] font-[400] text-white opacity-0 shadow-[0_14px_26px_rgba(21,27,32,0.22)] transition-all duration-200 group-hover:-translate-y-1 group-hover:opacity-100">
+                  <div
+                    className="pointer-events-none absolute bottom-[calc(100%+0.45rem)] left-1/2 z-10 w-max 
+                  -translate-x-1/2 rounded-[0.85rem] bg-[#151b20] text-[0.55rem] font-[400] text-white opacity-0 
+                   transition-all duration-200 group-hover:-translate-y-1 
+                  group-hover:opacity-100 pl-[0.6rem] pr-[0.6rem] pt-[0.15rem] pb-[0.15rem]"
+                  >
                     {formatTooltipDate(entry.date)} — {entry.completedHabits}/
                     {entry.totalHabits} habits completed
                   </div>
