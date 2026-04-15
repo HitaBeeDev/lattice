@@ -4,7 +4,12 @@ import HabitList from "../components/habits/HabitList";
 import SummaryStats from "../components/habits/SummaryStats";
 import ResultsReport from "../components/habits/ResultsReport";
 function HabitTrackerPage() {
-    return (<main className="mx-auto flex w-full max-w-[1400px] flex-col gap-6 pb-8" id="main-content" tabIndex={-1}>
+  return (
+    <main
+      className="mx-auto flex w-full max-w-[1400px] flex-col gap-6 pb-8"
+      id="main-content"
+      tabIndex={-1}
+    >
       <WelcomeBanner />
 
       <WeekDaysHeader />
@@ -14,6 +19,7 @@ function HabitTrackerPage() {
       <SummaryStats />
 
       <ResultsReport />
-    </main>);
+    </main>
+  );
 }
 export default HabitTrackerPage;
