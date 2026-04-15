@@ -50,6 +50,12 @@ const getLocalIsoDate = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
+const isDateInRange = (
+  date: string,
+  rangeStart: string,
+  rangeEnd: string,
+): boolean => date >= rangeStart && date <= rangeEnd;
+
 /** Returns the index (Mon=0 … Sun=6) for today. */
 const getTodayDayIndex = (): number => {
   const weekday = new Date().getDay(); // 0=Sun, 1=Mon, …, 6=Sat
@@ -198,11 +204,26 @@ function DashboardPage() {
     [activeWeek.days, dailyFocusSeconds, realTodayDate],
   );
 
-  const todayTaskPct =
-    totalTodayTasks === 0
+  const weekStartDate = getLocalIsoDate(weekDates[0] ?? new Date());
+  const weekEndDate = getLocalIsoDate(weekDates[weekDates.length - 1] ?? new Date());
+  const currentWeekTasks = useMemo(
+    () =>
+      tasks.filter((task) => isDateInRange(task.date, weekStartDate, weekEndDate)),
+    [tasks, weekEndDate, weekStartDate],
+  );
+  const completedWeekTasks = currentWeekTasks.filter((task) => task.isCompleted).length;
+  const weeklyTaskPct =
+    currentWeekTasks.length === 0
       ? 0
-      : Math.round((completedTodayTasks / totalTodayTasks) * 100);
-  const weeklyGoalAverage = Math.round((todayTaskPct + habitPct) / 2);
+      : Math.round((completedWeekTasks / currentWeekTasks.length) * 100);
+  const weeklyHabitPct =
+    percentages.length === 0
+      ? 0
+      : Math.round(
+          percentages.reduce((sum, percentage) => sum + percentage, 0) /
+            percentages.length,
+        );
+  const weeklyGoalAverage = Math.round((weeklyTaskPct + weeklyHabitPct) / 2);
 
   // ── Habit heatmap: generated history + real current-week data ─────────────
   const habitHeatmapEntries = useMemo(() => {
