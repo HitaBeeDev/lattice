@@ -17,8 +17,6 @@ function HabitTrackerPage() {
       <HabitList />
 
       <SummaryStats />
-
-      <ResultsReport />
     </main>
   );
 }
