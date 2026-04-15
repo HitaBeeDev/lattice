@@ -4,7 +4,7 @@ import ToDoList from "./ToDoList";
 import WelcomeBanner from "./WelcomeBanner";
 
 function ToDoListAndWelcomeSection() {
-  const { showModal } = useTasks();
+  const { showModal, isEditing } = useTasks();
 
   return (
     <section
@@ -17,7 +17,7 @@ function ToDoListAndWelcomeSection() {
 
       <WelcomeBanner />
 
-      {showModal && <AddModal />}
+      {showModal && isEditing && <AddModal />}
 
       <ToDoList />
     </section>
