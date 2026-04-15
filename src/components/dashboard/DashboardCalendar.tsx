@@ -28,11 +28,7 @@ interface CalendarEvent {
   startHour: number;
   durationHours: number;
   variant: "dark" | "light";
-  avatars?: string[];
 }
-
-const AVATAR_COLORS_DARK = ["#4a7a8f", "#6a9e94", "#7a6a94"];
-const AVATAR_COLORS_LIGHT = ["#7ec8d8", "#8cc4b0", "#a89ec8"];
 
 interface TimeSlot {
   label: string;
@@ -101,7 +97,6 @@ const TIMED_EVENTS: CalendarEvent[] = [
     startHour: 9,
     durationHours: 1,
     variant: "dark",
-    avatars: ["E", "J", "M"],
   },
   {
     id: "evt-2",
@@ -111,7 +106,6 @@ const TIMED_EVENTS: CalendarEvent[] = [
     startHour: 10,
     durationHours: 1,
     variant: "light",
-    avatars: ["A", "R"],
   },
   {
     id: "evt-3",
@@ -121,7 +115,6 @@ const TIMED_EVENTS: CalendarEvent[] = [
     startHour: 8,
     durationHours: 1,
     variant: "light",
-    avatars: ["K", "T"],
   },
 ];
 
@@ -194,6 +187,22 @@ function eventHeightPct(durationHours: number): number {
 
 function isFutureDate(date: string, todayDate: string): boolean {
   return date > todayDate;
+}
+
+function isFutureSlot(
+  date: string,
+  slotHour: number,
+  todayDate: string,
+  currentHour: number,
+): boolean {
+  return date === todayDate ? slotHour > currentHour : isFutureDate(date, todayDate);
+}
+
+function eventOverlapsSlot(event: CalendarEvent, slotHour: number): boolean {
+  return (
+    event.startHour <= slotHour &&
+    event.startHour + event.durationHours > slotHour
+  );
 }
 
 export default function DashboardCalendar({
@@ -515,8 +524,8 @@ export default function DashboardCalendar({
                         height: `calc(${eventHeightPct(event.durationHours)}% - 6px)`,
                       }}
                     >
-                      <div className="flex items-start justify-between gap-1 h-full">
-                        <div className="flex flex-col justify-center min-w-0 flex-1">
+                      <div className="flex h-full items-start">
+                        <div className="flex min-w-0 flex-1 flex-col justify-center">
                           <p
                             className={clsx(
                               "truncate text-[0.56rem] font-[600] leading-tight",
@@ -538,34 +547,6 @@ export default function DashboardCalendar({
                             {event.subtitle}
                           </p>
                         </div>
-                        {event.avatars && event.avatars.length > 0 && (
-                          <div className="flex items-center flex-none self-center">
-                            {event.avatars.map((initial, idx) => {
-                              const colors =
-                                event.variant === "dark"
-                                  ? AVATAR_COLORS_DARK
-                                  : AVATAR_COLORS_LIGHT;
-                              return (
-                                <div
-                                  key={`${event.id}-av-${idx}`}
-                                  className={clsx(
-                                    "flex items-center justify-center rounded-full w-[1rem] h-[1rem] text-[0.36rem] font-[700] border",
-                                    idx > 0 && "-ml-[0.3rem]",
-                                    event.variant === "dark"
-                                      ? "border-[#161c22] text-white"
-                                      : "border-white text-white",
-                                  )}
-                                  style={{
-                                    backgroundColor: colors[idx % colors.length],
-                                  }}
-                                  aria-hidden="true"
-                                >
-                                  {initial}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
@@ -588,7 +569,9 @@ export default function DashboardCalendar({
               <div />
               {displayDays.map((day) => {
                 const dayTodos = visibleWeekDaysByDate.get(day.date)?.todos ?? [];
-                const isFutureDay = isFutureDate(day.date, todayDate);
+                const dayEvents = visibleTimedEvents.filter(
+                  (event) => event.day === day.day,
+                );
 
                 return (
                   <div
@@ -600,11 +583,20 @@ export default function DashboardCalendar({
                   >
                     {timeSlots.map((slot, index) => {
                       const todo = dayTodos[index];
+                      const hasOverlappingEvent = dayEvents.some((event) =>
+                        eventOverlapsSlot(event, slot.hour),
+                      );
+                      const isFutureTodoSlot = isFutureSlot(
+                        day.date,
+                        slot.hour,
+                        todayDate,
+                        currentHour,
+                      );
                       const isCompleted =
-                        todo && !isFutureDay ? todo.done : false;
+                        todo && !isFutureTodoSlot ? todo.done : false;
                       const isDarkTodo = todo?.variant === "dark";
 
-                      if (!todo || !todo.task.trim()) {
+                      if (!todo || !todo.task.trim() || hasOverlappingEvent) {
                         return (
                           <div
                             key={`${day.date}-${slot.hour}`}
