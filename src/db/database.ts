@@ -214,7 +214,7 @@ export async function migrateLocalStorageData(): Promise<void> {
 
 // Bump this version string whenever the mock data changes — it clears
 // the old data and re-seeds so the UI always reflects the latest mock.
-const MOCK_SEED_VERSION = "nexstep:mock-seeded:v2";
+const MOCK_SEED_VERSION = "nexstep:mock-seeded:v3";
 
 export async function seedMockData(): Promise<void> {
   if (typeof window === "undefined") {
@@ -234,4 +234,3 @@ export async function seedMockData(): Promise<void> {
 
   localStorage.setItem(MOCK_SEED_VERSION, "true");
 }
-

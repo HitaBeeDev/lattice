@@ -4,7 +4,7 @@ import CalendarCard from "../components/dashboard/CalendarCard";
 import ProgressCard from "../components/dashboard/ProgressCard";
 import TimeTrackerCard from "../components/dashboard/TimeTrackerCard";
 import TodoOverviewCard from "../components/dashboard/TodoOverviewCard";
-import { mockTasks } from "../lib/mockData";
+import { useTasks } from "../context/TasksContext";
 const WEEKLY_OUTPUT_TARGET_MINUTES = 3200;
 
 const formatFocusLabel = (minutes: number): string => {
@@ -45,6 +45,7 @@ const getLocalIsoDate = (date: Date): string => {
 };
 
 function DashboardPage() {
+  const { tasks, handleCheckboxChange } = useTasks();
   const realTodayDate = getLocalIsoDate(new Date());
 
   const activeWeek =
@@ -69,7 +70,7 @@ function DashboardPage() {
       : Math.round((completedHabitsToday / totalDailyHabits) * 100);
   const focusMinutes = selectedDay.focusTimeMinutes;
   const sampleFocusHours = formatFocusLabel(focusMinutes);
-  const todayTasks = mockTasks.filter((task) => task.date === realTodayDate);
+  const todayTasks = tasks.filter((task) => task.date === realTodayDate);
 
   const focusChartData = activeWeek.days.map((day) => {
     const focusTimeMinutes = day.focusTimeMinutes;
@@ -147,7 +148,7 @@ function DashboardPage() {
             multiDayTasks={[]}
           />
 
-          <TodoOverviewCard tasks={todayTasks} />
+          <TodoOverviewCard tasks={todayTasks} onToggleTask={handleCheckboxChange} />
 
           <TimeTrackerCard />
 

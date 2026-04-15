@@ -25,6 +25,7 @@ export interface TasksContextValue {
   groupedTasks: Record<string, Task[]>;
   checkedTasks: string[];
   handleCheckboxChange: (taskId: string) => void;
+  handleTaskProgressChange: (taskId: string) => void;
   sortedTasks: [string, Task[]][];
 }
 
@@ -160,6 +161,19 @@ export function useTasks(): TasksContextValue {
     });
   }, [tasks]);
 
+  const handleTaskProgressChange = useCallback((taskId: string): void => {
+    const task = tasks.find((entry) => entry.id === taskId);
+    if (!task || task.isCompleted) {
+      return;
+    }
+
+    void db.tasks.put({
+      ...task,
+      status: task.status === "in_progress" ? "pending" : "in_progress",
+      updatedAt: new Date().toISOString(),
+    });
+  }, [tasks]);
+
   const groupedTasks = useMemo<Record<string, Task[]>>(
     () =>
       tasks.reduce<Record<string, Task[]>>((accumulator, task) => {
@@ -194,6 +208,7 @@ export function useTasks(): TasksContextValue {
     groupedTasks,
     checkedTasks,
     handleCheckboxChange,
+    handleTaskProgressChange,
     sortedTasks,
   };
 }

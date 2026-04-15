@@ -14,6 +14,7 @@ import type { Task } from "../../types/task";
 
 type TodoOverviewCardProps = {
   tasks: Task[];
+  onToggleTask?: (taskId: string) => void;
 };
 
 type TodoVisual = {
@@ -80,53 +81,28 @@ const TASK_VISUALS: TodoVisual[] = [
 const formatTimeRange = (task: Task): string =>
   `${task.startTime} - ${task.endTime}`;
 
-const toMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(":").map(Number);
-  return hours * 60 + minutes;
-};
-
-const isTaskInProgress = (task: Task, nowMinutes: number): boolean => {
-  if (task.isCompleted) {
-    return false;
-  }
-
-  const startMinutes = toMinutes(task.startTime);
-  const endMinutes = toMinutes(task.endTime);
-
-  return nowMinutes >= startMinutes && nowMinutes < endMinutes;
-};
-
 const MAX_CARD_TASKS = 5;
 
 export default function TodoOverviewCard({
   tasks,
+  onToggleTask,
 }: TodoOverviewCardProps): React.ReactElement {
   const navigate = useNavigate();
   const listAreaRef = useRef<HTMLUListElement | null>(null);
   const sampleRowRef = useRef<HTMLLIElement | null>(null);
   const [visibleTaskCount, setVisibleTaskCount] = useState(MAX_CARD_TASKS);
-  const [displayTasks, setDisplayTasks] = useState<Task[]>(() =>
-    tasks.length > 0 ? tasks : FALLBACK_TASKS,
-  );
-
-  useEffect(() => {
-    setDisplayTasks(tasks.length > 0 ? tasks : FALLBACK_TASKS);
-  }, [tasks]);
-
-  const visibleTasks = displayTasks.slice(
+  const visibleTasks = (tasks.length > 0 ? tasks : FALLBACK_TASKS).slice(
     0,
     MAX_CARD_TASKS,
   );
-  const now = new Date();
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
   const visibleListTasks = visibleTasks.slice(0, visibleTaskCount);
   const hiddenTaskCount = Math.max(
     visibleTasks.length - visibleListTasks.length,
     0,
   );
   const completedCount = visibleTasks.filter((task) => task.isCompleted).length;
-  const inProgressCount = visibleTasks.filter((task) =>
-    isTaskInProgress(task, nowMinutes),
+  const inProgressCount = visibleTasks.filter(
+    (task) => task.status === "in_progress" && !task.isCompleted,
   ).length;
   const remainingCount = Math.max(
     visibleTasks.length - completedCount - inProgressCount,
@@ -164,20 +140,6 @@ export default function TodoOverviewCard({
   ];
   const handleOpenTasks = (): void => {
     navigate("/tasks");
-  };
-
-  const handleToggleTask = (taskId: string): void => {
-    setDisplayTasks((currentTasks) =>
-      currentTasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              isCompleted: !task.isCompleted,
-              status: task.isCompleted ? "pending" : "completed",
-            }
-          : task,
-      ),
-    );
   };
 
   useEffect(() => {
@@ -322,7 +284,7 @@ export default function TodoOverviewCard({
 
                   <button
                     type="button"
-                    onClick={() => handleToggleTask(task.id)}
+                    onClick={() => onToggleTask?.(task.id)}
                     aria-label={
                       task.isCompleted
                         ? `Mark ${task.name} as not completed`
@@ -333,6 +295,7 @@ export default function TodoOverviewCard({
                         ? "bg-[#72e1ee]"
                         : "border border-white/16 bg-white/5"
                     }`}
+                    disabled={!onToggleTask}
                   >
                     {task.isCompleted ? (
                       <Check
@@ -362,7 +325,9 @@ export default function TodoOverviewCard({
               View all tasks
             </button>
           ) : (
-            <span>{pendingCount} left</span>
+            <span className="text-[0.7rem] text-[#f9fafb] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20">
+              {pendingCount} left
+            </span>
           )}
         </div>
       </div>

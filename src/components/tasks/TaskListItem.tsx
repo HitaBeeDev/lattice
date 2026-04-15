@@ -9,10 +9,11 @@ type TaskListItemProps = {
     isChecked: boolean;
     onDelete: () => void;
     onEdit: () => void;
+    onMarkInProgress: () => void;
     onToggle: () => void;
     task: Task;
 };
-export default function TaskListItem({ isChecked, onDelete, onEdit, onToggle, task, }: TaskListItemProps) {
+export default function TaskListItem({ isChecked, onDelete, onEdit, onMarkInProgress, onToggle, task, }: TaskListItemProps) {
     const checkboxId = `task-complete-${task.id}`;
     return (<li>
       <div>
@@ -38,6 +39,9 @@ export default function TaskListItem({ isChecked, onDelete, onEdit, onToggle, ta
         </div>
 
         <div>
+          {!task.isCompleted ? (<Button onClick={onMarkInProgress} size="sm" variant="ghost">
+              {task.status === "in_progress" ? "Stop progress" : "Start task"}
+            </Button>) : null}
           <Button onClick={onEdit} size="sm" variant="ghost">
             Edit
           </Button>

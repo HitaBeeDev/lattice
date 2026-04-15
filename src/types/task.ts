@@ -1,7 +1,7 @@
 export const TASK_PRIORITIES = ["High", "Medium", "Low"] as const;
 export type Priority = (typeof TASK_PRIORITIES)[number];
 
-export const TASK_STATUSES = ["pending", "completed"] as const;
+export const TASK_STATUSES = ["pending", "in_progress", "completed"] as const;
 export type TaskStatus = (typeof TASK_STATUSES)[number];
 
 export interface TaskTag {
