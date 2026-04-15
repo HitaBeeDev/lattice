@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import clsx from "clsx";
 import type {
@@ -86,6 +86,8 @@ const FIRST_VISIBLE_HOUR = 6;
 const LAST_VISIBLE_START_HOUR = 20;
 const MULTI_DAY_ROW_HEIGHT_PX = 20;
 const MULTI_DAY_ROW_GAP_PX = 2;
+const DAY_COLUMN_GAP_PX = 6;
+const TODO_SLOT_VERTICAL_INSET_PX = 3;
 
 // Mock calendar events — only visible on the data week (March 23–28)
 const TIMED_EVENTS: CalendarEvent[] = [
@@ -310,11 +312,10 @@ export default function DashboardCalendar({
   );
 
   const headerLabel = `${MONTH_NAMES[currentMonday.getMonth()]} ${currentMonday.getFullYear()}`;
-  // Column 1 = 48px time label; columns 2-4 = Mon-Wed; column 5 = 8px mid-week gap; columns 6-9 = Thu-Sun
-  const GRID_COLS = "48px 1fr 1fr 1fr 8px 1fr 1fr 1fr 1fr";
+  const GRID_COLS = "48px repeat(7, minmax(0, 1fr))";
 
   /** Maps a day index (0=Mon … 6=Sun) to its 1-based grid column number. */
-  const dayIndexToGridCol = (i: number): number => (i < 3 ? i + 2 : i + 3);
+  const dayIndexToGridCol = (i: number): number => i + 2;
   const handlePreviousWeek = (
     event: React.MouseEvent<HTMLButtonElement>,
   ): void => {
@@ -358,29 +359,26 @@ export default function DashboardCalendar({
       {/* ── Day headers ── */}
       <div
         className="grid flex-none"
-        style={{ gridTemplateColumns: GRID_COLS }}
+        style={{ gridTemplateColumns: GRID_COLS, columnGap: `${DAY_COLUMN_GAP_PX}px` }}
       >
         <div />
         {displayDays.map((day) => {
           const isToday = day.date === todayDate;
           const dateNum = parseInt(day.date.split("-")[2], 10);
           return (
-            <Fragment key={day.date}>
-              <div className="flex flex-col items-center gap-[0.2rem]">
-                <span className="text-[0.52rem] font-[400] uppercase tracking-[0.07em] text-[#a0a6ab]">
-                  {WEEKDAY_ABBR[day.day]}
-                </span>
-                <span
-                  className={clsx(
-                    "flex h-[1.3rem] w-[1.3rem] items-center justify-center rounded-full text-[0.75rem] font-[500] leading-none",
-                    isToday ? "bg-[#72e1ee] text-[#0a1929]" : "text-[#3d454b]",
-                  )}
-                >
-                  {dateNum}
-                </span>
-              </div>
-              {day.day === "Wednesday" && <div />}
-            </Fragment>
+            <div key={day.date} className="flex flex-col items-center gap-[0.2rem]">
+              <span className="text-[0.52rem] font-[400] uppercase tracking-[0.07em] text-[#a0a6ab]">
+                {WEEKDAY_ABBR[day.day]}
+              </span>
+              <span
+                className={clsx(
+                  "flex h-[1.3rem] w-[1.3rem] items-center justify-center rounded-full text-[0.75rem] font-[500] leading-none",
+                  isToday ? "bg-[#72e1ee] text-[#0a1929]" : "text-[#3d454b]",
+                )}
+              >
+                {dateNum}
+              </span>
+            </div>
           );
         })}
       </div>
@@ -408,7 +406,7 @@ export default function DashboardCalendar({
                   className="absolute grid w-full"
                   style={{
                     gridTemplateColumns: GRID_COLS,
-                    columnGap: "4px",
+                    columnGap: `${DAY_COLUMN_GAP_PX}px`,
                     top: `${topPx}px`,
                     height: `${MULTI_DAY_ROW_HEIGHT_PX}px`,
                   }}
@@ -481,14 +479,14 @@ export default function DashboardCalendar({
             className="absolute inset-x-0 bottom-0 grid"
             style={{
               gridTemplateColumns: GRID_COLS,
-              columnGap: "4px",
+              columnGap: `${DAY_COLUMN_GAP_PX}px`,
               top: `${MULTI_DAY_BAND_HEIGHT_PX}px`,
             }}
           >
             <div />
             {displayDays.map((day) => (
-              <Fragment key={day.date}>
                 <div
+                  key={day.date}
                   className={clsx(
                     "grid h-full rounded-lg border border-dashed border-[#c0d4dc]/40",
                     day.date === todayDate && "bg-white/20",
@@ -497,8 +495,6 @@ export default function DashboardCalendar({
                     gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))`,
                   }}
                 />
-                {day.day === "Wednesday" && <div />}
-              </Fragment>
             ))}
           </div>
 
@@ -507,7 +503,7 @@ export default function DashboardCalendar({
             className="absolute inset-x-0 bottom-0 grid"
             style={{
               gridTemplateColumns: GRID_COLS,
-              columnGap: "4px",
+              columnGap: `${DAY_COLUMN_GAP_PX}px`,
               top: `${MULTI_DAY_BAND_HEIGHT_PX}px`,
             }}
           >
@@ -517,8 +513,7 @@ export default function DashboardCalendar({
                 (e) => e.day === day.day,
               );
               return (
-                <Fragment key={day.date}>
-                <div className="relative h-full min-w-0 overflow-hidden">
+                <div key={day.date} className="relative h-full min-w-0 overflow-hidden">
                   {dayEvents.map((event) => (
                     <div
                       key={event.id}
@@ -560,8 +555,6 @@ export default function DashboardCalendar({
                     </div>
                   ))}
                 </div>
-                {day.day === "Wednesday" && <div />}
-              </Fragment>
               );
             })}
           </div>
@@ -572,90 +565,82 @@ export default function DashboardCalendar({
               className="absolute inset-x-0 bottom-0 grid"
               style={{
                 gridTemplateColumns: GRID_COLS,
-                gridTemplateRows: "1fr",
-                columnGap: "6px",
+                gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))`,
+                columnGap: `${DAY_COLUMN_GAP_PX}px`,
+                rowGap: `${TODO_SLOT_VERTICAL_INSET_PX * 2}px`,
                 top: `${MULTI_DAY_BAND_HEIGHT_PX}px`,
               }}
             >
-              <div />
-              {displayDays.map((day) => {
+              {timeSlots.map((slot) => (
+                <div key={slot.label} />
+              ))}
+              {displayDays.flatMap((day, dayIndex) => {
                 const dayTodos = visibleWeekDaysByDate.get(day.date)?.todos ?? [];
                 const dayEvents = visibleTimedEvents.filter(
                   (event) => event.day === day.day,
                 );
 
-                return (
-                  <Fragment key={day.date}>
-                  <div
-                    className="grid h-full min-w-0 gap-[0.3rem]"
-                    style={{
-                      gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))`,
-                    }}
-                  >
-                    {timeSlots.map((slot, index) => {
-                      const todo = dayTodos[index];
-                      const hasOverlappingEvent = dayEvents.some((event) =>
-                        eventOverlapsSlot(event, slot.hour),
-                      );
-                      const isFutureTodoSlot = isFutureSlot(
-                        day.date,
-                        slot.hour,
-                        todayDate,
-                        currentHour,
-                      );
-                      const isCompleted =
-                        todo && !isFutureTodoSlot ? todo.done : false;
-                      const isDarkTodo = todo?.variant === "dark";
+                return timeSlots.map((slot, slotIndex) => {
+                  const todo = dayTodos[slotIndex];
+                  const hasOverlappingEvent = dayEvents.some((event) =>
+                    eventOverlapsSlot(event, slot.hour),
+                  );
+                  const isFutureTodoSlot = isFutureSlot(
+                    day.date,
+                    slot.hour,
+                    todayDate,
+                    currentHour,
+                  );
+                  const isCompleted =
+                    todo && !isFutureTodoSlot ? todo.done : false;
+                  const isDarkTodo = todo?.variant === "dark";
 
-                      if (!todo || !todo.task.trim() || hasOverlappingEvent) {
-                        return (
-                          <div
-                            key={`${day.date}-${slot.hour}`}
-                            className="h-full"
-                          />
-                        );
-                      }
+                  if (!todo || !todo.task.trim() || hasOverlappingEvent) {
+                    return (
+                      <div
+                        key={`${day.date}-${slot.hour}`}
+                        className="min-h-0"
+                        style={{
+                          gridColumn: dayIndex + 2,
+                          gridRow: slotIndex + 1,
+                        }}
+                      />
+                    );
+                  }
 
-                      return (
-                        <div key={todo.task} className="h-full min-h-0">
-                          <div
-                            className={clsx(
-                              "relative z-[2] flex h-full min-h-0 min-w-0 items-center justify-start overflow-hidden rounded-[0.3rem] px-[0.45rem]",
-                              isDarkTodo
-                                ? "bg-[#161c22]"
-                                : isCompleted
-                                ? "bg-[#d8edf1]/70"
-                                : "bg-white/90 shadow-[0_1px_4px_rgba(0,0,0,0.06)]",
-                            )}
-                            style={{
-                              width:
-                                todo.spanDays && todo.spanDays > 1
-                                  ? `calc(${todo.spanDays * 100}% + ${(todo.spanDays - 1) * 6}px)`
-                                  : "100%",
-                            }}
-                          >
-                            <p
-                              className={clsx(
-                                "overflow-hidden text-[0.56rem] font-[600] leading-tight break-words [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]",
-                                isDarkTodo
-                                  ? "text-white"
-                                  : isCompleted
-                                  ? "text-[#8c959c] line-through"
-                                  : day.date === todayDate
-                                    ? "text-[#161c22]"
-                                    : "text-[#2c353c]",
-                              )}
-                            >
-                              {todo.task}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {day.day === "Wednesday" && <div />}
-                  </Fragment>
-                );
+                  return (
+                    <div
+                      key={todo.task}
+                      className={clsx(
+                        "relative z-[2] flex min-h-0 min-w-0 items-center justify-start overflow-hidden rounded-[0.3rem] px-[0.45rem]",
+                        isDarkTodo
+                          ? "bg-[#161c22]"
+                          : isCompleted
+                          ? "bg-[#d8edf1]/70"
+                          : "bg-white/90 shadow-[0_1px_4px_rgba(0,0,0,0.06)]",
+                      )}
+                      style={{
+                        gridColumn: dayIndex + 2,
+                        gridRow: slotIndex + 1,
+                      }}
+                    >
+                      <p
+                        className={clsx(
+                          "overflow-hidden text-[0.56rem] font-[600] leading-tight break-words [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]",
+                          isDarkTodo
+                            ? "text-white"
+                            : isCompleted
+                            ? "text-[#8c959c] line-through"
+                            : day.date === todayDate
+                              ? "text-[#161c22]"
+                              : "text-[#2c353c]",
+                        )}
+                      >
+                        {todo.task}
+                      </p>
+                    </div>
+                  );
+                });
               })}
             </div>
           )}

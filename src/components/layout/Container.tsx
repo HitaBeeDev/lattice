@@ -14,8 +14,8 @@ function Container({ children }: ContainerProps) {
     <div
       className={
         isDashboardRoute
-          ? "flex h-[100dvh] flex-col overflow-hidden p-8"
-          : "flex min-h-screen flex-col"
+          ? "flex min-h-screen flex-col px-5 pb-6 pt-24 sm:px-6 lg:px-8"
+          : "flex min-h-screen flex-col px-5 pb-8 pt-24 sm:px-6 lg:px-8"
       }
     >
       <a
@@ -25,7 +25,11 @@ function Container({ children }: ContainerProps) {
         Skip to main content
       </a>
       <TopNav />
-      <div className={isDashboardRoute ? "flex-1 min-h-0 overflow-hidden" : ""}>
+      <div
+        className={
+          isDashboardRoute ? "flex min-h-0 flex-1 overflow-hidden" : "flex-1"
+        }
+      >
         {children}
       </div>
     </div>

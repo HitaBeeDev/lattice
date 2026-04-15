@@ -24,7 +24,7 @@ function StatsBar({
   completedPomodoros,
 }: StatsBarProps) {
   return (
-    <div className="flex flex-row items-center justify-between mt-6">
+    <div className="flex flex-row items-center justify-between mt-2">
       {/* Left Section */}
       <div className="flex flex-row items-center gap-[0.4rem]">
         {/* Tasks pill */}

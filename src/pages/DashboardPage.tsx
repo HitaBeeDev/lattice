@@ -226,7 +226,11 @@ function DashboardPage() {
       const realCount = weekDateMap.get(entry.date);
 
       if (realCount !== undefined) {
-        return { ...entry, completedHabits: realCount, totalHabits: totalHabitsCount };
+        return {
+          ...entry,
+          completedHabits: realCount,
+          totalHabits: totalHabitsCount,
+        };
       }
 
       return entry;
@@ -237,7 +241,7 @@ function DashboardPage() {
     <main className="h-full overflow-hidden" id="main-content" tabIndex={-1}>
       <div className="h-full min-w-[1280px] flex flex-col">
         {/* Row 1: Welcome Section */}
-        <div className="mt-2">
+        <div className="mt-8">
           <p className="font-['Inter'] font-[300] text-[2.1rem] text-[#060a0f]">
             Welcome in, {mockUser.name}
           </p>
@@ -274,7 +278,10 @@ function DashboardPage() {
             multiDayTasks={[]}
           />
 
-          <TodoOverviewCard tasks={todayTasks} onToggleTask={handleCheckboxChange} />
+          <TodoOverviewCard
+            tasks={todayTasks}
+            onToggleTask={handleCheckboxChange}
+          />
 
           <TimeTrackerCard />
 

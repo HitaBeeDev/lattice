@@ -95,7 +95,7 @@ export default function TimeTrackerCard(): React.ReactElement {
       </div>
 
       <div className="flex items-center justify-center flex-1">
-        <div className="fixed h-[12rem] w-[12rem] pointer-events-none">
+        <div className="relative h-[12rem] w-[12rem] pointer-events-none">
           <svg
             viewBox="0 0 140 140"
             className="absolute inset-0 w-full h-full -rotate-90"

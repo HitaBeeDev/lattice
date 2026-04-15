@@ -3,8 +3,17 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+    color: #0a1929;
   }
 
   h1,
@@ -14,5 +23,12 @@
   h5,
   h6 {
     font-family: "Sora", "Inter", "Avenir Next", "Segoe UI", sans-serif;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
   }
 }
