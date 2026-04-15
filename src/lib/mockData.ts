@@ -2,9 +2,22 @@ import type { Habit } from "../types/habit";
 import type { Task } from "../types/task";
 import type { TimerAnalytics } from "../types/pomodoro";
 
-// Today: 2026-04-14 (Tuesday). Week: Mon=0 … Sun=6, so today = index 1.
-// days[i] = true  → habit was completed on that day this week
-// days[i] = false → not completed
+// Dates are always computed relative to TODAY so the demo data stays current
+// regardless of when the app is opened.
+
+const getLocalIsoDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+/** Returns an ISO date string offset by `days` from today (local timezone). */
+const relativeDay = (offset: number): string => {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  return getLocalIsoDate(date);
+};
 
 export const mockUser = {
   name: "Layla",
@@ -14,19 +27,23 @@ const buildCurrentWeekFocusSeconds = (): Record<string, number> => {
   const today = new Date();
   const currentDay = today.getDay();
   const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + mondayOffset);
+  const todayStr = getLocalIsoDate(today);
 
+  // Only seed PAST days — today and future start at 0 so real sessions
+  // accumulate from scratch and the progress card stays accurate.
   const focusHours = [1.1, 6.1, 5.4, 4.6, 5.8, 5.4, 1.2];
 
-  return Object.fromEntries(
-    focusHours.map((hours, index) => {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + index);
+  const entries = focusHours
+    .map((hours, index) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() + mondayOffset + index);
+      const dateStr = getLocalIsoDate(date);
+      if (dateStr >= todayStr) return null;
+      return [dateStr, Math.round(hours * 3600)] as [string, number];
+    })
+    .filter((entry): entry is [string, number] => entry !== null);
 
-      return [date.toISOString().slice(0, 10), Math.round(hours * 3600)];
-    }),
-  );
+  return Object.fromEntries(entries);
 };
 
 export const mockTimerAnalytics: TimerAnalytics = {
@@ -44,7 +61,7 @@ export const mockHabits: Habit[] = [
     description: "10 minutes of mindful breathing",
     category: "mindfulness",
     targetPerWeek: 7,
-    days: [true, true, false, false, false, false, false],
+    days: [true, true, true, false, false, false, false],
     isArchived: false,
     createdAt: "2026-04-01T08:00:00.000Z",
     updatedAt: "2026-04-14T08:10:00.000Z",
@@ -55,7 +72,7 @@ export const mockHabits: Habit[] = [
     description: "At least 30 minutes of physical activity",
     category: "fitness",
     targetPerWeek: 5,
-    days: [true, true, false, false, false, false, false],
+    days: [true, true, true, false, false, false, false],
     isArchived: false,
     createdAt: "2026-04-01T08:00:00.000Z",
     updatedAt: "2026-04-14T07:45:00.000Z",
@@ -77,7 +94,7 @@ export const mockHabits: Habit[] = [
     description: "Stay hydrated throughout the day",
     category: "health",
     targetPerWeek: 7,
-    days: [true, true, false, false, false, false, false],
+    days: [true, true, true, false, false, false, false],
     isArchived: false,
     createdAt: "2026-04-01T08:00:00.000Z",
     updatedAt: "2026-04-14T14:00:00.000Z",
@@ -110,12 +127,19 @@ export const mockHabits: Habit[] = [
     description: "Hit the daily step goal",
     category: "fitness",
     targetPerWeek: 7,
-    days: [true, true, false, false, false, false, false],
+    days: [true, true, true, false, false, false, false],
     isArchived: false,
     createdAt: "2026-04-01T08:00:00.000Z",
     updatedAt: "2026-04-14T18:30:00.000Z",
   },
 ];
+
+// Task dates are relative to today so the demo always shows live data:
+//   relativeDay(0)  = today
+//   relativeDay(-1) = yesterday
+//   relativeDay(1)  = tomorrow
+//   relativeDay(2)  = day after tomorrow
+//   relativeDay(7)  = one week from today
 
 export const mockTasks: Task[] = [
   // Today — completed
@@ -123,7 +147,7 @@ export const mockTasks: Task[] = [
     id: "task-mock-1",
     name: "Review project proposal",
     description: "Go through the Q2 proposal and leave comments",
-    date: "2026-04-14",
+    date: relativeDay(0),
     startTime: "09:00",
     endTime: "10:00",
     priority: "High",
@@ -131,14 +155,14 @@ export const mockTasks: Task[] = [
     status: "completed",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-13T20:00:00.000Z",
-    updatedAt: "2026-04-14T10:05:00.000Z",
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
     id: "task-mock-2",
     name: "Team standup meeting",
     description: "Daily sync with the team",
-    date: "2026-04-14",
+    date: relativeDay(0),
     startTime: "10:30",
     endTime: "11:00",
     priority: "Medium",
@@ -146,15 +170,15 @@ export const mockTasks: Task[] = [
     status: "completed",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-13T20:00:00.000Z",
-    updatedAt: "2026-04-14T11:02:00.000Z",
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   // Today — pending
   {
     id: "task-mock-3",
     name: "Write unit tests",
     description: "Add test coverage for the auth module",
-    date: "2026-04-14",
+    date: relativeDay(0),
     startTime: "13:00",
     endTime: "15:00",
     priority: "Medium",
@@ -162,14 +186,14 @@ export const mockTasks: Task[] = [
     status: "pending",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-13T20:00:00.000Z",
-    updatedAt: "2026-04-13T20:00:00.000Z",
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 86400000).toISOString(),
   },
   {
     id: "task-mock-4",
     name: "Update documentation",
     description: "Sync README with latest API changes",
-    date: "2026-04-14",
+    date: relativeDay(0),
     startTime: "15:00",
     endTime: "16:00",
     priority: "Low",
@@ -177,14 +201,14 @@ export const mockTasks: Task[] = [
     status: "pending",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-13T20:00:00.000Z",
-    updatedAt: "2026-04-13T20:00:00.000Z",
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 86400000).toISOString(),
   },
   {
     id: "task-mock-5",
     name: "Fix login redirect bug",
     description: "Users are occasionally stuck on a blank screen after OAuth",
-    date: "2026-04-14",
+    date: relativeDay(0),
     startTime: "16:00",
     endTime: "17:30",
     priority: "High",
@@ -192,15 +216,15 @@ export const mockTasks: Task[] = [
     status: "pending",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-13T20:00:00.000Z",
-    updatedAt: "2026-04-13T20:00:00.000Z",
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 86400000).toISOString(),
   },
   // Yesterday — completed
   {
     id: "task-mock-6",
     name: "Design mockups",
     description: "Figma wireframes for the new settings page",
-    date: "2026-04-13",
+    date: relativeDay(-1),
     startTime: "10:00",
     endTime: "12:00",
     priority: "High",
@@ -208,14 +232,14 @@ export const mockTasks: Task[] = [
     status: "completed",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-12T18:00:00.000Z",
-    updatedAt: "2026-04-13T12:15:00.000Z",
+    createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 86400000).toISOString(),
   },
   {
     id: "task-mock-7",
     name: "Client presentation",
     description: "Present progress to stakeholders",
-    date: "2026-04-13",
+    date: relativeDay(-1),
     startTime: "14:00",
     endTime: "15:00",
     priority: "High",
@@ -223,15 +247,15 @@ export const mockTasks: Task[] = [
     status: "completed",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-12T18:00:00.000Z",
-    updatedAt: "2026-04-13T15:10:00.000Z",
+    createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 86400000).toISOString(),
   },
-  // Upcoming
+  // Tomorrow
   {
     id: "task-mock-8",
     name: "Sprint planning",
     description: "Plan tasks for the next two-week sprint",
-    date: "2026-04-15",
+    date: relativeDay(1),
     startTime: "09:00",
     endTime: "11:00",
     priority: "Medium",
@@ -239,14 +263,14 @@ export const mockTasks: Task[] = [
     status: "pending",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-14T09:00:00.000Z",
-    updatedAt: "2026-04-14T09:00:00.000Z",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
     id: "task-mock-9",
     name: "Design review",
     description: "Review the updated dashboard layout with product",
-    date: "2026-04-15",
+    date: relativeDay(1),
     startTime: "11:30",
     endTime: "12:15",
     priority: "Medium",
@@ -254,14 +278,14 @@ export const mockTasks: Task[] = [
     status: "completed",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-14T10:00:00.000Z",
-    updatedAt: "2026-04-15T12:20:00.000Z",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
     id: "task-mock-10",
     name: "Refactor calendar card",
     description: "Clean up spacing and slot-state logic in the dashboard calendar",
-    date: "2026-04-15",
+    date: relativeDay(1),
     startTime: "13:00",
     endTime: "14:30",
     priority: "High",
@@ -269,14 +293,14 @@ export const mockTasks: Task[] = [
     status: "pending",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-14T11:00:00.000Z",
-    updatedAt: "2026-04-14T11:00:00.000Z",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
     id: "task-mock-11",
     name: "Write release notes",
     description: "Draft the release summary for this week's changes",
-    date: "2026-04-15",
+    date: relativeDay(1),
     startTime: "15:00",
     endTime: "16:00",
     priority: "Low",
@@ -284,14 +308,15 @@ export const mockTasks: Task[] = [
     status: "pending",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-14T12:00:00.000Z",
-    updatedAt: "2026-04-14T12:00:00.000Z",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
+  // Day after tomorrow
   {
     id: "task-mock-12",
     name: "Code review",
     description: "Review open pull requests from the team",
-    date: "2026-04-16",
+    date: relativeDay(2),
     startTime: "13:00",
     endTime: "14:00",
     priority: "Medium",
@@ -299,14 +324,15 @@ export const mockTasks: Task[] = [
     status: "pending",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-14T09:00:00.000Z",
-    updatedAt: "2026-04-14T09:00:00.000Z",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
+  // Next week
   {
     id: "task-mock-13",
     name: "Deploy to staging",
     description: "Push the release candidate to the staging environment",
-    date: "2026-04-21",
+    date: relativeDay(7),
     startTime: "11:00",
     endTime: "12:30",
     priority: "High",
@@ -314,7 +340,7 @@ export const mockTasks: Task[] = [
     status: "pending",
     tags: [],
     subtasks: [],
-    createdAt: "2026-04-14T09:00:00.000Z",
-    updatedAt: "2026-04-14T09:00:00.000Z",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
 ];

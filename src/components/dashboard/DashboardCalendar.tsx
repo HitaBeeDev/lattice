@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import clsx from "clsx";
 import type {
@@ -254,11 +254,13 @@ export default function DashboardCalendar({
         )
         .filter((i) => i !== -1);
       if (covered.length === 0) return [];
-      return [
+      const firstCol = dayIndexToGridCol(covered[0]);
+      const lastCol = dayIndexToGridCol(covered[covered.length - 1]);
+    return [
         {
           ...task,
-          colStart: covered[0] + 2,
-          span: covered[covered.length - 1] - covered[0] + 1,
+          colStart: firstCol,
+          span: lastCol - firstCol + 1,
         },
       ];
     })
@@ -308,7 +310,11 @@ export default function DashboardCalendar({
   );
 
   const headerLabel = `${MONTH_NAMES[currentMonday.getMonth()]} ${currentMonday.getFullYear()}`;
-  const GRID_COLS = "48px repeat(7, 1fr)";
+  // Column 1 = 48px time label; columns 2-4 = Mon-Wed; column 5 = 8px mid-week gap; columns 6-9 = Thu-Sun
+  const GRID_COLS = "48px 1fr 1fr 1fr 8px 1fr 1fr 1fr 1fr";
+
+  /** Maps a day index (0=Mon … 6=Sun) to its 1-based grid column number. */
+  const dayIndexToGridCol = (i: number): number => (i < 3 ? i + 2 : i + 3);
   const handlePreviousWeek = (
     event: React.MouseEvent<HTMLButtonElement>,
   ): void => {
@@ -359,22 +365,22 @@ export default function DashboardCalendar({
           const isToday = day.date === todayDate;
           const dateNum = parseInt(day.date.split("-")[2], 10);
           return (
-            <div
-              key={day.date}
-              className="flex flex-col items-center gap-[0.2rem]"
-            >
-              <span className="text-[0.52rem] font-[400] uppercase tracking-[0.07em] text-[#a0a6ab]">
-                {WEEKDAY_ABBR[day.day]}
-              </span>
-              <span
-                className={clsx(
-                  "flex h-[1.3rem] w-[1.3rem] items-center justify-center rounded-full text-[0.75rem] font-[500] leading-none",
-                  isToday ? "bg-[#72e1ee] text-[#0a1929]" : "text-[#3d454b]",
-                )}
-              >
-                {dateNum}
-              </span>
-            </div>
+            <Fragment key={day.date}>
+              <div className="flex flex-col items-center gap-[0.2rem]">
+                <span className="text-[0.52rem] font-[400] uppercase tracking-[0.07em] text-[#a0a6ab]">
+                  {WEEKDAY_ABBR[day.day]}
+                </span>
+                <span
+                  className={clsx(
+                    "flex h-[1.3rem] w-[1.3rem] items-center justify-center rounded-full text-[0.75rem] font-[500] leading-none",
+                    isToday ? "bg-[#72e1ee] text-[#0a1929]" : "text-[#3d454b]",
+                  )}
+                >
+                  {dateNum}
+                </span>
+              </div>
+              {day.day === "Wednesday" && <div />}
+            </Fragment>
           );
         })}
       </div>
@@ -481,16 +487,18 @@ export default function DashboardCalendar({
           >
             <div />
             {displayDays.map((day) => (
-              <div
-                key={day.date}
-                className={clsx(
-                  "grid h-full rounded-lg border border-dashed border-[#c0d4dc]/40",
-                  day.date === todayDate && "bg-white/20",
-                )}
-                style={{
-                  gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))`,
-                }}
-              />
+              <Fragment key={day.date}>
+                <div
+                  className={clsx(
+                    "grid h-full rounded-lg border border-dashed border-[#c0d4dc]/40",
+                    day.date === todayDate && "bg-white/20",
+                  )}
+                  style={{
+                    gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))`,
+                  }}
+                />
+                {day.day === "Wednesday" && <div />}
+              </Fragment>
             ))}
           </div>
 
@@ -509,7 +517,8 @@ export default function DashboardCalendar({
                 (e) => e.day === day.day,
               );
               return (
-                <div key={day.date} className="relative h-full min-w-0 overflow-hidden">
+                <Fragment key={day.date}>
+                <div className="relative h-full min-w-0 overflow-hidden">
                   {dayEvents.map((event) => (
                     <div
                       key={event.id}
@@ -551,6 +560,8 @@ export default function DashboardCalendar({
                     </div>
                   ))}
                 </div>
+                {day.day === "Wednesday" && <div />}
+              </Fragment>
               );
             })}
           </div>
@@ -574,8 +585,8 @@ export default function DashboardCalendar({
                 );
 
                 return (
+                  <Fragment key={day.date}>
                   <div
-                    key={day.date}
                     className="grid h-full min-w-0 gap-[0.3rem]"
                     style={{
                       gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))`,
@@ -642,6 +653,8 @@ export default function DashboardCalendar({
                       );
                     })}
                   </div>
+                  {day.day === "Wednesday" && <div />}
+                  </Fragment>
                 );
               })}
             </div>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import articles from "../components/pomodoro/articles";
 import type { TimerAnalytics, TimerSessionHistoryEntry } from "../types/pomodoro";
 import { mockTimerAnalytics } from "../lib/mockData";
@@ -28,7 +28,6 @@ interface PersistedTimerState {
 export interface TimeTrackerContextValue {
   totalSeconds: number;
   maxSeconds: number;
-  timerId: ReturnType<typeof setInterval> | null;
   isTimerActive: boolean;
   isEditing: boolean;
   sessionType: SessionType;
@@ -40,6 +39,7 @@ export interface TimeTrackerContextValue {
   handleSessionChange: (type: SessionType) => void;
   handleStart: () => void;
   handlePause: () => void;
+  handleComplete: () => void;
   handleReset: () => void;
   handleUpdateTime: (minutes: number) => void;
   toggleEdit: () => void;
@@ -66,7 +66,8 @@ const SESSION_DURATIONS: Record<SessionType, number> = {
 const INITIAL_TOTAL_SECONDS = SESSION_DURATIONS.Pomodoro;
 const TIMER_RADIUS = 80;
 const TIMER_STATE_STORAGE_KEY = "timer-session-state";
-const TIMER_ANALYTICS_STORAGE_KEY = "timer-session-analytics";
+// Bumped to v2: resets stale mock-seeded analytics so today starts at 0.
+const TIMER_ANALYTICS_STORAGE_KEY = "timer-session-analytics-v2";
 
 const createInitialTimerState = (): PersistedTimerState => ({
   totalSeconds: INITIAL_TOTAL_SECONDS,
@@ -93,7 +94,13 @@ const buildProjectRemainingTimes = (
     ])
   );
 
-const getTodayKey = (date: Date = new Date()): string => date.toISOString().slice(0, 10);
+/** Returns a local-timezone ISO date string (YYYY-MM-DD) — consistent with the rest of the app. */
+const getTodayKey = (date: Date = new Date()): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 const getRemainingSeconds = (
   runStartedAt: string,
@@ -113,9 +120,28 @@ export function useTimer(): TimeTrackerContextValue {
     TIMER_ANALYTICS_STORAGE_KEY,
     mockTimerAnalytics
   );
-  const [timerId, setTimerId] = useState<ReturnType<typeof setInterval> | null>(null);
+  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const currentArticleIndex = useRandomIndex(articles.length);
+
+  // On mount: if the timer was not running when the page was last closed,
+  // restore it to the session type's default duration instead of the stale persisted value.
+  useEffect(() => {
+    setTimerState((prev) => {
+      if (prev.isTimerActive) {
+        return prev;
+      }
+      const defaultSeconds = SESSION_DURATIONS[prev.sessionType];
+      return {
+        ...prev,
+        totalSeconds: defaultSeconds,
+        maxSeconds: defaultSeconds,
+        runStartedAt: null,
+        runStartedRemainingSeconds: null,
+      };
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const {
     totalSeconds,
@@ -171,11 +197,11 @@ export function useTimer(): TimeTrackerContextValue {
       durationSeconds: number,
       completedAt: string
     ): void => {
-      if (timerId !== null) {
-        clearInterval(timerId);
+      if (timerIntervalRef.current !== null) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
       }
 
-      setTimerId(null);
       setTimerState((previousState) => ({
         ...previousState,
         totalSeconds: 0,
@@ -189,7 +215,7 @@ export function useTimer(): TimeTrackerContextValue {
       }));
       recordCompletedSession(completedSessionType, durationSeconds, completedAt);
     },
-    [recordCompletedSession, setTimerState, timerId]
+    [recordCompletedSession, setTimerState]
   );
 
   useEffect((): (() => void) | void => {
@@ -223,11 +249,11 @@ export function useTimer(): TimeTrackerContextValue {
 
     syncTimer();
     const intervalId = setInterval(syncTimer, 1000);
-    setTimerId(intervalId);
+    timerIntervalRef.current = intervalId;
 
     return (): void => {
       clearInterval(intervalId);
-      setTimerId(null);
+      timerIntervalRef.current = null;
     };
   }, [
     completeCurrentSession,
@@ -261,11 +287,11 @@ export function useTimer(): TimeTrackerContextValue {
   }, [projectName, sessionType, setTimerState]);
 
   const handlePause = useCallback((): void => {
-    if (timerId !== null) {
-      clearInterval(timerId);
+    if (timerIntervalRef.current !== null) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
     }
 
-    setTimerId(null);
     setTimerState((previousState) => {
       if (
         !previousState.isTimerActive ||
@@ -297,16 +323,16 @@ export function useTimer(): TimeTrackerContextValue {
         ),
       };
     });
-  }, [setTimerState, timerId]);
+  }, [setTimerState]);
 
   const handleSessionChange = useCallback((type: SessionType): void => {
     const newTotalSeconds = SESSION_DURATIONS[type];
 
-    if (timerId !== null) {
-      clearInterval(timerId);
+    if (timerIntervalRef.current !== null) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
     }
 
-    setTimerId(null);
     setTimerState((previousState) => ({
       ...previousState,
       sessionType: type,
@@ -320,7 +346,25 @@ export function useTimer(): TimeTrackerContextValue {
         newTotalSeconds
       ),
     }));
-  }, [setTimerState, timerId]);
+  }, [setTimerState]);
+
+  const handleComplete = useCallback((): void => {
+    if (totalSeconds <= 0) {
+      return;
+    }
+
+    // Record only the time actually elapsed, then reset so the timer is ready
+    // for the next session without needing a manual reset click.
+    const elapsedSeconds = maxSeconds - totalSeconds;
+    completeCurrentSession(sessionType, elapsedSeconds, new Date().toISOString());
+    setTimerState((previousState) => ({
+      ...previousState,
+      totalSeconds: previousState.maxSeconds,
+      isTimerActive: false,
+      runStartedAt: null,
+      runStartedRemainingSeconds: null,
+    }));
+  }, [completeCurrentSession, maxSeconds, sessionType, setTimerState, totalSeconds]);
 
   const handleStart = useCallback((): void => {
     setTimerState((previousState) => {
@@ -344,32 +388,36 @@ export function useTimer(): TimeTrackerContextValue {
   }, [setTimerState]);
 
   const handleReset = useCallback((): void => {
-    if (timerId !== null) {
-      clearInterval(timerId);
+    if (timerIntervalRef.current !== null) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
     }
 
-    setTimerId(null);
-    setTimerState((previousState) => ({
-      ...previousState,
-      totalSeconds: previousState.maxSeconds,
-      isTimerActive: false,
-      runStartedAt: null,
-      runStartedRemainingSeconds: null,
-      projectRemainingTimes: buildProjectRemainingTimes(
-        previousState.projectRemainingTimes,
-        previousState.maxSeconds
-      ),
-    }));
-  }, [setTimerState, timerId]);
+    setTimerState((previousState) => {
+      const defaultSeconds = SESSION_DURATIONS[previousState.sessionType];
+      return {
+        ...previousState,
+        totalSeconds: defaultSeconds,
+        maxSeconds: defaultSeconds,
+        isTimerActive: false,
+        runStartedAt: null,
+        runStartedRemainingSeconds: null,
+        projectRemainingTimes: buildProjectRemainingTimes(
+          previousState.projectRemainingTimes,
+          defaultSeconds
+        ),
+      };
+    });
+  }, [setTimerState]);
 
   const handleUpdateTime = useCallback((minutes: number): void => {
     const newTotalSeconds = minutes * 60;
 
-    if (timerId !== null) {
-      clearInterval(timerId);
+    if (timerIntervalRef.current !== null) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
     }
 
-    setTimerId(null);
     setTimerState((previousState) => ({
       ...previousState,
       totalSeconds: newTotalSeconds,
@@ -383,7 +431,7 @@ export function useTimer(): TimeTrackerContextValue {
       ),
     }));
     setIsEditing(false);
-  }, [setTimerState, timerId]);
+  }, [setTimerState]);
 
   const toggleEdit = useCallback((): void => {
     setIsEditing((previousState) => !previousState);
@@ -398,7 +446,6 @@ export function useTimer(): TimeTrackerContextValue {
     () => ({
       totalSeconds,
       maxSeconds,
-      timerId,
       isTimerActive,
       isEditing,
       sessionType,
@@ -410,6 +457,7 @@ export function useTimer(): TimeTrackerContextValue {
       handleSessionChange,
       handleStart,
       handlePause,
+      handleComplete,
       handleReset,
       handleUpdateTime,
       toggleEdit,
@@ -436,6 +484,7 @@ export function useTimer(): TimeTrackerContextValue {
       currentArticleIndex,
       editButtonText,
       handleAddProject,
+      handleComplete,
       handlePause,
       handleReset,
       handleSessionChange,
@@ -450,7 +499,6 @@ export function useTimer(): TimeTrackerContextValue {
       projects,
       sessionType,
       strokeDashoffset,
-      timerId,
       todayFocusSeconds,
       toggleEdit,
       totalSeconds,

@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 const FOCUS_CHART_HEIGHT = 100;
 const MIN_FOCUS_BAR_HEIGHT = 8;
 const MAX_FOCUS_BAR_HEIGHT = 72;
+// Fixed reference so bar heights are absolute, not relative to the week's max.
+// A full day of 8 h reaches the top; shorter sessions stay proportionally short.
+const FOCUS_CHART_REFERENCE_MINUTES = 480;
 
 interface ProgressChartItem {
   day: string;
@@ -38,11 +41,6 @@ function ProgressCard({
   sampleFocusHours,
   focusChartData,
 }: ProgressCardProps): React.ReactElement {
-  const maxFocusChartMinutes = Math.max(
-    ...focusChartData.map((item) => item.focusMinutes),
-    1,
-  );
-
   return (
     <div className="col-span-1 row-span-2 flex h-full w-full flex-col overflow-hidden rounded-[1.2rem] bg-[#cee2e9]/40 p-5">
       <div className="flex flex-row items-start justify-between">
@@ -71,7 +69,7 @@ function ProgressCard({
         {focusChartData.map((item) => {
           const barHeight = getFocusBarHeight(
             item.focusMinutes,
-            maxFocusChartMinutes,
+            FOCUS_CHART_REFERENCE_MINUTES,
           );
 
           return (

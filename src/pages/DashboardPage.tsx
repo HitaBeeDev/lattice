@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { mockDashboardMonth } from "../lib/mockDashboardMonth";
+import { mockUser } from "../lib/mockData";
 import StatsBar from "../components/dashboard/StatsBar";
 import CalendarCard from "../components/dashboard/CalendarCard";
 import ProgressCard from "../components/dashboard/ProgressCard";
@@ -8,7 +10,22 @@ import HabitConsistencyCard, {
   buildMockHabitHeatmapEntries,
 } from "../components/dashboard/HabitConsistencyCard";
 import { useTasks } from "../context/TasksContext";
-const WEEKLY_OUTPUT_TARGET_MINUTES = 3200;
+import { useHabits } from "../context/HabitContext";
+import { useTimeTracker } from "../context/TimeTrackerContext";
+import type { MockDashboardWeek } from "../lib/mockDashboardMonth";
+import type { Habit } from "../types/habit";
+import type { Task } from "../types/task";
+
+// Mon=0 … Sun=6  (matches the habit days[] index)
+const DAY_NAME_TO_INDEX: Record<string, number> = {
+  Monday: 0,
+  Tuesday: 1,
+  Wednesday: 2,
+  Thursday: 3,
+  Friday: 4,
+  Saturday: 5,
+  Sunday: 6,
+};
 
 const formatFocusLabel = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
@@ -25,11 +42,36 @@ const formatFocusLabel = (minutes: number): string => {
   return `${hours}h ${remainingMinutes}m`;
 };
 
-const calculateHabitStreak = (completionDays: boolean[]): number => {
-  let streak = 0;
+const getLocalIsoDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
 
-  for (let index = completionDays.length - 1; index >= 0; index -= 1) {
-    if (!completionDays[index]) {
+  return `${year}-${month}-${day}`;
+};
+
+/** Returns the index (Mon=0 … Sun=6) for today. */
+const getTodayDayIndex = (): number => {
+  const weekday = new Date().getDay(); // 0=Sun, 1=Mon, …, 6=Sat
+  return weekday === 0 ? 6 : weekday - 1;
+};
+
+/**
+ * Count consecutive days with at least one habit completed, working backwards
+ * from todayDayIndex through the start of the week.
+ * If today has no completions yet (day not done), start from yesterday so an
+ * active prior streak isn't shown as 0 just because today hasn't started.
+ */
+const calculateCurrentHabitStreak = (
+  percentages: number[],
+  todayDayIndex: number,
+): number => {
+  let streak = 0;
+  const startIndex =
+    percentages[todayDayIndex] === 0 ? todayDayIndex - 1 : todayDayIndex;
+
+  for (let i = startIndex; i >= 0; i -= 1) {
+    if (percentages[i] === 0) {
       break;
     }
 
@@ -39,77 +81,157 @@ const calculateHabitStreak = (completionDays: boolean[]): number => {
   return streak;
 };
 
-const getLocalIsoDate = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+/**
+ * Returns a copy of `activeWeek` where each day's todos and habits are
+ * replaced with live data when real records exist for that date.
+ * Days that have no real tasks keep their original mock todos.
+ * Habits are always synced from the DB if any habits are loaded.
+ */
+const buildSyncedActiveWeek = (
+  activeWeek: MockDashboardWeek,
+  tasks: Task[],
+  habits: Habit[],
+): MockDashboardWeek => ({
+  ...activeWeek,
+  days: activeWeek.days.map((day) => {
+    const dayIndex = DAY_NAME_TO_INDEX[day.day] ?? 0;
 
-  return `${year}-${month}-${day}`;
-};
+    // Sync todos: use real tasks for this day when available, else keep mock
+    const dayRealTasks = tasks.filter((t) => t.date === day.date);
+    const todos =
+      dayRealTasks.length > 0
+        ? dayRealTasks.slice(0, 4).map((t) => ({
+            task: t.name,
+            done: t.isCompleted,
+          }))
+        : day.todos;
+
+    // Sync habits: use live DB habits when loaded, else keep mock
+    const habitsData =
+      habits.length > 0
+        ? habits.map((h) => ({
+            name: h.name,
+            completed: h.days[dayIndex] ?? false,
+          }))
+        : day.habits;
+
+    return { ...day, todos, habits: habitsData };
+  }),
+});
 
 function DashboardPage() {
   const { tasks, handleCheckboxChange } = useTasks();
-  const realTodayDate = getLocalIsoDate(new Date());
+  const { habits, percentages, weekDates } = useHabits();
+  const {
+    dailyFocusSeconds,
+    todayFocusSeconds,
+    completedPomodoros: timerPomodoros,
+  } = useTimeTracker();
 
+  const realTodayDate = getLocalIsoDate(new Date());
+  const todayDayIndex = getTodayDayIndex();
+
+  // ── Calendar week ──────────────────────────────────────────────────────────
   const activeWeek =
     mockDashboardMonth.weeks.find((week) =>
       week.days.some((day) => day.date === realTodayDate),
     ) ?? mockDashboardMonth.weeks[mockDashboardMonth.weeks.length - 1];
-  const selectedDay =
-    activeWeek.days.find((day) => day.date === realTodayDate) ??
-    activeWeek.days[0];
 
-  const totalTodayTasks = selectedDay.todos.length;
-  const completedTodayTasks = selectedDay.todos.filter(
-    (todo) => todo.done,
+  const syncedActiveWeek = useMemo(
+    () => buildSyncedActiveWeek(activeWeek, tasks, habits),
+    [activeWeek, tasks, habits],
+  );
+
+  // Replace the active week in the full weeks list so calendar navigation also
+  // shows real data for the current week.
+  const syncedWeeks = useMemo(
+    () =>
+      mockDashboardMonth.weeks.map((week) =>
+        week.week === activeWeek.week ? syncedActiveWeek : week,
+      ),
+    [activeWeek.week, syncedActiveWeek],
+  );
+
+  // ── Task stats (from real Dexie data) ─────────────────────────────────────
+  const todayTasks = useMemo(
+    () => tasks.filter((task) => task.date === realTodayDate),
+    [tasks, realTodayDate],
+  );
+  const totalTodayTasks = todayTasks.length;
+  const completedTodayTasks = todayTasks.filter((t) => t.isCompleted).length;
+
+  // ── Habit stats (from real Dexie data) ────────────────────────────────────
+  const completedHabitsToday = habits.filter(
+    (h) => h.days[todayDayIndex],
   ).length;
-  const completedHabitsToday = selectedDay.habits.filter(
-    (habit) => habit.completed,
-  ).length;
-  const totalDailyHabits = selectedDay.habits.length;
+  const totalDailyHabits = habits.length;
   const habitPct =
     totalDailyHabits === 0
       ? 0
       : Math.round((completedHabitsToday / totalDailyHabits) * 100);
-  const focusMinutes = selectedDay.focusTimeMinutes;
+
+  const currentStreak = calculateCurrentHabitStreak(percentages, todayDayIndex);
+  const totalHabits = habits.length;
+
+  // ── Focus / Pomodoro stats (from real localStorage timer) ─────────────────
+  const focusMinutes = Math.round(todayFocusSeconds / 60);
   const sampleFocusHours = formatFocusLabel(focusMinutes);
-  const todayTasks = tasks.filter((task) => task.date === realTodayDate);
+  const completedPomodoros = timerPomodoros;
 
-  const focusChartData = activeWeek.days.map((day) => {
-    const focusTimeMinutes = day.focusTimeMinutes;
-    const isFuture = day.date > realTodayDate;
+  // Focus chart: use real dailyFocusSeconds keyed by ISO date
+  const focusChartData = useMemo(
+    () =>
+      activeWeek.days.map((day) => {
+        const focusTimeSeconds = dailyFocusSeconds[day.date] ?? 0;
+        const focusTimeMinutes = Math.round(focusTimeSeconds / 60);
+        const isFuture = day.date > realTodayDate;
 
-    return {
-      day: day.day.slice(0, 1),
-      focusMinutes: focusTimeMinutes,
-      label: formatFocusLabel(focusTimeMinutes),
-      isToday: day.date === selectedDay.date,
-      isMuted: focusTimeMinutes <= 70,
-      isFuture,
-    };
-  });
-  const weeklyFocusMinutes = activeWeek.days.reduce(
-    (total, day) => total + day.focusTimeMinutes,
-    0,
+        return {
+          day: day.day.slice(0, 1),
+          focusMinutes: focusTimeMinutes,
+          label: formatFocusLabel(focusTimeMinutes),
+          isToday: day.date === realTodayDate,
+          isMuted: focusTimeMinutes <= 70,
+          isFuture,
+        };
+      }),
+    [activeWeek.days, dailyFocusSeconds, realTodayDate],
   );
-  const weeklyGoalAverage = Math.round(
-    Math.min((weeklyFocusMinutes / WEEKLY_OUTPUT_TARGET_MINUTES) * 100, 100),
-  );
-  const uniqueHabitNames = new Set(
-    mockDashboardMonth.weeks.flatMap((week) =>
-      week.days.flatMap((day) => day.habits.map((habit) => habit.name)),
-    ),
-  );
-  const completionDays = activeWeek.days.map((day) =>
-    day.habits.some((habit) => habit.completed),
-  );
-  const currentStreak = calculateHabitStreak(completionDays);
-  const completedPomodoros = Math.round(weeklyFocusMinutes / 25);
-  const habitHeatmapEntries = buildMockHabitHeatmapEntries();
 
-  // #6F757B
-  // #72e1ee
-  // #f4f9fb
+  const todayTaskPct =
+    totalTodayTasks === 0
+      ? 0
+      : Math.round((completedTodayTasks / totalTodayTasks) * 100);
+  const weeklyGoalAverage = Math.round((todayTaskPct + habitPct) / 2);
+
+  // ── Habit heatmap: generated history + real current-week data ─────────────
+  const habitHeatmapEntries = useMemo(() => {
+    const generated = buildMockHabitHeatmapEntries();
+
+    if (habits.length === 0) {
+      return generated;
+    }
+
+    const totalHabitsCount = habits.length;
+
+    // Map current-week ISO dates → real completed habit count
+    const weekDateMap = new Map<string, number>(
+      weekDates.map((date, index) => [
+        getLocalIsoDate(date),
+        habits.filter((h) => h.days[index]).length,
+      ]),
+    );
+
+    return generated.map((entry) => {
+      const realCount = weekDateMap.get(entry.date);
+
+      if (realCount !== undefined) {
+        return { ...entry, completedHabits: realCount, totalHabits: totalHabitsCount };
+      }
+
+      return entry;
+    });
+  }, [habits, weekDates]);
 
   return (
     <main className="h-full overflow-hidden" id="main-content" tabIndex={-1}>
@@ -117,7 +239,7 @@ function DashboardPage() {
         {/* Row 1: Welcome Section */}
         <div className="mt-2">
           <p className="font-['Inter'] font-[300] text-[2.1rem] text-[#060a0f]">
-            Welcome in, {mockDashboardMonth.name}
+            Welcome in, {mockUser.name}
           </p>
         </div>
 
@@ -131,7 +253,7 @@ function DashboardPage() {
           focusMinutes={focusMinutes}
           weeklyGoalAverage={weeklyGoalAverage}
           currentStreak={currentStreak}
-          totalHabits={uniqueHabitNames.size}
+          totalHabits={totalHabits}
           completedPomodoros={completedPomodoros}
         />
 
@@ -146,8 +268,8 @@ function DashboardPage() {
           />
 
           <CalendarCard
-            activeWeek={activeWeek}
-            weeks={mockDashboardMonth.weeks}
+            activeWeek={syncedActiveWeek}
+            weeks={syncedWeeks}
             todayDate={realTodayDate}
             multiDayTasks={[]}
           />

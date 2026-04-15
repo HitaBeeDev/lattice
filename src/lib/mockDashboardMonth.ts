@@ -103,7 +103,7 @@ const shiftDashboardMonthDates = (
 };
 
 const baseMockDashboardMonth: MockDashboardMonth = {
-  name: "Elena",
+  name: "Layla",
   month: "March",
   year: 2026,
   multiDayTasks: [

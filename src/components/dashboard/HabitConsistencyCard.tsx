@@ -58,8 +58,13 @@ const getCompletionStyles = (ratio: number): string => {
 
 const calculateCurrentStreak = (entries: HabitHeatmapEntry[]): number => {
   let streak = 0;
+  const lastIndex = entries.length - 1;
+  // If today has no completions yet, start from yesterday so a prior streak
+  // isn't shown as 0 just because today hasn't been completed.
+  const startIndex =
+    getCompletionRatio(entries[lastIndex]) === 0 ? lastIndex - 1 : lastIndex;
 
-  for (let index = entries.length - 1; index >= 0; index -= 1) {
+  for (let index = startIndex; index >= 0; index -= 1) {
     if (getCompletionRatio(entries[index]) === 0) {
       break;
     }
@@ -291,7 +296,7 @@ export default function HabitConsistencyCard({
               gap: `${GAP}px`,
             }}
           >
-            {paddedEntries.map((entry, index) => {
+            {paddedEntries.map((entry) => {
               const completionRatio = getCompletionRatio(entry);
               const isNewestDay = entry.date === newestEntryDate;
 
