@@ -81,9 +81,9 @@ const MONTH_NAMES = [
   "December",
 ];
 
-const VISIBLE_HOURS = 4;
+const VISIBLE_HOURS = 7;
 const FIRST_VISIBLE_HOUR = 6;
-const LAST_VISIBLE_START_HOUR = 20;
+const LAST_VISIBLE_START_HOUR = 17;
 const MULTI_DAY_ROW_HEIGHT_PX = 20;
 const MULTI_DAY_ROW_GAP_PX = 2;
 const DAY_COLUMN_GAP_PX = 6;

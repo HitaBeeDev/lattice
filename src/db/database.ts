@@ -52,6 +52,7 @@ const toHabitRecord = (habit: LegacyIndexedDbHabitEntry): HabitEntry => {
     name: habit.name.trim(),
     description: habit.description,
     category: habit.category ?? "other",
+    frequency: "daily" as const,
     targetPerWeek: habit.targetPerWeek ?? 7,
     days: Array.isArray(habit.days) ? habit.days : Array(7).fill(false),
     isArchived: habit.isArchived ?? false,
@@ -214,7 +215,7 @@ export async function migrateLocalStorageData(): Promise<void> {
 
 // Bump this version string whenever the mock data changes — it clears
 // the old data and re-seeds so the UI always reflects the latest mock.
-const MOCK_SEED_VERSION = "nexstep:mock-seeded:v5";
+const MOCK_SEED_VERSION = "nexstep:mock-seeded:v6";
 
 export async function seedMockData(): Promise<void> {
   if (typeof window === "undefined") {

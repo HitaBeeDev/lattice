@@ -1,3 +1,5 @@
+export type HabitFrequency = "daily" | "weekly" | "custom";
+
 export const HABIT_CATEGORIES = [
   "health",
   "fitness",
@@ -17,7 +19,10 @@ export interface Habit {
   name: string;
   description?: string;
   category: HabitCategory;
+  frequency: HabitFrequency;
+  frequencyDays?: number[];
   targetPerWeek?: number;
+  streakGoal?: number;
   days: boolean[];
   isArchived: boolean;
   createdAt: string;

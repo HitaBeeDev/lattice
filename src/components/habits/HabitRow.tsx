@@ -49,7 +49,7 @@ export default function HabitRow({
     resolver: zodResolver(
       makeHabitSchema(habits.map((item) => item.name), habit.name),
     ),
-    defaultValues: { name: habit.name },
+    defaultValues: { name: habit.name, frequency: habit.frequency ?? "daily" },
   });
 
   useEffect(() => {

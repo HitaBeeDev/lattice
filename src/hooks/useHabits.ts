@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import habitQuotes from "../components/habits/habitQuotes";
 import { db } from "../db/database";
+import type { HabitFormValues } from "../lib/habitSchema";
 import type { Habit } from "../types/habit";
 import { useRandomIndex } from "./useRandomIndex";
 
@@ -25,7 +26,7 @@ export interface HabitContextValue {
   habits: Habit[];
   isLoading: boolean;
   editIndex: number;
-  addHabit: (name: string) => void;
+  addHabit: (values: HabitFormValues) => void;
   startEdit: (index: number) => void;
   saveEdit: (index: number, name: string) => void;
   cancelEdit: () => void;
@@ -48,15 +49,20 @@ export interface HabitContextValue {
   quoteIndex: number;
 }
 
-const createHabitRecord = (name: string): Habit => {
+const createHabitRecord = (values: HabitFormValues): Habit => {
   const timestamp = new Date().toISOString();
+  const targetPerWeek = values.targetPerWeek ?? DEFAULT_HABIT_TARGET;
+  const streakGoal = values.streakGoal;
 
   return {
     id: `habit-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
-    name: name.trim(),
+    name: values.name.trim(),
     days: Array(DAYS_PER_WEEK).fill(false),
     category: "other",
-    targetPerWeek: DEFAULT_HABIT_TARGET,
+    frequency: values.frequency,
+    frequencyDays: values.frequency === "custom" ? (values.frequencyDays ?? []) : undefined,
+    targetPerWeek,
+    streakGoal,
     isArchived: false,
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -104,8 +110,8 @@ export function useHabits(): HabitContextValue {
 
   const isLargeScreen = windowWidth >= LARGE_SCREEN_BREAKPOINT;
 
-  const addHabit = useCallback((name: string): void => {
-    void db.habits.add(createHabitRecord(name));
+  const addHabit = useCallback((values: HabitFormValues): void => {
+    void db.habits.add(createHabitRecord(values));
   }, []);
 
   const startEdit = useCallback((index: number): void => {

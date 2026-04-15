@@ -19,7 +19,8 @@ export default function TopNav() {
     <header className="fixed inset-x-0 top-0 z-50 px-5 pt-5 sm:px-6 lg:px-8">
       <nav
         aria-label="Primary"
-        className="mx-auto flex w-full max-w-[1400px] items-center justify-between rounded-[2rem] border border-white/70 bg-[rgba(248,252,252,0.78)] px-5 py-3 shadow-[0_18px_55px_rgba(70,95,110,0.12)] backdrop-blur-xl"
+        className="mx-auto flex w-full max-w-[1400px] items-center justify-between rounded-[2rem]
+         bg-[rgba(248,252,252,0.05)] px-5 py-3 shadow-[0_18px_55px_rgba(70,95,110,0.12)] backdrop-blur-xl"
       >
         <div>
           <NavLink

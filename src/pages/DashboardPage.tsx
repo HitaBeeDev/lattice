@@ -106,7 +106,7 @@ const buildSyncedActiveWeek = (
     const dayRealTasks = tasks.filter((t) => t.date === day.date);
     const todos =
       dayRealTasks.length > 0
-        ? dayRealTasks.slice(0, 4).map((t) => ({
+        ? dayRealTasks.slice(0, 7).map((t) => ({
             task: t.name,
             done: t.isCompleted,
           }))
@@ -205,13 +205,19 @@ function DashboardPage() {
   );
 
   const weekStartDate = getLocalIsoDate(weekDates[0] ?? new Date());
-  const weekEndDate = getLocalIsoDate(weekDates[weekDates.length - 1] ?? new Date());
+  const weekEndDate = getLocalIsoDate(
+    weekDates[weekDates.length - 1] ?? new Date(),
+  );
   const currentWeekTasks = useMemo(
     () =>
-      tasks.filter((task) => isDateInRange(task.date, weekStartDate, weekEndDate)),
+      tasks.filter((task) =>
+        isDateInRange(task.date, weekStartDate, weekEndDate),
+      ),
     [tasks, weekEndDate, weekStartDate],
   );
-  const completedWeekTasks = currentWeekTasks.filter((task) => task.isCompleted).length;
+  const completedWeekTasks = currentWeekTasks.filter(
+    (task) => task.isCompleted,
+  ).length;
   const weeklyTaskPct =
     currentWeekTasks.length === 0
       ? 0
