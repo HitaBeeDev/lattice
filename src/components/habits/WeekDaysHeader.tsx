@@ -4,70 +4,100 @@ export default function WeekDaysHeader() {
   const { formatDate, visibleWeekDates } = useHabits();
 
   return (
-    <section className="rounded-[2rem] border border-white/70 bg-[rgba(242,249,249,0.8)] p-4 shadow-[0_18px_55px_rgba(80,111,122,0.1)] backdrop-blur-xl lg:p-5">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(220px,1.2fr)_repeat(7,minmax(72px,0.52fr))_120px_120px_180px]">
-        <div className="rounded-[1.4rem] bg-white/70 px-4 py-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7d929c]">
-            Your habits
-          </p>
-          <p className="mt-2 font-['Sora'] text-xl text-[#101820]">
+    <section>
+      <div className="grid grid-cols-[repeat(13,minmax(0,1fr))] justify-between items-center ml-5 mr-5">
+        <div className="flex flex-col items-start justify-center col-span-2">
+          <p className="text-[0.75rem] leading-none font-[400] text-[#a0a5ab]">
             Weekly tracker
           </p>
         </div>
 
-        {visibleWeekDates.map((date) => (
-          <div
-            className="hidden rounded-[1.4rem] bg-white/65 px-3 py-4 text-center lg:block"
-            key={date.toISOString()}
-          >
-            <p className="text-xs uppercase tracking-[0.14em] text-[#8ca0a9]">
-              {date.toLocaleDateString("en-US", { weekday: "short" })}
-            </p>
-            <p className="mt-2 text-sm font-medium text-[#1b2830]">
-              {formatDate(date)}
-            </p>
-          </div>
-        ))}
+        <div className="flex flex-col items-center justify-center col-span-1">
+          <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">
+            MON
+          </p>
 
-        <div className="hidden rounded-[1.4rem] bg-white/65 px-3 py-4 text-center lg:block">
-          <p className="text-xs uppercase tracking-[0.14em] text-[#8ca0a9]">
-            Edit
+          <p className="text-[0.7rem] leading-none font-[400] text-[#161c22] mt-2">
+            APR 13
           </p>
         </div>
 
-        <div className="hidden rounded-[1.4rem] bg-white/65 px-3 py-4 text-center lg:block">
-          <p className="text-xs uppercase tracking-[0.14em] text-[#8ca0a9]">
-            Delete
+        <div className="flex flex-col items-center justify-center col-span-1">
+          <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">
+            TUE
+          </p>
+
+          <p className="text-[0.7rem] leading-none font-[400] text-[#161c22] mt-2">
+            APR 14
           </p>
         </div>
 
-        <div className="hidden rounded-[1.4rem] bg-white/65 px-3 py-4 text-center lg:block">
-          <p className="text-xs uppercase tracking-[0.14em] text-[#8ca0a9]">
-            Progress
+        <div className="flex flex-col items-center justify-center col-span-1">
+          <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">
+            WED
+          </p>
+
+          <p className="text-[0.7rem] leading-none font-[400] text-[#161c22] mt-2">
+            APR 15
           </p>
         </div>
-      </div>
 
-      <div className="mt-3 flex gap-2 overflow-x-auto pb-1 lg:hidden">
-        {visibleWeekDates.map((date) => (
-          <div
-            className="min-w-[108px] rounded-full bg-white/75 px-4 py-2"
-            key={date.toISOString()}
-          >
-            <p className="text-[11px] uppercase tracking-[0.14em] text-[#8ca0a9]">
-              {date.toLocaleDateString("en-US", { weekday: "short" })}
-            </p>
-            <p className="text-sm font-medium text-[#1b2830]">
-              {formatDate(date)}
-            </p>
-          </div>
-        ))}
+        <div className="flex flex-col items-center justify-center col-span-1">
+          <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">
+            THU
+          </p>
 
-        <div className="min-w-[112px] rounded-full bg-white/75 px-4 py-2 text-sm font-medium text-[#1b2830]">
-          Edit/Delete
+          <p className="text-[0.7rem] leading-none font-[400] text-[#161c22] mt-2">
+            APR 16
+          </p>
         </div>
-        <div className="min-w-[112px] rounded-full bg-white/75 px-4 py-2 text-sm font-medium text-[#1b2830]">
-          Progress
+
+        <div className="flex flex-col items-center justify-center col-span-1">
+          <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">
+            FRI
+          </p>
+
+          <p className="text-[0.7rem] leading-none font-[400] text-[#161c22] mt-2">
+            APR 17
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center justify-center col-span-1">
+          <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">
+            SAT
+          </p>
+
+          <p className="text-[0.7rem] leading-none font-[400] text-[#161c22] mt-2">
+            APR 18
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center justify-center col-span-1">
+          <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">
+            SUN
+          </p>
+
+          <p className="text-[0.7rem] leading-none font-[400] text-[#161c22] mt-2">
+            APR 19
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center justify-center col-span-1">
+          <p className="text-[0.75rem] leading-none font-[400] text-[#a0a5ab]">
+            EDIT
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center justify-center col-span-1">
+          <p className="text-[0.75rem] leading-none font-[400] text-[#a0a5ab]">
+            DELETE
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center justify-center col-span-2">
+          <p className="text-[0.75rem] leading-none font-[400] text-[#a0a5ab]">
+            PROGRESS
+          </p>
         </div>
       </div>
     </section>
