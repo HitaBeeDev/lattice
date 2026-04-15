@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 type HabitHeatmapEntry = {
   date: string;
@@ -154,6 +155,7 @@ export function buildMockHabitHeatmapEntries(): HabitHeatmapEntry[] {
 export default function HabitConsistencyCard({
   entries,
 }: HabitConsistencyCardProps): React.ReactElement {
+  const navigate = useNavigate();
   const gridRef = React.useRef<HTMLDivElement | null>(null);
   const [gridSize, setGridSize] = React.useState({ width: 0, height: 0 });
   const sortedEntries = React.useMemo(
@@ -248,15 +250,22 @@ export default function HabitConsistencyCard({
     visibleEntries.length > 0
       ? visibleEntries[visibleEntries.length - 1].date
       : null;
+  const goToHabits = (): void => {
+    navigate("/habit-tracker");
+  };
 
   return (
     <section className="relative col-span-2 row-span-1 row-start-4 flex h-full w-full overflow-visible rounded-[1.2rem] bg-[#cee2e9]/40 p-4">
       <div className="relative flex flex-col w-full h-full">
         <div className="flex items-center justify-between w-full">
           <div className="flex flex-row items-center gap-2">
-            <p className="text-[0.85rem] font-[400] leading-none text-[#3d454b]">
+            <button
+              className="text-[0.85rem] font-[400] leading-none text-[#3d454b] transition-colors duration-200 hover:text-[#1f2a33]"
+              onClick={goToHabits}
+              type="button"
+            >
               Habit Consistency
-            </p>
+            </button>
 
             <p className="text-[0.55rem] font-[400] leading-none text-[#a0a6ab]">
               Last {visibleEntries.length} days
@@ -288,15 +297,17 @@ export default function HabitConsistencyCard({
 
               return (
                 <div key={entry.date} className="relative group">
-                  <div
-                    className={`rounded-[0.24rem] ring-1 ring-[#d9edf2] transition-all duration-200 ease-out group-hover:-translate-y-[1px] group-hover:scale-[1.08] group-hover:ring-[#b4e8f0] ${getCompletionStyles(completionRatio)} ${
+                  <button
+                    className={`block appearance-none border-0 p-0 align-top rounded-[0.24rem] ring-1 ring-[#d9edf2] transition-all duration-200 ease-out group-hover:-translate-y-[1px] group-hover:scale-[1.08] group-hover:ring-[#b4e8f0] ${getCompletionStyles(completionRatio)} ${
                       isNewestDay ? "ring-[#9edee9]" : ""
                     }`}
+                    onClick={goToHabits}
                     style={{
                       width: `${cellSize}px`,
                       height: `${cellSize}px`,
                     }}
                     aria-label={`${formatTooltipDate(entry.date)} — ${entry.completedHabits}/${entry.totalHabits} habits completed`}
+                    type="button"
                   />
 
                   <div
