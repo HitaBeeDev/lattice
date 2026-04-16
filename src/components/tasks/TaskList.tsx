@@ -2,7 +2,16 @@ import { useTasks } from "../../context/TasksContext";
 import { EmptyState } from "../ui";
 import TaskGroup from "./TaskGroup";
 
-function ToDoList() {
+const getTodayKey = (): string => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
+function TaskList() {
   const {
     handleTaskDelete,
     handleTaskEditClick,
@@ -11,12 +20,14 @@ function ToDoList() {
     handleTaskProgressChange,
     sortedTasks,
   } = useTasks();
+  const todayKey = getTodayKey();
+  const visibleTasks = sortedTasks.filter(([date]) => date >= todayKey);
 
-  if (sortedTasks.length === 0) {
+  if (visibleTasks.length === 0) {
     return (
       <EmptyState
-        className="rounded-[2rem] border border-dashed border-white/80 bg-white/45 px-6 py-12 shadow-[0_18px_55px_rgba(80,111,122,0.08)]"
-        description="Looks like you're all caught up. There are no to-dos on the list right now."
+        className="rounded-[1.7rem] border border-dashed border-white/80 bg-white/45 px-6 py-12 shadow-[0_18px_55px_rgba(80,111,122,0.08)]"
+        description="Looks like you're all caught up. There are no tasks on the list right now."
         title="Nothing scheduled"
       />
     );
@@ -25,7 +36,7 @@ function ToDoList() {
   return (
     <section>
       <div>
-        {sortedTasks.map(([date, tasks]) => (
+        {visibleTasks.map(([date, tasks]) => (
           <TaskGroup
             key={date}
             checkedTasks={checkedTasks}
@@ -39,8 +50,7 @@ function ToDoList() {
         ))}
       </div>
     </section>
-
   );
 }
 
-export default ToDoList;
+export default TaskList;

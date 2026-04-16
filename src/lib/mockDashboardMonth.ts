@@ -3,7 +3,7 @@ export interface MockDashboardHabitEntry {
   completed: boolean;
 }
 
-export interface MockDashboardTodoEntry {
+export interface MockDashboardTaskEntry {
   task: string;
   done: boolean;
   spanDays?: number;
@@ -15,7 +15,7 @@ export interface MockDashboardDay {
   date: string;
   focusTimeMinutes: number;
   habits: MockDashboardHabitEntry[];
-  todos: MockDashboardTodoEntry[];
+  tasks: MockDashboardTaskEntry[];
 }
 
 export interface MockDashboardWeek {
@@ -177,7 +177,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Review project RAID log", done: true },
             { task: "Update steering committee agenda", done: false },
             { task: "Confirm milestone owners with product", done: true },
@@ -195,7 +195,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Run cross-functional standup", done: true },
             { task: "Follow up on blocked engineering ticket", done: true },
             { task: "Review vendor proposal revisions", done: false },
@@ -213,7 +213,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: false },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Prepare sprint health snapshot", done: true },
             { task: "Resolve resourcing conflict for QA", done: false },
             { task: "Review delivery timeline with design", done: true },
@@ -231,7 +231,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Facilitate stakeholder checkpoint", done: true },
             { task: "Draft decision log entries", done: true },
             { task: "Escalate budget variance", done: false },
@@ -249,7 +249,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: false },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Review weekly delivery metrics", done: true },
             { task: "Close resolved action items", done: true },
             { task: "Publish Friday project summary", done: true },
@@ -267,7 +267,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Outline next week's priorities", done: true },
             { task: "Review notes from client workshop", done: true },
             { task: "Organize leadership readout files", done: true },
@@ -285,7 +285,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Review upcoming milestone calendar", done: true },
             { task: "Finalize Monday talking points", done: true },
             { task: "Clean up project workspace", done: true },
@@ -308,7 +308,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Review release readiness checklist", done: true },
             { task: "Reprioritize backlog with product", done: false },
             { task: "Confirm staffing plan for next sprint", done: true },
@@ -326,7 +326,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Lead weekly project standup", done: true },
             { task: "Clear vendor decision backlog", done: true },
             { task: "Update action tracker after standup", done: true },
@@ -344,7 +344,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: false },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Prepare operating review dashboard", done: true },
             { task: "Review implementation estimates", done: true },
             { task: "Align engineering and data dependencies", done: true },
@@ -362,7 +362,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Facilitate product requirement review", done: true },
             { task: "Approve final UAT participant list", done: true },
             { task: "Refine mitigation plan for blockers", done: true },
@@ -380,7 +380,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: false },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Review KPI deltas with operations", done: true },
             { task: "Close approved change requests", done: true },
             { task: "Publish week-end recap", done: true },
@@ -398,7 +398,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Sketch next quarter initiative themes", done: true },
             { task: "Review notes from customer interviews", done: true },
             { task: "Clean up roadmap deck", done: true },
@@ -416,7 +416,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Finalize next week's meeting cadence", done: true },
             { task: "Review unresolved action items", done: true },
             { task: "Update project budget tracker", done: true },
@@ -439,7 +439,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Draft QBR storyline with department leads", done: true },
             { task: "Review late milestone risk with engineering", done: false },
             { task: "Finalize sprint goals for platform team", done: true },
@@ -457,7 +457,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Run blocker triage with workstream leads", done: true },
             { task: "Reply to leadership follow-up questions", done: true },
             { task: "Revise rollout comms draft", done: false },
@@ -475,7 +475,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: false },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Consolidate operating review metrics", done: true },
             { task: "Chair steering prep meeting", done: true },
             { task: "Refine cross-team launch checklist", done: true },
@@ -493,7 +493,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Walk stakeholders through delivery options", done: true },
             { task: "Update project assumptions log", done: true },
             { task: "Approve revised implementation scope", done: true },
@@ -511,7 +511,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: false },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Publish Friday status report", done: true },
             { task: "Review roadmap changes with product", done: true },
             { task: "Update RAID owners after review", done: true },
@@ -529,7 +529,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Review board meeting prep notes", done: true },
             { task: "Organize follow-up actions by owner", done: true },
             { task: "Refresh hiring panel schedule", done: true },
@@ -547,7 +547,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Journal", completed: true },
             { name: "Walk", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Finalize upcoming week priorities", done: true },
             { task: "Review open budget exceptions", done: true },
             { task: "Prepare weekly reflection notes", done: true },
@@ -572,7 +572,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Kick off CRM migration cutover", done: true },
             { task: "Resolve open integration risk", done: false },
             { task: "Review architecture decision summary", done: true },
@@ -592,7 +592,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Run cutover status standup", done: true },
             { task: "Reply to leadership status requests", done: true },
             { task: "Chase delayed vendor rollback plan", done: false },
@@ -611,7 +611,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Review go-live readiness metrics", done: true },
             {
               task: "Consolidate executive talking points",
@@ -636,7 +636,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Lead steering committee review", done: true },
           ],
         },
@@ -653,7 +653,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Schedule post-launch issue review", done: false },
             { task: "", done: false },
             { task: "Send Friday handoff to stakeholders", done: true },
@@ -672,7 +672,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Morning yoga flow", done: true },
             { task: "Visit weekend farmers market", done: true },
           ],
@@ -690,7 +690,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Long walk by the river", done: true },
             { task: "Practice piano for 30 minutes", done: false },
           ],
@@ -713,7 +713,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Confirm workstream owners and backups", done: true },
             { task: "Review onboarding plan with operations", done: true },
             { task: "Escalate unresolved analytics dependency", done: false },
@@ -732,7 +732,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Review onboarding FAQ with support", done: true },
             { task: "Push finance for revised forecast inputs", done: false },
           ],
@@ -750,7 +750,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Consolidate hiring panel recommendations", done: true },
             { task: "Refine steering update narrative", done: true },
             { task: "Validate engineering capacity assumptions", done: true },
@@ -769,7 +769,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Summarize decisions and owners", done: true },
             { task: "Review open onboarding blockers", done: true },
             { task: "Update governance tracker after meeting", done: true },
@@ -788,7 +788,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Review Falcon first-week delivery signal", done: true },
             { task: "Close hiring panel action items", done: true },
             { task: "Publish weekly portfolio summary", done: true },
@@ -810,7 +810,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: false },
           ],
-          todos: [
+          tasks: [
             { task: "Review hiring notes for final candidates", done: true },
             { task: "Organize Falcon workshop materials", done: true },
             { task: "Refresh personal planning board", done: true },
@@ -832,7 +832,7 @@ const baseMockDashboardMonth: MockDashboardMonth = {
             { name: "Meditation", completed: true },
             { name: "No Sugar", completed: true },
           ],
-          todos: [
+          tasks: [
             { task: "Finalize Monday portfolio priorities", done: true },
             { task: "Review next week's dependency calendar", done: true },
             { task: "Prepare summary of unresolved risks", done: true },

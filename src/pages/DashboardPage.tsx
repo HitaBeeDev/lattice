@@ -5,7 +5,7 @@ import StatsBar from "../components/dashboard/StatsBar";
 import CalendarCard from "../components/dashboard/CalendarCard";
 import ProgressCard from "../components/dashboard/ProgressCard";
 import TimeTrackerCard from "../components/dashboard/TimeTrackerCard";
-import TodoOverviewCard from "../components/dashboard/TodoOverviewCard";
+import TaskOverviewCard from "../components/dashboard/TaskOverviewCard";
 import HabitConsistencyCard, {
   buildMockHabitHeatmapEntries,
 } from "../components/dashboard/HabitConsistencyCard";
@@ -88,9 +88,9 @@ const calculateCurrentHabitStreak = (
 };
 
 /**
- * Returns a copy of `activeWeek` where each day's todos and habits are
+ * Returns a copy of `activeWeek` where each day's tasks and habits are
  * replaced with live data when real records exist for that date.
- * Days that have no real tasks keep their original mock todos.
+ * Days that have no real tasks keep their original mock tasks.
  * Habits are always synced from the DB if any habits are loaded.
  */
 const buildSyncedActiveWeek = (
@@ -102,15 +102,15 @@ const buildSyncedActiveWeek = (
   days: activeWeek.days.map((day) => {
     const dayIndex = DAY_NAME_TO_INDEX[day.day] ?? 0;
 
-    // Sync todos: use real tasks for this day when available, else keep mock
+    // Sync tasks: use real tasks for this day when available, else keep mock
     const dayRealTasks = tasks.filter((t) => t.date === day.date);
-    const todos =
+    const mockTasks =
       dayRealTasks.length > 0
         ? dayRealTasks.slice(0, 7).map((t) => ({
             task: t.name,
             done: t.isCompleted,
           }))
-        : day.todos;
+        : day.tasks;
 
     // Sync habits: use live DB habits when loaded, else keep mock
     const habitsData =
@@ -121,7 +121,7 @@ const buildSyncedActiveWeek = (
           }))
         : day.habits;
 
-    return { ...day, todos, habits: habitsData };
+    return { ...day, tasks: mockTasks, habits: habitsData };
   }),
 });
 
@@ -305,7 +305,7 @@ function DashboardPage() {
             multiDayTasks={[]}
           />
 
-          <TodoOverviewCard
+          <TaskOverviewCard
             tasks={todayTasks}
             onToggleTask={handleCheckboxChange}
           />

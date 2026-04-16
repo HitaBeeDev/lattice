@@ -3,7 +3,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { cn } from "../ui/cn";
 import { useTasks } from "../../context/TasksContext";
-import { taskSchema, type TaskFormValues, PRIORITY_OPTIONS } from "../../lib/taskSchema";
+import {
+  taskSchema,
+  type TaskFormValues,
+  PRIORITY_OPTIONS,
+} from "../../lib/taskSchema";
 import { getEmptyTaskForm } from "../../hooks/useTasks";
 import { Input } from "../ui";
 import type { Priority } from "../../types/task";
@@ -15,7 +19,8 @@ const PRIORITY_COLORS: Record<Priority, string> = {
 };
 
 function WelcomeBanner() {
-  const { handleTaskAddition, sortedTasks, checkedTasks, getCurrentDate } = useTasks();
+  const { handleTaskAddition, sortedTasks, checkedTasks, getCurrentDate } =
+    useTasks();
 
   const total = sortedTasks.reduce((acc, [, tasks]) => acc + tasks.length, 0);
   const done = checkedTasks.length;
@@ -116,7 +121,10 @@ function WelcomeBanner() {
           </p>
         </div>
 
-        <form className="flex flex-col gap-3 mt-5" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          className="flex flex-col gap-3 mt-5"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           {/* Task name */}
           <Input
             className="rounded-[0.5rem] h-[2.5rem] text-[0.8rem] border border-[#e0e9ed]"
@@ -130,7 +138,9 @@ function WelcomeBanner() {
           {/* Date + time row */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">Date</p>
+              <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">
+                Date
+              </p>
               <Input
                 className="rounded-[0.5rem] h-[2.5rem] text-[0.8rem] border border-[#e0e9ed]"
                 error={errors.date?.message}
@@ -140,7 +150,9 @@ function WelcomeBanner() {
               />
             </div>
             <div>
-              <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">Start time</p>
+              <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">
+                Start time
+              </p>
               <Input
                 className="rounded-[0.5rem] h-[2.5rem] text-[0.8rem] border border-[#e0e9ed]"
                 id="new-task-start-time"
@@ -152,7 +164,9 @@ function WelcomeBanner() {
 
           {/* Priority */}
           <div>
-            <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">Priority</p>
+            <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">
+              Priority
+            </p>
             <input type="hidden" {...register("priority")} />
             <div className="flex gap-1.5">
               {PRIORITY_OPTIONS.map((priority) => (
@@ -160,7 +174,9 @@ function WelcomeBanner() {
                   key={priority}
                   type="button"
                   aria-pressed={selectedPriority === priority}
-                  onClick={() => setValue("priority", priority, { shouldValidate: true })}
+                  onClick={() =>
+                    setValue("priority", priority, { shouldValidate: true })
+                  }
                   className={cn(
                     "flex-1 flex items-center justify-center gap-1.5 rounded-[0.5rem] border py-1.5 text-[0.65rem] font-[400] transition",
                     selectedPriority === priority
@@ -177,13 +193,17 @@ function WelcomeBanner() {
               ))}
             </div>
             {errors.priority && (
-              <p className="text-[0.7rem] text-[#ef4444] mt-1">{errors.priority.message}</p>
+              <p className="text-[0.7rem] text-[#ef4444] mt-1">
+                {errors.priority.message}
+              </p>
             )}
           </div>
 
           {/* Notes */}
           <div>
-            <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">Notes</p>
+            <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">
+              Notes
+            </p>
             <Input
               className="rounded-[0.5rem] h-[2.5rem] text-[0.8rem] border border-[#e0e9ed]"
               id="new-task-description"

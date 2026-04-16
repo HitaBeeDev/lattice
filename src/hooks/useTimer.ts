@@ -66,8 +66,8 @@ const SESSION_DURATIONS: Record<SessionType, number> = {
 const INITIAL_TOTAL_SECONDS = SESSION_DURATIONS.Pomodoro;
 const TIMER_RADIUS = 80;
 const TIMER_STATE_STORAGE_KEY = "timer-session-state";
-// Bumped to v2: resets stale mock-seeded analytics so today starts at 0.
-const TIMER_ANALYTICS_STORAGE_KEY = "timer-session-analytics-v2";
+// Bumped to v3 to reseed dashboard focus analytics with non-zero mock values.
+const TIMER_ANALYTICS_STORAGE_KEY = "timer-session-analytics-v3";
 
 const createInitialTimerState = (): PersistedTimerState => ({
   totalSeconds: INITIAL_TOTAL_SECONDS,

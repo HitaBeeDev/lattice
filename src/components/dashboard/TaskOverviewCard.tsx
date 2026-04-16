@@ -12,12 +12,12 @@ import { useNavigate } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import type { Task } from "../../types/task";
 
-type TodoOverviewCardProps = {
+type TaskOverviewCardProps = {
   tasks: Task[];
   onToggleTask?: (taskId: string) => void;
 };
 
-type TodoVisual = {
+type TaskVisual = {
   icon: LucideIcon;
   accent: string;
 };
@@ -70,7 +70,7 @@ const FALLBACK_TASKS: Task[] = [
   },
 ];
 
-const TASK_VISUALS: TodoVisual[] = [
+const TASK_VISUALS: TaskVisual[] = [
   { icon: Monitor, accent: "#6366f1" },
   { icon: Zap, accent: "#f59e0b" },
   { icon: MessageSquareText, accent: "#06b6d4" },
@@ -83,10 +83,10 @@ const formatTimeRange = (task: Task): string =>
 
 const MAX_CARD_TASKS = 5;
 
-export default function TodoOverviewCard({
+export default function TaskOverviewCard({
   tasks,
   onToggleTask,
-}: TodoOverviewCardProps): React.ReactElement {
+}: TaskOverviewCardProps): React.ReactElement {
   const navigate = useNavigate();
   const listAreaRef = useRef<HTMLUListElement | null>(null);
   const sampleRowRef = useRef<HTMLLIElement | null>(null);
@@ -198,7 +198,7 @@ export default function TodoOverviewCard({
     >
       <div className="flex flex-row items-center justify-between">
         <p className="pt-2 ml-2 text-[0.85rem] leading-none font-[400] text-[#3d454b]">
-          Todos
+          Tasks
         </p>
 
         <p className="text-[2.2rem] leading-none font-[200] text-[#161c22] mt-3">

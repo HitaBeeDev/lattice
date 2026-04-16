@@ -32,7 +32,7 @@ const articles: Article[] = [
   {
     title: "Time Management Tips: Organize Your Day for Success",
     content:
-      "Effective time management is crucial for achieving your goals and maximizing productivity. Start by creating a daily schedule and prioritizing your tasks based on importance and urgency. Use tools such as calendars, to-do lists, and time-blocking techniques to stay organized and focused throughout the day. Be realistic about what you can accomplish and avoid overcommitting yourself. Remember to allocate time for breaks and relaxation to avoid burnout. With disciplined time management practices, you can make the most of each day and accomplish your objectives with ease.",
+      "Effective time management is crucial for achieving your goals and maximizing productivity. Start by creating a daily schedule and prioritizing your tasks based on importance and urgency. Use tools such as calendars, task lists, and time-blocking techniques to stay organized and focused throughout the day. Be realistic about what you can accomplish and avoid overcommitting yourself. Remember to allocate time for breaks and relaxation to avoid burnout. With disciplined time management practices, you can make the most of each day and accomplish your objectives with ease.",
   },
   {
     title: "The Power of Focus: Concentrate Your Efforts for Maximum Results",

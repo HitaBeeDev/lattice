@@ -19,6 +19,36 @@ const relativeDay = (offset: number): string => {
   return getLocalIsoDate(date);
 };
 
+const getCurrentWeekdayIndex = (): number => {
+  const currentDay = new Date().getDay();
+  return currentDay === 0 ? 6 : currentDay - 1;
+};
+
+const buildMockHabitDays = (
+  completedDays: number,
+  { includeToday = false }: { includeToday?: boolean } = {},
+): boolean[] => {
+  const todayIndex = getCurrentWeekdayIndex();
+  const days = Array(7).fill(false);
+  let remaining = Math.min(completedDays, todayIndex + 1);
+
+  if (includeToday && remaining > 0) {
+    days[todayIndex] = true;
+    remaining -= 1;
+  }
+
+  for (let index = 0; index <= todayIndex && remaining > 0; index += 1) {
+    if (days[index]) {
+      continue;
+    }
+
+    days[index] = true;
+    remaining -= 1;
+  }
+
+  return days;
+};
+
 export const mockUser = {
   name: "Layla",
 };
@@ -27,19 +57,13 @@ const buildCurrentWeekFocusSeconds = (): Record<string, number> => {
   const today = new Date();
   const currentDay = today.getDay();
   const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
-  const todayStr = getLocalIsoDate(today);
+  const weekFocusHours = [3.2, 3.8, 4.1, 3.5, 3.9, 3.1, 2.7];
 
-  // Only seed PAST days — today and future start at 0 so real sessions
-  // accumulate from scratch and the progress card stays accurate.
-  const focusHours = [1.1, 6.1, 5.4, 4.6, 5.8, 5.4, 1.2];
-
-  const entries = focusHours
+  const entries = weekFocusHours
     .map((hours, index) => {
       const date = new Date(today);
       date.setDate(today.getDate() + mondayOffset + index);
-      const dateStr = getLocalIsoDate(date);
-      if (dateStr >= todayStr) return null;
-      return [dateStr, Math.round(hours * 3600)] as [string, number];
+      return [getLocalIsoDate(date), Math.round(hours * 3600)] as [string, number];
     })
     .filter((entry): entry is [string, number] => entry !== null);
 
@@ -62,7 +86,7 @@ export const mockHabits: Habit[] = [
     category: "mindfulness",
     frequency: "daily",
     targetPerWeek: 7,
-    days: [true, true, true, false, false, false, false],
+    days: buildMockHabitDays(4, { includeToday: true }),
     isArchived: false,
     createdAt: "2026-04-01T08:00:00.000Z",
     updatedAt: "2026-04-14T08:10:00.000Z",
@@ -74,7 +98,7 @@ export const mockHabits: Habit[] = [
     category: "fitness",
     frequency: "weekly",
     targetPerWeek: 5,
-    days: [true, true, true, false, false, false, false],
+    days: buildMockHabitDays(4, { includeToday: true }),
     isArchived: false,
     createdAt: "2026-04-01T08:00:00.000Z",
     updatedAt: "2026-04-14T07:45:00.000Z",
@@ -86,7 +110,7 @@ export const mockHabits: Habit[] = [
     category: "learning",
     frequency: "daily",
     targetPerWeek: 7,
-    days: [true, false, false, false, false, false, false],
+    days: buildMockHabitDays(2, { includeToday: true }),
     isArchived: false,
     createdAt: "2026-04-01T08:00:00.000Z",
     updatedAt: "2026-04-13T21:00:00.000Z",
@@ -98,7 +122,7 @@ export const mockHabits: Habit[] = [
     category: "health",
     frequency: "daily",
     targetPerWeek: 7,
-    days: [true, true, true, false, false, false, false],
+    days: buildMockHabitDays(4, { includeToday: true }),
     isArchived: false,
     createdAt: "2026-04-01T08:00:00.000Z",
     updatedAt: "2026-04-14T14:00:00.000Z",
@@ -110,7 +134,7 @@ export const mockHabits: Habit[] = [
     category: "mindfulness",
     frequency: "weekly",
     targetPerWeek: 5,
-    days: [true, false, false, false, false, false, false],
+    days: buildMockHabitDays(2, { includeToday: true }),
     isArchived: false,
     createdAt: "2026-04-01T08:00:00.000Z",
     updatedAt: "2026-04-13T22:00:00.000Z",
@@ -122,7 +146,7 @@ export const mockHabits: Habit[] = [
     category: "health",
     frequency: "daily",
     targetPerWeek: 7,
-    days: [false, false, false, false, false, false, false],
+    days: buildMockHabitDays(1, { includeToday: true }),
     isArchived: false,
     createdAt: "2026-04-07T08:00:00.000Z",
     updatedAt: "2026-04-07T08:00:00.000Z",
@@ -135,7 +159,7 @@ export const mockHabits: Habit[] = [
     frequency: "custom",
     frequencyDays: [0, 1, 2, 3, 4],
     targetPerWeek: 5,
-    days: [true, true, true, false, false, false, false],
+    days: buildMockHabitDays(4, { includeToday: true }),
     isArchived: false,
     createdAt: "2026-04-01T08:00:00.000Z",
     updatedAt: "2026-04-14T18:30:00.000Z",

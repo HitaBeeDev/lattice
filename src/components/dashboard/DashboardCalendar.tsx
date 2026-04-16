@@ -14,8 +14,8 @@ interface DashboardCalendarProps {
   multiDayTasks: MockMultiDayTask[];
   /** Pin the visible hour window to a fixed start instead of using real clock time */
   fixedStartHour?: number;
-  /** Hide the per-day todo pills so only timed events show */
-  hideWeekTodos?: boolean;
+  /** Hide the per-day task pills so only timed events show */
+  hideWeekTasks?: boolean;
   /** Cap the multi-day band to this many rows */
   maxMultiDayRows?: number;
 }
@@ -87,7 +87,7 @@ const LAST_VISIBLE_START_HOUR = 17;
 const MULTI_DAY_ROW_HEIGHT_PX = 20;
 const MULTI_DAY_ROW_GAP_PX = 2;
 const DAY_COLUMN_GAP_PX = 6;
-const TODO_SLOT_VERTICAL_INSET_PX = 3;
+const TASK_SLOT_VERTICAL_INSET_PX = 3;
 
 // Mock calendar events — only visible on the data week (March 23–28)
 const TIMED_EVENTS: CalendarEvent[] = [
@@ -213,7 +213,7 @@ export default function DashboardCalendar({
   todayDate,
   multiDayTasks,
   fixedStartHour,
-  hideWeekTodos = false,
+  hideWeekTasks = false,
   maxMultiDayRows,
 }: DashboardCalendarProps): React.ReactElement {
   // Always open on the week that contains today
@@ -559,15 +559,15 @@ export default function DashboardCalendar({
             })}
           </div>
 
-          {/* Week todos — one column per day for the visible week */}
-          {visibleWeek && !hideWeekTodos && (
+          {/* Week tasks — one column per day for the visible week */}
+          {visibleWeek && !hideWeekTasks && (
             <div
               className="absolute inset-x-0 bottom-0 grid"
               style={{
                 gridTemplateColumns: GRID_COLS,
                 gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))`,
                 columnGap: `${DAY_COLUMN_GAP_PX}px`,
-                rowGap: `${TODO_SLOT_VERTICAL_INSET_PX * 2}px`,
+                rowGap: `${TASK_SLOT_VERTICAL_INSET_PX * 2}px`,
                 top: `${MULTI_DAY_BAND_HEIGHT_PX}px`,
               }}
             >
@@ -575,27 +575,27 @@ export default function DashboardCalendar({
                 <div key={slot.label} />
               ))}
               {displayDays.flatMap((day, dayIndex) => {
-                const dayTodos = visibleWeekDaysByDate.get(day.date)?.todos ?? [];
+                const dayTasks = visibleWeekDaysByDate.get(day.date)?.tasks ?? [];
                 const dayEvents = visibleTimedEvents.filter(
                   (event) => event.day === day.day,
                 );
 
                 return timeSlots.map((slot, slotIndex) => {
-                  const todo = dayTodos[slotIndex];
+                  const taskItem = dayTasks[slotIndex];
                   const hasOverlappingEvent = dayEvents.some((event) =>
                     eventOverlapsSlot(event, slot.hour),
                   );
-                  const isFutureTodoSlot = isFutureSlot(
+                  const isFutureTaskSlot = isFutureSlot(
                     day.date,
                     slot.hour,
                     todayDate,
                     currentHour,
                   );
                   const isCompleted =
-                    todo && !isFutureTodoSlot ? todo.done : false;
-                  const isDarkTodo = todo?.variant === "dark";
+                    taskItem && !isFutureTaskSlot ? taskItem.done : false;
+                  const isDarkTask = taskItem?.variant === "dark";
 
-                  if (!todo || !todo.task.trim() || hasOverlappingEvent) {
+                  if (!taskItem || !taskItem.task.trim() || hasOverlappingEvent) {
                     return (
                       <div
                         key={`${day.date}-${slot.hour}`}
@@ -610,10 +610,10 @@ export default function DashboardCalendar({
 
                   return (
                     <div
-                      key={todo.task}
+                      key={taskItem.task}
                       className={clsx(
                         "relative z-[2] flex min-h-0 min-w-0 items-center justify-start overflow-hidden rounded-[0.3rem] px-[0.45rem]",
-                        isDarkTodo
+                        isDarkTask
                           ? "bg-[#161c22]"
                           : isCompleted
                           ? "bg-[#d8edf1]/70"
@@ -627,7 +627,7 @@ export default function DashboardCalendar({
                       <p
                         className={clsx(
                           "overflow-hidden text-[0.56rem] font-[600] leading-tight break-words [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]",
-                          isDarkTodo
+                          isDarkTask
                             ? "text-white"
                             : isCompleted
                             ? "text-[#8c959c] line-through"
@@ -636,7 +636,7 @@ export default function DashboardCalendar({
                               : "text-[#2c353c]",
                         )}
                       >
-                        {todo.task}
+                        {taskItem.task}
                       </p>
                     </div>
                   );

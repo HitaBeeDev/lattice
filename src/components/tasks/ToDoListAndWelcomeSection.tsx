@@ -1,6 +1,6 @@
 import { useTasks } from "../../context/TasksContext";
 import AddModal from "./AddModal";
-import ToDoList from "./ToDoList";
+import TaskList from "./TaskList";
 import WelcomeBanner from "./WelcomeBanner";
 
 function ToDoListAndWelcomeSection() {
@@ -19,7 +19,7 @@ function ToDoListAndWelcomeSection() {
 
       {showModal && isEditing && <AddModal />}
 
-      <ToDoList />
+      <TaskList />
     </section>
   );
 }
