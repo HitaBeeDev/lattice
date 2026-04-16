@@ -1,13 +1,15 @@
-import type { ReactNode } from "react";
+import MuiTooltip from "@mui/material/Tooltip";
+import type { ReactElement, ReactNode } from "react";
+
 type TooltipProps = {
-    children: ReactNode;
-    content: ReactNode;
+  children: ReactElement;
+  content: ReactNode;
 };
+
 export default function Tooltip({ children, content }: TooltipProps) {
-    return (<span>
+  return (
+    <MuiTooltip title={content} arrow>
       {children}
-      <span role="tooltip">
-        {content}
-      </span>
-    </span>);
+    </MuiTooltip>
+  );
 }

@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(npm run *22)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(wc -l /Users/aliet/Documents/Anahita/code/Lattice/src/components/**/*.tsx)",
+      "Bash(awk '$1 > 100 {print}')",
+      "Bash(grep -n \"useEffect\" src/hooks/*.ts -A 20)",
+      "Bash(cat)",
+      "Read(//tmp/**)"
     ]
   }
 }
