@@ -1,5 +1,7 @@
-import TopNav from "./TopNav";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import TopNav from "./TopNav";
+import Sidebar from "./Sidebar/Sidebar";
 
 type ContainerProps = {
   children: React.ReactNode;
@@ -7,6 +9,8 @@ type ContainerProps = {
 
 function Container({ children }: ContainerProps) {
   const location = useLocation();
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
   const isDashboardRoute =
     location.pathname === "/" || location.pathname === "/dashboard";
   const isPomodoroRoute = location.pathname === "/pomodoro";
@@ -27,7 +31,20 @@ function Container({ children }: ContainerProps) {
       >
         Skip to main content
       </a>
-      <TopNav />
+
+      <TopNav onMenuOpen={() => setIsMobileNavOpen(true)} />
+
+      {/* Mobile nav backdrop */}
+      {isMobileNavOpen && (
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+          onClick={() => setIsMobileNavOpen(false)}
+        />
+      )}
+
+      <Sidebar isOpen={isMobileNavOpen} setIsOpen={setIsMobileNavOpen} />
+
       <div
         className={
           isDashboardRoute || isPomodoroRoute

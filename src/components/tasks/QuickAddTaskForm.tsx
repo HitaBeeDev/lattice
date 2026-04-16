@@ -33,6 +33,9 @@ export default function QuickAddTaskForm({ onAdd }: QuickAddTaskFormProps) {
 
   return (
     <form className="flex flex-col gap-3 mt-5" onSubmit={handleSubmit(onSubmit)}>
+      <label className="sr-only" htmlFor="new-task-name">
+        Task name
+      </label>
       <Input
         className="rounded-[0.5rem] h-[2.5rem] text-[0.8rem] border border-[#e0e9ed]"
         error={errors.name?.message}
@@ -52,7 +55,9 @@ export default function QuickAddTaskForm({ onAdd }: QuickAddTaskFormProps) {
       />
 
       <div>
-        <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">Notes</p>
+        <label className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5 block" htmlFor="new-task-description">
+          Notes
+        </label>
         <Input
           className="rounded-[0.5rem] h-[2.5rem] text-[0.8rem] border border-[#e0e9ed]"
           error={errors.description?.message}

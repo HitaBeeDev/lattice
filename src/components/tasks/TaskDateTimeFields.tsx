@@ -14,7 +14,9 @@ export default function TaskDateTimeFields({ register, errors }: TaskDateTimeFie
   return (
     <div className="grid grid-cols-2 gap-2">
       <div>
-        <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">Date</p>
+        <label className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5 block" htmlFor="new-task-date">
+          Date
+        </label>
         <Input
           className="rounded-[0.5rem] h-[2.5rem] text-[0.8rem] border border-[#e0e9ed]"
           error={errors.date?.message}
@@ -24,7 +26,9 @@ export default function TaskDateTimeFields({ register, errors }: TaskDateTimeFie
         />
       </div>
       <div>
-        <p className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5">Start time</p>
+        <label className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5 block" htmlFor="new-task-start-time">
+          Start time
+        </label>
         <Input
           className="rounded-[0.5rem] h-[2.5rem] text-[0.8rem] border border-[#e0e9ed]"
           error={errors.startTime?.message}

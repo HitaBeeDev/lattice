@@ -38,7 +38,7 @@ export default function TimeTrackerCard(): React.ReactElement {
   const sessionLabel = SESSION_TYPE_LABELS[sessionType] ?? "Work time";
 
   return (
-    <div className="col-span-1 col-start-1 row-span-2 row-start-3 flex h-full w-full flex-col rounded-[1.2rem] bg-[#cee2e9]/40 p-5">
+    <div className="sm:col-span-1 lg:col-span-1 lg:col-start-1 lg:row-span-2 lg:row-start-3 flex min-h-[12rem] lg:h-full w-full flex-col rounded-[1.2rem] bg-[#cee2e9]/40 p-5">
       <div className="flex flex-row items-start justify-between">
         <p className="text-[0.85rem] mt-2 leading-none font-[400] text-[#3d454b]">
           Time Tracker

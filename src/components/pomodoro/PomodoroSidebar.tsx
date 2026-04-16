@@ -23,7 +23,7 @@ export default function PomodoroSidebar({
   progressPct,
 }: PomodoroSidebarProps) {
   return (
-    <div className="col-span-1 flex flex-col justify-between rounded-[1.7rem] bg-white p-8">
+    <div className="lg:col-span-1 flex flex-col justify-between rounded-[1.7rem] bg-white p-8">
       <div>
         <p className="text-[0.7rem] leading-none font-[300] text-[#a0a5ab] ml-1 mt-3">{todayLabel}</p>
         <p className="mt-7 max-w-[10ch] text-[4rem] leading-[0.92] font-[200] tracking-[-0.05em] text-[#161c22]">

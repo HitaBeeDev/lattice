@@ -30,8 +30,8 @@ function DashboardPage() {
   } = useDashboard();
 
   return (
-    <main className="h-full overflow-hidden" id="main-content" tabIndex={-1}>
-      <div className="h-full min-w-[1280px] flex flex-col">
+    <main className="h-full overflow-y-auto lg:overflow-hidden" id="main-content" tabIndex={-1}>
+      <div className="flex flex-col lg:h-full">
         <div className="mt-8">
           <p className="font-['Inter'] font-[300] text-[2.1rem] text-[#060a0f]">
             Welcome in, {mockUser.name}
@@ -51,7 +51,7 @@ function DashboardPage() {
           completedPomodoros={completedPomodoros}
         />
 
-        <div className="grid flex-1 min-h-0 grid-cols-4 grid-rows-4 gap-3 mt-6">
+        <div className="grid gap-3 mt-6 grid-cols-1 sm:grid-cols-2 lg:flex-1 lg:min-h-0 lg:grid-cols-4 lg:grid-rows-4 pb-6 lg:pb-0">
           <ProgressCard
             sampleFocusHours={sampleFocusHours}
             focusChartData={focusChartData}

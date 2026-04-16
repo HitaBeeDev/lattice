@@ -28,7 +28,7 @@ export default function HabitConsistencyCard({
   };
 
   return (
-    <section className="relative col-span-2 row-span-1 row-start-4 flex h-full w-full overflow-visible rounded-[1.2rem] bg-[#cee2e9]/40 p-4">
+    <section className="relative sm:col-span-2 lg:col-span-2 lg:row-span-1 lg:row-start-4 flex min-h-[10rem] lg:h-full w-full overflow-visible rounded-[1.2rem] bg-[#cee2e9]/40 p-4">
       <div className="relative flex flex-col w-full h-full">
         <div className="flex items-center justify-between w-full">
           <div className="flex flex-row items-center gap-2">

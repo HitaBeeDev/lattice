@@ -56,7 +56,7 @@ export default function Modal({ children, description, onClose, open, title }: M
   return createPortal(
     <div
       aria-label="Close dialog"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-sm px-4"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/25 backdrop-blur-sm sm:px-4"
       onClick={onClose}
       onKeyDown={handleBackdropKeyDown}
       role="button"
@@ -68,7 +68,7 @@ export default function Modal({ children, description, onClose, open, title }: M
         aria-labelledby={titleId}
         aria-modal="true"
         role="dialog"
-        className="w-full max-w-md bg-white rounded-[1.5rem] shadow-[0_24px_60px_rgba(0,0,0,0.12)] overflow-hidden"
+        className="w-full max-h-[95dvh] overflow-y-auto sm:max-w-md bg-white rounded-t-[1.5rem] sm:rounded-[1.5rem] shadow-[0_24px_60px_rgba(0,0,0,0.12)] overflow-hidden"
         onClick={(event: MouseEvent<HTMLDivElement>) => event.stopPropagation()}
       >
         <ModalHeader title={title} titleId={titleId} onClose={onClose} />

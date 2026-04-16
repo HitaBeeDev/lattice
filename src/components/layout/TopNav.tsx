@@ -1,3 +1,4 @@
+import { Menu } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
 const navItems = [
@@ -7,7 +8,11 @@ const navItems = [
   { label: "Pomodoro", path: "/pomodoro" },
 ];
 
-export default function TopNav() {
+type TopNavProps = {
+  onMenuOpen: () => void;
+};
+
+export default function TopNav({ onMenuOpen }: TopNavProps) {
   const location = useLocation();
 
   const isActive = (path: string) =>
@@ -22,7 +27,17 @@ export default function TopNav() {
         className="mx-auto flex w-full max-w-[1400px] items-center justify-between rounded-[2rem]
          bg-[rgba(248,252,252,0.05)] px-5 py-3 shadow-[0_18px_55px_rgba(70,95,110,0.12)] backdrop-blur-xl"
       >
-        <div>
+        <div className="flex items-center gap-3">
+          {/* Hamburger — mobile only */}
+          <button
+            aria-label="Open navigation menu"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[#242c32] hover:bg-white/60 transition lg:hidden"
+            onClick={onMenuOpen}
+            type="button"
+          >
+            <Menu className="h-5 w-5" aria-hidden="true" />
+          </button>
+
           <NavLink
             to="/"
             className="font-heading cursor-pointer text-[1.1rem] font-[600] tracking-[0.08em] text-[#242c32] transition-colors duration-200 hover:text-[#50585e]"
@@ -32,8 +47,9 @@ export default function TopNav() {
           </NavLink>
         </div>
 
+        {/* Desktop nav pill — hidden on mobile */}
         <ul
-          className="flex flex-row items-center gap-2 rounded-[5rem] bg-white/90 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]"
+          className="hidden lg:flex flex-row items-center gap-2 rounded-[5rem] bg-white/90 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]"
           role="list"
         >
           {navItems.map((item) => (

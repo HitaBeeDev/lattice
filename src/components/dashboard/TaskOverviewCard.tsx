@@ -47,7 +47,7 @@ export default function TaskOverviewCard({
   const handleOpenTasks = (): void => navigate("/tasks");
 
   return (
-    <section className="col-span-1 col-start-4 row-span-4 row-start-1 flex h-full w-full flex-col overflow-hidden rounded-[1.2rem] bg-[#cee2e9]/40 p-5">
+    <section className="sm:col-span-2 lg:col-span-1 lg:col-start-4 lg:row-span-4 lg:row-start-1 flex min-h-[20rem] lg:h-full w-full flex-col overflow-hidden rounded-[1.2rem] bg-[#cee2e9]/40 p-5">
       <div className="flex flex-row items-center justify-between">
         <p className="pt-2 ml-2 text-[0.85rem] leading-none font-[400] text-[#3d454b]">Tasks</p>
         <p className="text-[2.2rem] leading-none font-[200] text-[#161c22] mt-3">{progress}%</p>

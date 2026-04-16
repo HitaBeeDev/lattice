@@ -23,7 +23,7 @@ export default function TimerDisplay({
 }: TimerDisplayProps) {
   const timeLabel = `${minutes}:${seconds.toString().padStart(2, "0")}`;
   return (
-    <div className="relative mx-auto mt-3 flex h-[24rem] w-[24rem] items-center justify-center">
+    <div className="relative mx-auto mt-3 flex w-full max-w-[24rem] aspect-square items-center justify-center">
       <svg
         aria-label={`${sessionType} timer showing ${minutes} minutes and ${seconds} seconds remaining`}
         viewBox="0 0 200 200"
