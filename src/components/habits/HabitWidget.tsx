@@ -1,10 +1,13 @@
 import { useHabits } from "../../context/HabitContext";
 import { EmptyState, Skeleton } from "../ui";
+
+const HABIT_SKELETON_IDS = ["habit-alpha", "habit-beta", "habit-gamma"] as const;
+
 function HabitWidgetSkeleton() {
     return (<div>
-      <Skeleton />
+      <Skeleton className="h-6 w-24" />
       <div>
-        {[0, 1, 2].map((i) => (<Skeleton key={`skeleton-habit-${i}`}/>))}
+        {HABIT_SKELETON_IDS.map((id) => (<Skeleton key={id} className="mt-3 h-10 w-full"/>))}
       </div>
     </div>);
 }

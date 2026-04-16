@@ -3,6 +3,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import habitQuotes from "../components/habits/habitQuotes";
 import { db } from "../db/database";
 import type { HabitFormValues } from "../lib/habitSchema";
+import { MOBILE_NAV_BREAKPOINT } from "../lib/layoutConstants";
 import type { Habit } from "../types/habit";
 import { useRandomIndex } from "./useRandomIndex";
 
@@ -14,7 +15,6 @@ const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 
 const DAY_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = { weekday: "short" };
 const DAYS_PER_WEEK = 7;
-const LARGE_SCREEN_BREAKPOINT = 1024;
 const DEFAULT_HABIT_TARGET = 7;
 
 export interface HabitCompletionStats {
@@ -25,18 +25,16 @@ export interface HabitCompletionStats {
 export interface HabitContextValue {
   habits: Habit[];
   isLoading: boolean;
-  editIndex: number;
+  editingHabitId: string | null;
   addHabit: (values: HabitFormValues) => void;
-  startEdit: (index: number) => void;
-  saveEdit: (index: number, name: string) => void;
+  startEdit: (habitId: string) => void;
+  saveEdit: (habitId: string, name: string) => void;
   cancelEdit: () => void;
-  deleteHabit: (index: number) => void;
-  toggleDayMark: (habitIndex: number, dayIndex: number) => void;
+  deleteHabit: (habitId: string) => void;
+  toggleDayMark: (habitId: string, dayIndex: number) => void;
   getWeekDates: () => Date[];
   formatDate: (date: Date) => string;
   formatDayOfWeek: (date: Date) => string;
-  calculateHabitCompletion: () => HabitCompletionStats;
-  calculateAveragePercentageForWeek: () => number;
   totalHabits: number;
   formattedToday: string;
   completedHabits: number;
@@ -92,7 +90,7 @@ const formatDayOfWeek = (date: Date): string =>
 export function useHabits(): HabitContextValue {
   const habitEntries = useLiveQuery<Habit[] | undefined>(() => db.habits.toArray(), []);
   const habits = useMemo<Habit[]>(() => habitEntries ?? [], [habitEntries]);
-  const [editIndex, setEditIndex] = useState<number>(-1);
+  const [editingHabitId, setEditingHabitId] = useState<string | null>(null);
   const quoteIndex = useRandomIndex(habitQuotes.length);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
@@ -108,18 +106,18 @@ export function useHabits(): HabitContextValue {
     };
   }, []);
 
-  const isLargeScreen = windowWidth >= LARGE_SCREEN_BREAKPOINT;
+  const isLargeScreen = windowWidth >= MOBILE_NAV_BREAKPOINT;
 
   const addHabit = useCallback((values: HabitFormValues): void => {
     void db.habits.add(createHabitRecord(values));
   }, []);
 
-  const startEdit = useCallback((index: number): void => {
-    setEditIndex(index);
+  const startEdit = useCallback((habitId: string): void => {
+    setEditingHabitId(habitId);
   }, []);
 
-  const saveEdit = useCallback((index: number, name: string): void => {
-    const habit = habits[index];
+  const saveEdit = useCallback((habitId: string, name: string): void => {
+    const habit = habits.find((entry) => entry.id === habitId);
     if (!habit) {
       return;
     }
@@ -129,24 +127,19 @@ export function useHabits(): HabitContextValue {
       name: name.trim(),
       updatedAt: new Date().toISOString(),
     });
-    setEditIndex(-1);
+    setEditingHabitId(null);
   }, [habits]);
 
   const cancelEdit = useCallback((): void => {
-    setEditIndex(-1);
+    setEditingHabitId(null);
   }, []);
 
-  const deleteHabit = useCallback((index: number): void => {
-    const habit = habits[index];
-    if (!habit) {
-      return;
-    }
+  const deleteHabit = useCallback((habitId: string): void => {
+    void db.habits.delete(habitId);
+  }, []);
 
-    void db.habits.delete(habit.id);
-  }, [habits]);
-
-  const toggleDayMark = useCallback((habitIndex: number, dayIndex: number): void => {
-    const habit = habits[habitIndex];
+  const toggleDayMark = useCallback((habitId: string, dayIndex: number): void => {
+    const habit = habits.find((entry) => entry.id === habitId);
     if (!habit) {
       return;
     }
@@ -228,7 +221,7 @@ export function useHabits(): HabitContextValue {
     () => ({
       habits,
       isLoading: habitEntries === undefined,
-      editIndex,
+      editingHabitId,
       addHabit,
       startEdit,
       saveEdit,
@@ -238,8 +231,6 @@ export function useHabits(): HabitContextValue {
       getWeekDates,
       formatDate,
       formatDayOfWeek,
-      calculateHabitCompletion,
-      calculateAveragePercentageForWeek,
       totalHabits,
       formattedToday,
       completedHabits,
@@ -254,15 +245,13 @@ export function useHabits(): HabitContextValue {
     [
       habits,
       habitEntries,
-      editIndex,
+      editingHabitId,
       addHabit,
       startEdit,
       saveEdit,
       cancelEdit,
       deleteHabit,
       toggleDayMark,
-      calculateHabitCompletion,
-      calculateAveragePercentageForWeek,
       totalHabits,
       formattedToday,
       completedHabits,

@@ -15,15 +15,7 @@ function TimerArticles() {
       </h2>
 
       <div className="relative mt-4 min-h-0 flex-1 overflow-hidden">
-        <p
-          className="text-[0.88rem] font-[300] leading-7 text-[#66727a]"
-          style={{
-            display: "-webkit-box",
-            WebkitBoxOrient: "vertical",
-            WebkitLineClamp: 5,
-            overflow: "hidden",
-          }}
-        >
+        <p className="text-[0.88rem] font-[300] leading-7 text-[#66727a] line-clamp-5">
           {article?.content}
         </p>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white via-white/92 to-transparent" />

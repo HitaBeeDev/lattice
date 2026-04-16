@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *22)",
+      "Bash(npm run *)"
+    ]
+  }
+}

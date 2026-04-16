@@ -3,10 +3,10 @@ import { cn } from "../ui/cn";
 import { PRIORITY_OPTIONS, type TaskFormValues } from "../../lib/taskSchema";
 import type { Priority } from "../../types/task";
 
-const PRIORITY_COLORS: Record<Priority, string> = {
-  High: "#ef4444",
-  Medium: "#f59e0b",
-  Low: "#22c55e",
+const PRIORITY_DOT_CLASSES: Record<Priority, string> = {
+  High: "bg-[#ef4444]",
+  Medium: "bg-[#f59e0b]",
+  Low: "bg-[#22c55e]",
 };
 
 type PrioritySelectorProps = {
@@ -44,10 +44,7 @@ export default function PrioritySelector({
                 : "bg-white text-[#a0a5ab] border-[#dde4e8] hover:border-[#b0bec5]",
             )}
           >
-            <div
-              className="h-1.5 w-1.5 rounded-full flex-shrink-0"
-              style={{ backgroundColor: PRIORITY_COLORS[priority] }}
-            />
+            <div className={`h-1.5 w-1.5 rounded-full flex-shrink-0 ${PRIORITY_DOT_CLASSES[priority]}`} />
             {priority}
           </button>
         ))}

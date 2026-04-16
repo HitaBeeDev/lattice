@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  /* Repeating diagonal stripe patterns used in progress bars */
+  .bg-hatch {
+    background-image: repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.95) 0px,
+      rgba(255, 255, 255, 0.95) 2px,
+      transparent 2px,
+      transparent 8px
+    );
+  }
+
+  .bg-hatch-teal {
+    background-image: repeating-linear-gradient(
+      135deg,
+      rgba(114, 225, 238, 0.45) 0px,
+      rgba(114, 225, 238, 0.45) 2px,
+      transparent 2px,
+      transparent 8px
+    );
+  }
+
+  .bg-hatch-accent {
+    background-image: repeating-linear-gradient(
+      135deg,
+      #aceef5 0px,
+      #aceef5 2px,
+      transparent 2px,
+      transparent 8px
+    );
+  }
+}
+
 @layer base {
   * {
     box-sizing: border-box;

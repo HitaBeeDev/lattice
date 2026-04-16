@@ -41,6 +41,43 @@ export const MULTI_DAY_ROW_GAP_PX = 2;
 export const DAY_COLUMN_GAP_PX = 6;
 export const TASK_SLOT_VERTICAL_INSET_PX = 3;
 export const GRID_COLS = "48px repeat(7, minmax(0, 1fr))";
+const GRID_ROW_START_CLASSES = [
+  "row-start-1",
+  "row-start-2",
+  "row-start-3",
+  "row-start-4",
+  "row-start-5",
+  "row-start-6",
+  "row-start-7",
+] as const;
+const GRID_COL_START_CLASSES = [
+  "col-start-1",
+  "col-start-2",
+  "col-start-3",
+  "col-start-4",
+  "col-start-5",
+  "col-start-6",
+  "col-start-7",
+  "col-start-8",
+] as const;
+const COL_SPAN_CLASSES = [
+  "col-span-1",
+  "col-span-2",
+  "col-span-3",
+  "col-span-4",
+  "col-span-5",
+  "col-span-6",
+  "col-span-7",
+] as const;
+const ROW_SPAN_CLASSES = [
+  "row-span-1",
+  "row-span-2",
+  "row-span-3",
+  "row-span-4",
+  "row-span-5",
+  "row-span-6",
+  "row-span-7",
+] as const;
 
 export interface TimeSlot {
   label: string;
@@ -92,6 +129,22 @@ export function shiftWeek(monday: Date, direction: -1 | 1): Date {
 
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
+}
+
+export function getGridRowStartClass(rowStart: number): string {
+  return GRID_ROW_START_CLASSES[clamp(rowStart, 1, GRID_ROW_START_CLASSES.length) - 1];
+}
+
+export function getGridColStartClass(colStart: number): string {
+  return GRID_COL_START_CLASSES[clamp(colStart, 1, GRID_COL_START_CLASSES.length) - 1];
+}
+
+export function getColSpanClass(colSpan: number): string {
+  return COL_SPAN_CLASSES[clamp(colSpan, 1, COL_SPAN_CLASSES.length) - 1];
+}
+
+export function getRowSpanClass(rowSpan: number): string {
+  return ROW_SPAN_CLASSES[clamp(rowSpan, 1, ROW_SPAN_CLASSES.length) - 1];
 }
 
 export function formatHourLabel(hour: number): string {

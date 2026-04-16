@@ -2,15 +2,6 @@ import { useTasks } from "../../context/TasksContext";
 import { EmptyState } from "../ui";
 import TaskGroup from "./TaskGroup";
 
-const getTodayKey = (): string => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
-
 function TaskList() {
   const {
     handleTaskDelete,
@@ -18,12 +9,10 @@ function TaskList() {
     checkedTasks,
     handleCheckboxChange,
     handleTaskProgressChange,
-    sortedTasks,
+    visibleTaskGroups,
   } = useTasks();
-  const todayKey = getTodayKey();
-  const visibleTasks = sortedTasks.filter(([date]) => date >= todayKey);
 
-  if (visibleTasks.length === 0) {
+  if (visibleTaskGroups.length === 0) {
     return (
       <EmptyState
         className="rounded-[1.7rem] border border-dashed border-white/80 bg-white/45 px-6 py-12 shadow-[0_18px_55px_rgba(80,111,122,0.08)]"
@@ -36,7 +25,7 @@ function TaskList() {
   return (
     <section>
       <div>
-        {visibleTasks.map(([date, tasks]) => (
+        {visibleTaskGroups.map(({ date, tasks }) => (
           <TaskGroup
             key={date}
             checkedTasks={checkedTasks}

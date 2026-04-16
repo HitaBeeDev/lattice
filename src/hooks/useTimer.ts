@@ -51,9 +51,6 @@ export interface TimeTrackerContextValue {
   todayFocusSeconds: number;
   dailyFocusSeconds: Record<string, number>;
   sessionDurations: Record<SessionType, number>;
-  radius: number;
-  circumference: number;
-  strokeDashoffset: number;
   currentArticleIndex: number;
 }
 
@@ -64,7 +61,6 @@ const SESSION_DURATIONS: Record<SessionType, number> = {
 };
 
 const INITIAL_TOTAL_SECONDS = SESSION_DURATIONS.Pomodoro;
-const TIMER_RADIUS = 80;
 const TIMER_STATE_STORAGE_KEY = "timer-session-state";
 // Bumped to v3 to reseed dashboard focus analytics with non-zero mock values.
 const TIMER_ANALYTICS_STORAGE_KEY = "timer-session-analytics-v3";
@@ -437,8 +433,6 @@ export function useTimer(): TimeTrackerContextValue {
   }, []);
 
   const editButtonText = isEditing ? "Cancel Edit" : "Edit Time";
-  const circumference = 2 * Math.PI * TIMER_RADIUS;
-  const strokeDashoffset = (totalSeconds / maxSeconds) * circumference;
   const todayFocusSeconds = analytics.dailyFocusSeconds[getTodayKey()] ?? 0;
 
   return useMemo<TimeTrackerContextValue>(
@@ -468,9 +462,6 @@ export function useTimer(): TimeTrackerContextValue {
       todayFocusSeconds,
       dailyFocusSeconds: analytics.dailyFocusSeconds,
       sessionDurations: SESSION_DURATIONS,
-      radius: TIMER_RADIUS,
-      circumference,
-      strokeDashoffset,
       currentArticleIndex,
     }),
     [
@@ -479,7 +470,6 @@ export function useTimer(): TimeTrackerContextValue {
       analytics.longBreakCount,
       analytics.sessionHistory,
       analytics.shortBreakCount,
-      circumference,
       currentArticleIndex,
       editButtonText,
       handleAddProject,
@@ -497,7 +487,6 @@ export function useTimer(): TimeTrackerContextValue {
       projectTimes,
       projects,
       sessionType,
-      strokeDashoffset,
       todayFocusSeconds,
       toggleEdit,
       totalSeconds,

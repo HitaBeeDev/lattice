@@ -1,4 +1,5 @@
 import { useHabits } from "../../context/HabitContext";
+import { getPercentageFillClass } from "../../lib/progressStyles";
 import habitQuotes from "./habitQuotes";
 
 export default function SummaryStats() {
@@ -41,10 +42,7 @@ export default function SummaryStats() {
               </p>
 
               <div className="mt-4 h-[0.3rem] overflow-hidden rounded-full bg-[#e6e8ea]">
-                <div
-                  className="h-full rounded-full bg-[#06090f]"
-                  style={{ width: `${percentages[index]}%` }}
-                />
+                <div className={getPercentageFillClass(percentages[index], "h-full rounded-full bg-[#06090f]")} />
               </div>
             </div>
           ))}

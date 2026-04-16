@@ -1,4 +1,5 @@
 import { cn } from "./cn";
+import { getPercentageFillClass } from "../../lib/progressStyles";
 
 type ProgressBarProps = {
   className?: string;
@@ -27,10 +28,7 @@ export default function ProgressBar({
       )}
       <div className="space-y-3">
         <div className="h-3 overflow-hidden rounded-full bg-[#dbe8eb]">
-          <div
-            className="h-full rounded-full bg-[#72e1ee] transition-all"
-            style={{ width: `${safeValue}%` }}
-          />
+          <div className={getPercentageFillClass(safeValue, "h-full rounded-full bg-[#72e1ee] transition-all")} />
         </div>
         <p className="text-sm leading-6 text-[#627882]">
           {safeValue >= 80

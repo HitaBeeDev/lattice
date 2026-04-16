@@ -1,13 +1,14 @@
 import { PanelLeftClose, PanelLeftOpen, Sparkles, X } from "lucide-react";
 import NavList from "./NavList";
 import { mainNavItems } from "./navData";
+import { MOBILE_NAV_BREAKPOINT } from "../../../lib/layoutConstants";
 type SidebarProps = {
     isOpen: boolean;
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     const handleMobileNavigate = () => {
-        if (window.innerWidth < 1024) {
+        if (window.innerWidth < MOBILE_NAV_BREAKPOINT) {
             setIsOpen(false);
         }
     };

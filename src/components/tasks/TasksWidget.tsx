@@ -1,38 +1,24 @@
-import type { Task } from "../../types/task";
+import { useMemo } from "react";
 import { useTasks } from "../../context/TasksContext";
 import { Badge, EmptyState, Skeleton } from "../ui";
+import { getUpcomingTasks, TASK_WIDGET_SKELETON_IDS } from "../../lib/taskWidget";
 const PRIORITY_VARIANTS = {
     High: "high",
     Medium: "medium",
     Low: "low",
 } as const;
-const MAX_GROUPS = 2;
-const MAX_TASKS_PER_GROUP = 2;
-const byDate = ([dateA]: [
-    string,
-    Task[]
-], [dateB]: [
-    string,
-    Task[]
-]) => new Date(dateA).getTime() - new Date(dateB).getTime();
-const getUpcomingTasks = (groupedTasks: Record<string, Task[]>, checkedTasks: string[]) => Object.entries(groupedTasks)
-    .sort(byDate)
-    .slice(0, MAX_GROUPS)
-    .flatMap(([, tasks]) => tasks
-    .filter((task) => !checkedTasks.includes(task.id))
-    .slice(0, MAX_TASKS_PER_GROUP));
 function TasksWidgetSkeleton() {
     return (<div>
-      <Skeleton />
+      <Skeleton className="h-6 w-28" />
       <div>
-        {[0, 1].map((i) => (<div key={`skeleton-task-${i}`}>
-            <Skeleton />
+        {TASK_WIDGET_SKELETON_IDS.map((id) => (<div key={id}>
+            <Skeleton className="mt-3 h-5 w-20" />
             <div>
               <div>
-                <Skeleton />
-                <Skeleton />
+                <Skeleton className="mt-2 h-4 w-36" />
+                <Skeleton className="mt-2 h-4 w-24" />
               </div>
-              <Skeleton />
+              <Skeleton className="mt-2 h-5 w-16 rounded-full" />
             </div>
           </div>))}
       </div>
@@ -40,10 +26,13 @@ function TasksWidgetSkeleton() {
 }
 function TasksWidget() {
     const { groupedTasks, checkedTasks, isLoading } = useTasks();
+    const upcomingTasks = useMemo(() => getUpcomingTasks(groupedTasks, checkedTasks), [
+        checkedTasks,
+        groupedTasks
+    ]);
     if (isLoading) {
         return <TasksWidgetSkeleton />;
     }
-    const upcomingTasks = getUpcomingTasks(groupedTasks, checkedTasks);
     return (<div>
       <div>
         <p>

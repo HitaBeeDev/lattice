@@ -4,7 +4,7 @@ import { Button, Tooltip } from "../ui";
 type DailyHabitsCardProps = {
     habits: Habit[];
     todayIndex: number;
-    toggleDayMark: (habitIndex: number, dayIndex: number) => void;
+    toggleDayMark: (habitId: string, dayIndex: number) => void;
 };
 type DailyHabitItemProps = {
     habit: Habit;
@@ -47,7 +47,7 @@ export default function DailyHabitsCard({ habits, todayIndex, toggleDayMark, }: 
       </div>
 
       <ul>
-        {habits.length > 0 ? (habits.map((habit, index) => (<DailyHabitItem key={habit.id} habit={habit} onToggle={() => toggleDayMark(index, todayIndex)} todayIndex={todayIndex}/>))) : (<li>No habits yet.</li>)}
+        {habits.length > 0 ? (habits.map((habit) => (<DailyHabitItem key={habit.id} habit={habit} onToggle={() => toggleDayMark(habit.id, todayIndex)} todayIndex={todayIndex}/>))) : (<li>No habits yet.</li>)}
       </ul>
     </article>);
 }

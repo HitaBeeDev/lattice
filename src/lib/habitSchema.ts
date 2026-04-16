@@ -2,6 +2,9 @@ import { z } from "zod";
 
 const HABIT_NAME_MIN = 2;
 const HABIT_NAME_MAX = 50;
+export const HABIT_TARGET_MIN = 1;
+export const HABIT_TARGET_MAX = 7;
+export const HABIT_STREAK_GOAL_MIN = 1;
 
 export const habitSchema = z
   .object({
@@ -12,8 +15,17 @@ export const habitSchema = z
       .max(HABIT_NAME_MAX, `Habit name cannot exceed ${HABIT_NAME_MAX} characters`),
     frequency: z.enum(["daily", "weekly", "custom"]),
     frequencyDays: z.array(z.number().int().min(0).max(6)).optional(),
-    targetPerWeek: z.number().int().min(1, "Must be at least 1").max(7, "Cannot exceed 7").optional(),
-    streakGoal: z.number().int().min(1, "Must be at least 1").optional(),
+    targetPerWeek: z
+      .number()
+      .int()
+      .min(HABIT_TARGET_MIN, `Must be at least ${HABIT_TARGET_MIN}`)
+      .max(HABIT_TARGET_MAX, `Cannot exceed ${HABIT_TARGET_MAX}`)
+      .optional(),
+    streakGoal: z
+      .number()
+      .int()
+      .min(HABIT_STREAK_GOAL_MIN, `Must be at least ${HABIT_STREAK_GOAL_MIN}`)
+      .optional(),
   })
   .refine(
     ({ frequency, frequencyDays }) =>

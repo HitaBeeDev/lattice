@@ -1,4 +1,5 @@
 export { default as Badge } from "./Badge";
+export { default as HatchFill } from "./HatchFill";
 export { default as Button } from "./Button";
 export { default as EmptyState } from "./EmptyState";
 export { default as IconButton } from "./IconButton";

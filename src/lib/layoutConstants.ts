@@ -1,0 +1,1 @@
+export const MOBILE_NAV_BREAKPOINT = 1024;

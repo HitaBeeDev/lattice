@@ -8,6 +8,11 @@ export interface TaskDraft extends TaskFormValues {
   id?: string;
 }
 
+export interface TaskGroupEntry {
+  date: string;
+  tasks: Task[];
+}
+
 export interface TasksContextValue {
   tasks: Task[];
   isLoading: boolean;
@@ -27,6 +32,8 @@ export interface TasksContextValue {
   handleCheckboxChange: (taskId: string) => void;
   handleTaskProgressChange: (taskId: string) => void;
   sortedTasks: [string, Task[]][];
+  visibleTaskGroups: TaskGroupEntry[];
+  upcomingTaskGroups: TaskGroupEntry[];
 }
 
 export const getEmptyTaskForm = (): TaskFormValues => ({
@@ -52,6 +59,8 @@ const createTaskRecord = (task: TaskFormValues): Task => {
     updatedAt: timestamp,
   };
 };
+
+const getTodayKey = (): string => new Date().toISOString().slice(0, 10);
 
 export function useTasks(): TasksContextValue {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -191,6 +200,25 @@ export function useTasks(): TasksContextValue {
     [groupedTasks]
   );
 
+  const visibleTaskGroups = useMemo<TaskGroupEntry[]>(
+    () =>
+      sortedTasks
+        .filter(([date]) => date >= getTodayKey())
+        .map(([date, dateTasks]) => ({ date, tasks: dateTasks })),
+    [sortedTasks]
+  );
+
+  const upcomingTaskGroups = useMemo<TaskGroupEntry[]>(
+    () =>
+      sortedTasks
+        .map(([date, dateTasks]) => ({
+          date,
+          tasks: dateTasks.filter((task) => !task.isCompleted),
+        }))
+        .filter(({ date, tasks }) => date > getTodayKey() && tasks.length > 0),
+    [sortedTasks]
+  );
+
   return useMemo<TasksContextValue>(
     () => ({
       tasks,
@@ -211,6 +239,8 @@ export function useTasks(): TasksContextValue {
       handleCheckboxChange,
       handleTaskProgressChange,
       sortedTasks,
+      visibleTaskGroups,
+      upcomingTaskGroups,
     }),
     [
       tasks,
@@ -231,6 +261,8 @@ export function useTasks(): TasksContextValue {
       handleCheckboxChange,
       handleTaskProgressChange,
       sortedTasks,
+      visibleTaskGroups,
+      upcomingTaskGroups,
     ]
   );
 }
