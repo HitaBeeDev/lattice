@@ -72,4 +72,6 @@ function TaskItemInfo({ checkboxId, isChecked, onToggle, task }: TaskItemInfoPro
   );
 }
 
-export default memo(TaskItemInfo);
+const MemoizedTaskItemInfo = memo(TaskItemInfo);
+
+export default MemoizedTaskItemInfo;

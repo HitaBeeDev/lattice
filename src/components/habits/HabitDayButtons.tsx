@@ -76,4 +76,6 @@ function HabitDayButtons({
   );
 }
 
-export default memo(HabitDayButtons);
+const MemoizedHabitDayButtons = memo(HabitDayButtons);
+
+export default MemoizedHabitDayButtons;

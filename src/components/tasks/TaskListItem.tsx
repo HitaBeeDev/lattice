@@ -75,4 +75,6 @@ function TaskListItem({
   );
 }
 
-export default memo(TaskListItem);
+const MemoizedTaskListItem = memo(TaskListItem);
+
+export default MemoizedTaskListItem;

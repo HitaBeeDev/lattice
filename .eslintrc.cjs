@@ -7,7 +7,7 @@ module.exports = {
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
   ],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  ignorePatterns: ['dist', 'coverage', '.eslintrc.cjs'],
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   settings: { react: { version: '18.2' } },
   plugins: ['react-refresh'],
@@ -29,6 +29,12 @@ module.exports = {
         'plugin:react-hooks/recommended',
         'plugin:@typescript-eslint/recommended',
       ],
+    },
+    {
+      files: ['src/main.tsx'],
+      rules: {
+        'react-refresh/only-export-components': 'off',
+      },
     },
   ],
   rules: {

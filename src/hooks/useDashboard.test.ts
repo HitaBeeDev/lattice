@@ -77,7 +77,7 @@ const setup = (
   vi.mocked(useTasks).mockReturnValue({
     ...defaultTasksContext,
     ...taskOverrides,
-  } as ReturnType<typeof useTasks>);
+  } as unknown as ReturnType<typeof useTasks>);
   vi.mocked(useHabits).mockReturnValue({
     ...defaultHabitsContext,
     ...habitOverrides,
@@ -85,7 +85,7 @@ const setup = (
   vi.mocked(useTimeTracker).mockReturnValue({
     ...defaultTimerContext,
     ...timerOverrides,
-  } as ReturnType<typeof useTimeTracker>);
+  } as unknown as ReturnType<typeof useTimeTracker>);
   return renderHook(() => useDashboard());
 };
 

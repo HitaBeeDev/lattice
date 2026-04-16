@@ -19,4 +19,6 @@ function HabitProgressBar({ days }: HabitProgressBarProps) {
   );
 }
 
-export default memo(HabitProgressBar);
+const MemoizedHabitProgressBar = memo(HabitProgressBar);
+
+export default MemoizedHabitProgressBar;

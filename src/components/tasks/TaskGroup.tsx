@@ -46,4 +46,6 @@ function TaskGroup({
   );
 }
 
-export default memo(TaskGroup);
+const MemoizedTaskGroup = memo(TaskGroup);
+
+export default MemoizedTaskGroup;

@@ -27,7 +27,7 @@ const makeMockContext = (overrides: Record<string, unknown> = {}) => ({
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(useTimeTracker).mockReturnValue(
-    makeMockContext() as ReturnType<typeof useTimeTracker>,
+    makeMockContext() as unknown as ReturnType<typeof useTimeTracker>,
   );
 });
 
@@ -54,7 +54,7 @@ describe("useTimerEdit — initial state", () => {
 describe("useTimerEdit — handleToggleEdit", () => {
   it("sets editMinutes to current minutes when entering edit mode", () => {
     vi.mocked(useTimeTracker).mockReturnValue(
-      makeMockContext({ totalSeconds: 1500, isEditing: false }) as ReturnType<typeof useTimeTracker>,
+      makeMockContext({ totalSeconds: 1500, isEditing: false }) as unknown as ReturnType<typeof useTimeTracker>,
     );
     const { result } = renderHook(() => useTimerEdit());
 
@@ -66,7 +66,7 @@ describe("useTimerEdit — handleToggleEdit", () => {
   it("calls toggleEdit when entering edit mode", () => {
     const toggleEdit = vi.fn();
     vi.mocked(useTimeTracker).mockReturnValue(
-      makeMockContext({ isEditing: false, toggleEdit }) as ReturnType<typeof useTimeTracker>,
+      makeMockContext({ isEditing: false, toggleEdit }) as unknown as ReturnType<typeof useTimeTracker>,
     );
     const { result } = renderHook(() => useTimerEdit());
 
@@ -77,7 +77,7 @@ describe("useTimerEdit — handleToggleEdit", () => {
 
   it("clears editError when exiting edit mode", () => {
     vi.mocked(useTimeTracker).mockReturnValue(
-      makeMockContext({ isEditing: true }) as ReturnType<typeof useTimeTracker>,
+      makeMockContext({ isEditing: true }) as unknown as ReturnType<typeof useTimeTracker>,
     );
     const { result } = renderHook(() => useTimerEdit());
 
@@ -89,7 +89,7 @@ describe("useTimerEdit — handleToggleEdit", () => {
   it("calls toggleEdit when exiting edit mode", () => {
     const toggleEdit = vi.fn();
     vi.mocked(useTimeTracker).mockReturnValue(
-      makeMockContext({ isEditing: true, toggleEdit }) as ReturnType<typeof useTimeTracker>,
+      makeMockContext({ isEditing: true, toggleEdit }) as unknown as ReturnType<typeof useTimeTracker>,
     );
     const { result } = renderHook(() => useTimerEdit());
 
@@ -121,7 +121,7 @@ describe("useTimerEdit — handleSaveEditedTime", () => {
   it("calls handleUpdateTime with valid minutes", () => {
     const handleUpdateTime = vi.fn();
     vi.mocked(useTimeTracker).mockReturnValue(
-      makeMockContext({ handleUpdateTime }) as ReturnType<typeof useTimeTracker>,
+      makeMockContext({ handleUpdateTime }) as unknown as ReturnType<typeof useTimeTracker>,
     );
     const { result } = renderHook(() => useTimerEdit());
 
@@ -135,7 +135,7 @@ describe("useTimerEdit — handleSaveEditedTime", () => {
   it("sets editError and blocks save when minutes is 0", () => {
     const handleUpdateTime = vi.fn();
     vi.mocked(useTimeTracker).mockReturnValue(
-      makeMockContext({ handleUpdateTime }) as ReturnType<typeof useTimeTracker>,
+      makeMockContext({ handleUpdateTime }) as unknown as ReturnType<typeof useTimeTracker>,
     );
     const { result } = renderHook(() => useTimerEdit());
 
@@ -149,7 +149,7 @@ describe("useTimerEdit — handleSaveEditedTime", () => {
   it("sets editError and blocks save when minutes exceeds 99", () => {
     const handleUpdateTime = vi.fn();
     vi.mocked(useTimeTracker).mockReturnValue(
-      makeMockContext({ handleUpdateTime }) as ReturnType<typeof useTimeTracker>,
+      makeMockContext({ handleUpdateTime }) as unknown as ReturnType<typeof useTimeTracker>,
     );
     const { result } = renderHook(() => useTimerEdit());
 
@@ -163,7 +163,7 @@ describe("useTimerEdit — handleSaveEditedTime", () => {
   it("sets editError when minutes is not a number", () => {
     const handleUpdateTime = vi.fn();
     vi.mocked(useTimeTracker).mockReturnValue(
-      makeMockContext({ handleUpdateTime }) as ReturnType<typeof useTimeTracker>,
+      makeMockContext({ handleUpdateTime }) as unknown as ReturnType<typeof useTimeTracker>,
     );
     const { result } = renderHook(() => useTimerEdit());
 
@@ -177,7 +177,7 @@ describe("useTimerEdit — handleSaveEditedTime", () => {
   it("calls handleUpdateTime with 99 (maximum valid value)", () => {
     const handleUpdateTime = vi.fn();
     vi.mocked(useTimeTracker).mockReturnValue(
-      makeMockContext({ handleUpdateTime }) as ReturnType<typeof useTimeTracker>,
+      makeMockContext({ handleUpdateTime }) as unknown as ReturnType<typeof useTimeTracker>,
     );
     const { result } = renderHook(() => useTimerEdit());
 

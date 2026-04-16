@@ -56,4 +56,6 @@ function TaskStatusBadge({
   );
 }
 
-export default memo(TaskStatusBadge);
+const MemoizedTaskStatusBadge = memo(TaskStatusBadge);
+
+export default MemoizedTaskStatusBadge;

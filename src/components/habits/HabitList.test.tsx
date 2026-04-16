@@ -12,10 +12,14 @@ vi.mock("framer-motion", async () => {
   const { forwardRef, createElement } = await import("react");
   const createEl = (tag: string) =>
     forwardRef(
-      (
-        { children, animate, initial, exit, whileTap, transition, ...props }: Record<string, unknown>,
-        ref: React.Ref<unknown>,
-      ) => createElement(tag, { ...props, ref }, children as React.ReactNode),
+      ({ children, ...props }: Record<string, unknown>, ref: React.Ref<unknown>) => {
+        delete props.animate;
+        delete props.initial;
+        delete props.exit;
+        delete props.whileTap;
+        delete props.transition;
+        return createElement(tag, { ...props, ref }, children as React.ReactNode);
+      },
     );
   return {
     motion: {

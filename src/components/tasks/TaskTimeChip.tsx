@@ -19,4 +19,6 @@ function TaskTimeChip({ startTime, endTime }: TaskTimeChipProps) {
   );
 }
 
-export default memo(TaskTimeChip);
+const MemoizedTaskTimeChip = memo(TaskTimeChip);
+
+export default MemoizedTaskTimeChip;

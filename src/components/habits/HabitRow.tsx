@@ -85,4 +85,6 @@ function HabitRow({
   );
 }
 
-export default memo(HabitRow);
+const MemoizedHabitRow = memo(HabitRow);
+
+export default MemoizedHabitRow;

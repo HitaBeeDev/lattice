@@ -31,4 +31,6 @@ function TaskActionButtons({ taskName, onEdit, onDelete }: TaskActionButtonsProp
   );
 }
 
-export default memo(TaskActionButtons);
+const MemoizedTaskActionButtons = memo(TaskActionButtons);
+
+export default MemoizedTaskActionButtons;
