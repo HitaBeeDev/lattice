@@ -13,19 +13,31 @@ const formatLocalDate = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
+/**
+ * Parses a local ISO date string and anchors it at noon to avoid timezone edge cases.
+ */
 export const parseLocalDate = (date: string): Date => {
   const [year, month, day] = date.split("-").map(Number);
   return new Date(year, month - 1, day, 12, 0, 0, 0);
 };
 
+/**
+ * Formats an ISO date string for compact heatmap tooltip display.
+ */
 export const formatTooltipDate = (date: string): string =>
   new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(
     new Date(`${date}T12:00:00`),
   );
 
+/**
+ * Returns the completion ratio for a heatmap entry.
+ */
 export const getCompletionRatio = (entry: HabitHeatmapEntry): number =>
   entry.totalHabits > 0 ? entry.completedHabits / entry.totalHabits : 0;
 
+/**
+ * Maps a completion ratio to the heatmap cell background styling.
+ */
 export const getCompletionStyles = (ratio: number): string => {
   if (ratio >= 0.85) return "bg-[#63d9ea] shadow-[0_8px_18px_rgba(99,217,234,0.18)]";
   if (ratio >= 0.6) return "bg-[#8be4ef]";
@@ -34,6 +46,9 @@ export const getCompletionStyles = (ratio: number): string => {
   return "bg-[#f7fbfc]";
 };
 
+/**
+ * Counts the current consecutive streak of non-zero completion entries.
+ */
 export const calculateHeatmapStreak = (entries: HabitHeatmapEntry[]): number => {
   if (entries.length === 0) return 0;
   let streak = 0;
@@ -77,6 +92,9 @@ const buildBackfilledMockEntry = (date: Date): HabitHeatmapEntry => {
   };
 };
 
+/**
+ * Builds seeded mock heatmap history so the dashboard demo has stable-looking activity.
+ */
 export function buildMockHabitHeatmapEntries(): HabitHeatmapEntry[] {
   const totalHabits = 7;
   const today = new Date();
@@ -115,6 +133,9 @@ export function buildMockHabitHeatmapEntries(): HabitHeatmapEntry[] {
   });
 }
 
+/**
+ * Prepends generated placeholder history so a partially filled grid still renders evenly.
+ */
 export function buildPaddedEntries(
   visibleEntries: HabitHeatmapEntry[],
   emptyCellCount: number,

@@ -87,6 +87,9 @@ const formatDate = (date: Date): string =>
 const formatDayOfWeek = (date: Date): string =>
   new Intl.DateTimeFormat("en-US", DAY_FORMAT_OPTIONS).format(date);
 
+/**
+ * Manages habit persistence, editing actions, and weekly completion summaries.
+ */
 export function useHabits(): HabitContextValue {
   const habitEntries = useLiveQuery<Habit[] | undefined>(() => db.habits.toArray(), []);
   const habits = useMemo<Habit[]>(() => habitEntries ?? [], [habitEntries]);
@@ -172,6 +175,11 @@ export function useHabits(): HabitContextValue {
 
   const percentages = useMemo(() => {
     const totalHabitsCount = habits.length;
+    /*
+     * Each weekday percentage is calculated against the current total habit count.
+     * This keeps the weekly trend tied to "share completed that day" rather than
+     * absolute checkmarks, even as habits are added or removed during the week.
+     */
     return weekDates.map((_, index) => {
       const markedHabits = habits.filter((habit) => habit.days[index]).length;
       return totalHabitsCount !== 0

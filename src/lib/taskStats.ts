@@ -9,6 +9,9 @@ export type TaskCardStat = {
   remainingPct: number;
 };
 
+/**
+ * Computes summary counts and percentages for the visible task card state.
+ */
 export function computeTaskCardStats(visibleTasks: Task[]): TaskCardStat {
   const completedCount = visibleTasks.filter((t) => t.isCompleted).length;
   const inProgressCount = visibleTasks.filter(

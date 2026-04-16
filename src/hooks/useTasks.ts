@@ -36,6 +36,9 @@ export interface TasksContextValue {
   upcomingTaskGroups: TaskGroupEntry[];
 }
 
+/**
+ * Returns the default values used to initialize the task form.
+ */
 export const getEmptyTaskForm = (): TaskFormValues => ({
   name: "",
   description: "",
@@ -62,6 +65,9 @@ const createTaskRecord = (task: TaskFormValues): Task => {
 
 const getTodayKey = (): string => new Date().toISOString().slice(0, 10);
 
+/**
+ * Manages task CRUD state, grouped task collections, and derived task views.
+ */
 export function useTasks(): TasksContextValue {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);

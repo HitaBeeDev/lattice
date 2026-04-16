@@ -104,6 +104,9 @@ export interface DashboardStats {
   handleCheckboxChange: (taskId: string) => void;
 }
 
+/**
+ * Combines task, habit, and timer context data into the derived dashboard view model.
+ */
 export function useDashboard(): DashboardStats {
   const { tasks, handleCheckboxChange } = useTasks();
   const { habits, percentages, weekDates } = useHabits();

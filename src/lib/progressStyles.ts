@@ -44,16 +44,25 @@ function clampPercentage(value: number): number {
   return Math.min(100, Math.max(0, value));
 }
 
+/**
+ * Maps a percentage to the nearest supported width utility class.
+ */
 export function getPercentageWidthClass(value: number): string {
   const safeValue = clampPercentage(value);
   const index = Math.round(safeValue / 5);
   return WIDTH_CLASSES[index];
 }
 
+/**
+ * Builds the width class for a percentage fill bar with optional extra classes.
+ */
 export function getPercentageFillClass(value: number, className?: string): string {
   return cn(getPercentageWidthClass(value), className);
 }
 
+/**
+ * Maps a value relative to `maxValue` onto the nearest supported bar height class.
+ */
 export function getBarHeightClass(value: number, maxValue: number): string {
   const safeRatio = maxValue <= 0 ? 0 : clampPercentage((value / maxValue) * 100);
   const index = Math.round((safeRatio / 100) * (HEIGHT_CLASSES.length - 1));

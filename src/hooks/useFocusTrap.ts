@@ -9,6 +9,9 @@ const FOCUSABLE_SELECTOR = [
   "[tabindex]:not([tabindex='-1'])",
 ].join(", ");
 
+/**
+ * Traps keyboard focus inside an open dialog and restores the previously focused element on close.
+ */
 export function useFocusTrap(open: boolean, onClose: () => void) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);

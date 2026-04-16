@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Measures how many fixed-height rows fit inside a flex container and keeps
- * that count up to date as the container resizes.
+ * Measures how many task rows fit inside the current list viewport, capped by `maxCount`,
+ * and keeps that count in sync as the container resizes.
  */
 export function useVisibleTaskCount(maxCount: number): {
   listAreaRef: React.RefObject<HTMLUListElement>;

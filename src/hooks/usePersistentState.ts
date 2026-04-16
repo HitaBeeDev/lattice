@@ -1,5 +1,8 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
+/**
+ * Persists a React state value to localStorage and hydrates it on first render.
+ */
 export default function usePersistentState<T>(
   key: string,
   initialValue: T

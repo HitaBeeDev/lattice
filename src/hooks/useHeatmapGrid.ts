@@ -20,6 +20,9 @@ type HeatmapGridState = {
   visibleEntries: HabitHeatmapEntry[];
 };
 
+/**
+ * Derives the responsive subset of heatmap entries and summary stats for the grid.
+ */
 export function useHeatmapGrid(entries: HabitHeatmapEntry[]): HeatmapGridState {
   const gridRef = useRef<HTMLDivElement>(null);
   const [gridSize, setGridSize] = useState({ width: 0, height: 0 });

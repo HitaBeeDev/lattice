@@ -84,6 +84,9 @@ type UseCalendarWeekResult = {
   handleNextWeek: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
+/**
+ * Resolves the visible calendar week, time slots, and positioned events for the agenda UI.
+ */
 export function useCalendarWeek({
   weeks,
   todayDate,

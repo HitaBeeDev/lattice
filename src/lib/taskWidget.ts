@@ -8,6 +8,9 @@ const byDate = ([dateA]: [string, Task[]], [dateB]: [string, Task[]]) =>
 
 export const TASK_WIDGET_SKELETON_IDS = ["queue-primary", "queue-secondary"] as const;
 
+/**
+ * Returns the next unchecked tasks to show in the compact task widget.
+ */
 export function getUpcomingTasks(
   groupedTasks: Record<string, Task[]>,
   checkedTaskIds: string[],

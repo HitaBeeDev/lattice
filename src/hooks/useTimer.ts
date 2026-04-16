@@ -107,6 +107,9 @@ const getRemainingSeconds = (
   return Math.max(runStartedRemainingSeconds - elapsedSeconds, 0);
 };
 
+/**
+ * Owns the pomodoro timer state, persistence, analytics, and session controls.
+ */
 export function useTimer(): TimeTrackerContextValue {
   const [timerState, setTimerState] = usePersistentState<PersistedTimerState>(
     TIMER_STATE_STORAGE_KEY,
@@ -218,6 +221,10 @@ export function useTimer(): TimeTrackerContextValue {
       return;
     }
 
+    /*
+     * The countdown is recalculated from the persisted start timestamp on every tick.
+     * That avoids drift after refreshes, delayed intervals, or background-tab throttling.
+     */
     const syncTimer = (): void => {
       const remainingSeconds = getRemainingSeconds(
         runStartedAt,

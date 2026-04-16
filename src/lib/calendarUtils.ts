@@ -92,6 +92,9 @@ export interface DisplayDay {
 /** Maps a day index (0=Sun … 6=Sat, matching displayDays order) to its 1-based grid column. */
 export const dayIndexToGridCol = (i: number): number => i + 2;
 
+/**
+ * Formats a `Date` as a local ISO date string (`YYYY-MM-DD`).
+ */
 export function toIso(d: Date): string {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
@@ -121,32 +124,53 @@ export function getWeekDays(monday: Date): DisplayDay[] {
   });
 }
 
+/**
+ * Returns a new Monday shifted backward or forward by one week.
+ */
 export function shiftWeek(monday: Date, direction: -1 | 1): Date {
   const d = new Date(monday);
   d.setDate(d.getDate() + direction * 7);
   return d;
 }
 
+/**
+ * Clamps `value` between the provided `min` and `max` bounds.
+ */
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
+/**
+ * Maps a numeric grid row start to the closest supported Tailwind class.
+ */
 export function getGridRowStartClass(rowStart: number): string {
   return GRID_ROW_START_CLASSES[clamp(rowStart, 1, GRID_ROW_START_CLASSES.length) - 1];
 }
 
+/**
+ * Maps a numeric grid column start to the closest supported Tailwind class.
+ */
 export function getGridColStartClass(colStart: number): string {
   return GRID_COL_START_CLASSES[clamp(colStart, 1, GRID_COL_START_CLASSES.length) - 1];
 }
 
+/**
+ * Maps a numeric column span to the closest supported Tailwind class.
+ */
 export function getColSpanClass(colSpan: number): string {
   return COL_SPAN_CLASSES[clamp(colSpan, 1, COL_SPAN_CLASSES.length) - 1];
 }
 
+/**
+ * Maps a numeric row span to the closest supported Tailwind class.
+ */
 export function getRowSpanClass(rowSpan: number): string {
   return ROW_SPAN_CLASSES[clamp(rowSpan, 1, ROW_SPAN_CLASSES.length) - 1];
 }
 
+/**
+ * Formats a 24-hour number into the compact hour label used by the calendar.
+ */
 export function formatHourLabel(hour: number): string {
   const normalizedHour = ((hour % 24) + 24) % 24;
   const suffix = normalizedHour >= 12 ? "pm" : "am";
@@ -154,10 +178,16 @@ export function formatHourLabel(hour: number): string {
   return `${displayHour}:00 ${suffix}`;
 }
 
+/**
+ * Chooses the first visible calendar hour while keeping the viewport in allowed bounds.
+ */
 export function getVisibleStartHour(currentHour: number): number {
   return clamp(currentHour - 1, FIRST_VISIBLE_HOUR, LAST_VISIBLE_START_HOUR);
 }
 
+/**
+ * Builds the fixed set of visible calendar time slots starting at `startHour`.
+ */
 export function getTimeSlots(startHour: number): TimeSlot[] {
   return Array.from({ length: VISIBLE_HOURS }, (_, index) => ({
     hour: startHour + index,
@@ -165,18 +195,30 @@ export function getTimeSlots(startHour: number): TimeSlot[] {
   }));
 }
 
+/**
+ * Returns the top offset percentage for a timed event within the visible hour window.
+ */
 export function eventTopPct(startHour: number, visibleStartHour: number): number {
   return ((startHour - visibleStartHour) / VISIBLE_HOURS) * 100;
 }
 
+/**
+ * Returns the height percentage for a timed event within the visible hour window.
+ */
 export function eventHeightPct(durationHours: number): number {
   return (durationHours / VISIBLE_HOURS) * 100;
 }
 
+/**
+ * Reports whether an ISO date string is after the current reference date.
+ */
 export function isFutureDate(date: string, todayDate: string): boolean {
   return date > todayDate;
 }
 
+/**
+ * Reports whether a calendar slot is in the future relative to the current day and hour.
+ */
 export function isFutureSlot(
   date: string,
   slotHour: number,
@@ -193,6 +235,9 @@ export interface CalendarEventBase {
   durationHours: number;
 }
 
+/**
+ * Reports whether an event occupies the given hourly slot.
+ */
 export function eventOverlapsSlot(event: CalendarEventBase, slotHour: number): boolean {
   return (
     event.startHour <= slotHour &&

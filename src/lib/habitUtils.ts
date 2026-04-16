@@ -4,11 +4,15 @@ interface WeekDate {
   dayFull: string;
 }
 
-// Count habits with all days marked
+/**
+ * Counts habits whose weekly day marks are fully completed.
+ */
 export const calculateCompletedHabitsCount = (habits: Habit[]): number =>
   habits.filter((habit) => habit.days.every((day) => day)).length;
 
-// Calculate completion status for each day
+/**
+ * Counts how many habits are marked complete for each weekday in the current week.
+ */
 export const calculateDayCompletionStatus = (habits: Habit[]): number[] => {
   const dayCompletionStatus = Array(7).fill(0) as number[];
   habits.forEach((habit) => {
@@ -21,7 +25,9 @@ export const calculateDayCompletionStatus = (habits: Habit[]): number[] => {
   return dayCompletionStatus;
 };
 
-// Find the index of the day with the highest completion status
+/**
+ * Returns the full weekday label with the highest completion count.
+ */
 export const findBestDayIndex = (
   dayCompletionStatus: number[],
   weekDates: WeekDate[]
@@ -34,7 +40,9 @@ interface BestHabitResult {
   completionPercentage: number;
 }
 
-// Find the habit with the highest completion percentage
+/**
+ * Returns the habit with the highest weekly completion percentage.
+ */
 export const findBestHabit = (habits: Habit[]): BestHabitResult =>
   habits.reduce<BestHabitResult>(
     (best, habit) => {
@@ -48,7 +56,9 @@ export const findBestHabit = (habits: Habit[]): BestHabitResult =>
     { habit: null, completionPercentage: -1 }
   );
 
-// Calculate the average completion percentage for each day
+/**
+ * Calculates the average daily completion percentage across the week.
+ */
 export const calculateAveragePercentage = (habits: Habit[]): number => {
   const sumPercentageOfDay = Array(7).fill(0) as number[];
   habits.forEach((habit) => {
@@ -62,7 +72,9 @@ export const calculateAveragePercentage = (habits: Habit[]): number => {
   return Math.ceil(sumPercentageOfDay.reduce((acc, curr) => acc + curr, 0) / 7);
 };
 
-// Calculate the total score of the week
+/**
+ * Calculates the combined weekly score derived from the average completion percentage.
+ */
 export const calculateTotalScoreOfWeek = (habits: Habit[]): number => {
   const averagePercentage = calculateAveragePercentage(habits);
   return Math.ceil(

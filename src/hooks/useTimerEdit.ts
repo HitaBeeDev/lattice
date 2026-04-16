@@ -10,6 +10,9 @@ type UseTimerEditReturn = {
   handleSaveEditedTime: () => void;
 };
 
+/**
+ * Manages the editable timer input and validates manual duration updates.
+ */
 export function useTimerEdit(): UseTimerEditReturn {
   const { totalSeconds, isEditing, toggleEdit, handleUpdateTime } = useTimeTracker();
   const [editMinutes, setEditMinutes] = useState<string>("");
