@@ -1,9 +1,11 @@
 import { useHabits } from "../../context/HabitContext";
 import { getPercentageFillClass } from "../../lib/progressStyles";
 import habitQuotes from "./habitQuotes";
+import { useRandomIndex } from "../../hooks/useRandomIndex";
 
 export default function SummaryStats() {
-  const { percentages, quoteIndex, weekDates } = useHabits();
+  const { percentages, weekDates } = useHabits();
+  const quoteIndex = useRandomIndex(habitQuotes.length);
   const strongestDay = Math.max(...percentages, 0);
 
   return (

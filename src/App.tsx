@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { HabitProvider } from "./context/HabitContext";
 import { TaskProvider } from "./context/TasksContext";
 import { TimeTrackerProvider } from "./context/TimeTrackerContext";
-import { migrateLocalStorageData, seedMockData } from "./db/database";
+import { cancelIdleTask, scheduleIdleTask } from "./lib/scheduleIdleTask";
 
 type AppProps = {
   children: React.ReactNode;
@@ -21,7 +21,43 @@ function App({ children }: AppProps): JSX.Element {
   const location = useLocation();
 
   useEffect(() => {
-    void migrateLocalStorageData().then(() => seedMockData());
+    let isCancelled = false;
+    const idleHandle = scheduleIdleTask(() => {
+      void import("./db/database").then(async ({ migrateLocalStorageData, seedMockData }) => {
+        if (isCancelled) {
+          return;
+        }
+
+        await migrateLocalStorageData();
+
+        if (!isCancelled) {
+          await seedMockData();
+        }
+      });
+    }, 2000);
+
+    return () => {
+      isCancelled = true;
+      cancelIdleTask(idleHandle);
+    };
+  }, []);
+
+  useEffect(() => {
+    const ANALYTICS_RESET_VERSION = "nexstep:analytics-reset:v2";
+    const idleHandle = scheduleIdleTask(() => {
+      if (localStorage.getItem(ANALYTICS_RESET_VERSION) === "true") {
+        return;
+      }
+
+      localStorage.removeItem("timer-session-analytics");
+      localStorage.removeItem("timer-session-analytics-v2");
+      localStorage.removeItem("timer-session-analytics-v3");
+      localStorage.setItem(ANALYTICS_RESET_VERSION, "true");
+    }, 2500);
+
+    return () => {
+      cancelIdleTask(idleHandle);
+    };
   }, []);
 
   useEffect(() => {

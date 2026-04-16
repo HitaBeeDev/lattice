@@ -1,1 +1,3 @@
-export { mockUser } from "./mockData";
+export const mockUser = {
+  name: "Sofia",
+};

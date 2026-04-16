@@ -1,7 +1,6 @@
 import Dexie, { type Table } from "dexie";
 import type { Habit } from "../types/habit";
 import type { Task } from "../types/task";
-import { mockHabits, mockTasks } from "../lib/mockData";
 
 export type HabitEntry = Habit;
 export type TaskEntry = Task;
@@ -225,6 +224,8 @@ export async function seedMockData(): Promise<void> {
   if (localStorage.getItem(MOCK_SEED_VERSION) === "true") {
     return;
   }
+
+  const { mockHabits, mockTasks } = await import("../lib/mockData");
 
   await db.transaction("rw", db.habits, db.tasks, async () => {
     await db.habits.clear();

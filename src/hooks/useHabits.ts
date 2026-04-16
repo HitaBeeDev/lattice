@@ -1,11 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import habitQuotes from "../components/habits/habitQuotes";
 import { db } from "../db/database";
 import type { HabitFormValues } from "../lib/habitSchema";
 import { MOBILE_NAV_BREAKPOINT } from "../lib/layoutConstants";
 import type { Habit } from "../types/habit";
-import { useRandomIndex } from "./useRandomIndex";
 
 const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   weekday: "short",
@@ -44,7 +42,6 @@ export interface HabitContextValue {
   weekDates: Date[];
   percentages: number[];
   visibleWeekDates: Date[];
-  quoteIndex: number;
 }
 
 const createHabitRecord = (values: HabitFormValues): Habit => {
@@ -94,7 +91,6 @@ export function useHabits(): HabitContextValue {
   const habitEntries = useLiveQuery<Habit[] | undefined>(() => db.habits.toArray(), []);
   const habits = useMemo<Habit[]>(() => habitEntries ?? [], [habitEntries]);
   const [editingHabitId, setEditingHabitId] = useState<string | null>(null);
-  const quoteIndex = useRandomIndex(habitQuotes.length);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
   useEffect((): (() => void) => {
@@ -248,7 +244,6 @@ export function useHabits(): HabitContextValue {
       weekDates,
       percentages,
       visibleWeekDates,
-      quoteIndex,
     }),
     [
       habits,
@@ -269,7 +264,6 @@ export function useHabits(): HabitContextValue {
       weekDates,
       percentages,
       visibleWeekDates,
-      quoteIndex,
     ]
   );
 }

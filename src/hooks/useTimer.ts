@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import articles from "../components/pomodoro/articles";
 import type { TimerAnalytics, TimerSessionHistoryEntry } from "../types/pomodoro";
-import { mockTimerAnalytics } from "../lib/mockData";
+import { mockTimerAnalytics } from "../lib/mockTimerAnalytics";
 import usePersistentState from "./usePersistentState";
 import { useRandomIndex } from "./useRandomIndex";
 
@@ -64,6 +63,7 @@ const INITIAL_TOTAL_SECONDS = SESSION_DURATIONS.Pomodoro;
 const TIMER_STATE_STORAGE_KEY = "timer-session-state";
 // Bumped to v3 to reseed dashboard focus analytics with non-zero mock values.
 const TIMER_ANALYTICS_STORAGE_KEY = "timer-session-analytics-v3";
+const POMODORO_ARTICLE_COUNT = 10;
 
 const createInitialTimerState = (): PersistedTimerState => ({
   totalSeconds: INITIAL_TOTAL_SECONDS,
@@ -121,7 +121,7 @@ export function useTimer(): TimeTrackerContextValue {
   );
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const currentArticleIndex = useRandomIndex(articles.length);
+  const currentArticleIndex = useRandomIndex(POMODORO_ARTICLE_COUNT);
 
   // On mount: if the timer was not running when the page was last closed,
   // restore it to the session type's default duration instead of the stale persisted value.
