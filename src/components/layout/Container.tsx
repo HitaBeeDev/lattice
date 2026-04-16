@@ -9,13 +9,16 @@ function Container({ children }: ContainerProps) {
   const location = useLocation();
   const isDashboardRoute =
     location.pathname === "/" || location.pathname === "/dashboard";
+  const isPomodoroRoute = location.pathname === "/pomodoro";
 
   return (
     <div
       className={
-        isDashboardRoute
-          ? "flex min-h-screen flex-col px-5 pb-6 pt-24 sm:px-6 lg:px-8"
-          : "flex min-h-screen flex-col px-5 pb-8 pt-24 sm:px-6 lg:px-8"
+        isPomodoroRoute
+          ? "flex h-screen flex-col overflow-hidden px-5 pb-4 pt-22 sm:px-6 lg:px-8"
+          : isDashboardRoute
+            ? "flex min-h-screen flex-col px-5 pb-6 pt-24 sm:px-6 lg:px-8"
+            : "flex min-h-screen flex-col px-5 pb-8 pt-24 sm:px-6 lg:px-8"
       }
     >
       <a
@@ -27,7 +30,9 @@ function Container({ children }: ContainerProps) {
       <TopNav />
       <div
         className={
-          isDashboardRoute ? "flex min-h-0 flex-1 overflow-hidden" : "flex-1"
+          isDashboardRoute || isPomodoroRoute
+            ? "flex min-h-0 flex-1 overflow-hidden"
+            : "flex-1"
         }
       >
         {children}
