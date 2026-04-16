@@ -50,7 +50,7 @@ const buildMockHabitDays = (
 };
 
 export const mockUser = {
-  name: "Layla",
+  name: "Sofia",
 };
 
 const buildCurrentWeekFocusSeconds = (): Record<string, number> => {
