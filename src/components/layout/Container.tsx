@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import TopNav from "./TopNav";
 import Sidebar from "./Sidebar/Sidebar";
 
@@ -10,6 +11,7 @@ type ContainerProps = {
 function Container({ children }: ContainerProps) {
   const location = useLocation();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const shouldReduce = useReducedMotion();
 
   const isDashboardRoute =
     location.pathname === "/" || location.pathname === "/dashboard";
@@ -52,7 +54,18 @@ function Container({ children }: ContainerProps) {
             : "flex-1"
         }
       >
-        {children}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={shouldReduce ? undefined : { opacity: 0, y: 6 }}
+            animate={shouldReduce ? undefined : { opacity: 1, y: 0 }}
+            exit={shouldReduce ? undefined : { opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: "easeInOut" }}
+            className="h-full w-full"
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

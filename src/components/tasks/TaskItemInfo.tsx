@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { cn } from "../ui/cn";
 import type { Task } from "../../types/task";
 
@@ -10,6 +11,8 @@ type TaskItemInfoProps = {
 };
 
 export default function TaskItemInfo({ checkboxId, isChecked, onToggle, task }: TaskItemInfoProps) {
+  const shouldReduce = useReducedMotion();
+
   return (
     <div className="flex min-w-0 flex-1 items-center gap-4">
       <button
@@ -35,14 +38,29 @@ export default function TaskItemInfo({ checkboxId, isChecked, onToggle, task }: 
           onChange={onToggle}
           className="sr-only"
         />
-        <p
-          className={cn(
-            "truncate text-[0.85rem] font-[500] leading-none text-[#161c22]",
-            isChecked && "line-through text-[#a0a5ab]",
-          )}
-        >
-          {task.name}
-        </p>
+        <div className="relative min-w-0">
+          <p
+            className={cn(
+              "truncate text-[0.85rem] font-[500] leading-none transition-colors duration-200",
+              isChecked ? "text-[#a0a5ab]" : "text-[#161c22]",
+            )}
+          >
+            {task.name}
+          </p>
+          <AnimatePresence initial={false}>
+            {isChecked && (
+              <motion.span
+                aria-hidden="true"
+                className="absolute inset-y-0 left-0 my-auto h-px bg-[#a0a5ab]"
+                initial={{ scaleX: shouldReduce ? 1 : 0, width: "100%" }}
+                animate={{ scaleX: 1, width: "100%" }}
+                exit={{ scaleX: shouldReduce ? 1 : 0 }}
+                style={{ originX: 0 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+              />
+            )}
+          </AnimatePresence>
+        </div>
         {task.description ? (
           <p className="mt-1 truncate text-[0.7rem] font-[300] text-[#a0a5ab]">
             {task.description}
