@@ -10,10 +10,24 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Load Google Fonts asynchronously so the stylesheet never blocks rendering.
+      The media="print" trick lets the browser fetch the CSS without it being
+      render-critical; onload switches it to screen once ready.
+      The <noscript> fallback serves users with JS disabled.
+    -->
     <link
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Sora:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Sora:wght@400;500;600;700;800&display=swap"
+      />
+    </noscript>
     <title>Lattice</title>
   </head>
   <body>

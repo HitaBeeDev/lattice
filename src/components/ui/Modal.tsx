@@ -46,6 +46,7 @@ export default function Modal({ children, description, onClose, open, title }: M
   const dialogRef = useFocusTrap(open, onClose);
 
   const handleBackdropKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
     onClose();

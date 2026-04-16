@@ -11,6 +11,8 @@ export default defineConfig({
     },
   },
   build: {
+    // Target modern evergreen browsers — no legacy transforms, smaller output
+    target: 'esnext',
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -33,6 +35,14 @@ export default defineConfig({
           // Dexie IndexedDB layer
           if (id.includes('dexie')) {
             return 'vendor-dexie';
+          }
+          // React Hook Form — used across multiple lazy pages; cache separately
+          if (id.includes('react-hook-form') || id.includes('@hookform')) {
+            return 'vendor-hookform';
+          }
+          // Sonner toast library
+          if (id.includes('sonner')) {
+            return 'vendor-sonner';
           }
         },
       },

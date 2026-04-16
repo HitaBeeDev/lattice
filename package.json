@@ -8,7 +8,10 @@
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b --pretty",
     "lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -25,21 +28,28 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^25.6.0",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@typescript-eslint/eslint-plugin": "^8.58.1",
     "@typescript-eslint/parser": "^8.58.1",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/coverage-v8": "^4.1.4",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "jsdom": "^29.0.2",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^6.0.2",
     "vite": "^5.1.4",
-    "vite-bundle-visualizer": "^1.2.1"
+    "vite-bundle-visualizer": "^1.2.1",
+    "vitest": "^4.1.4"
   }
 }

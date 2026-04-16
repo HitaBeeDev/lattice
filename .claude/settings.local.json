@@ -10,7 +10,9 @@
       "Read(//tmp/**)",
       "Bash(node *)",
       "Bash(ls dist/assets/*.map2)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(npx vitest *)",
+      "Bash(ls src/hooks/*.ts src/lib/*.ts)"
     ]
   }
 }

@@ -35,6 +35,7 @@ export const getCompletionStyles = (ratio: number): string => {
 };
 
 export const calculateHeatmapStreak = (entries: HabitHeatmapEntry[]): number => {
+  if (entries.length === 0) return 0;
   let streak = 0;
   const lastIndex = entries.length - 1;
   const startIndex =
