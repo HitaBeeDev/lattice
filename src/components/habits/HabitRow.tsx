@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { PencilLine, Trash2 } from "lucide-react";
 import type { Habit } from "../../types/habit";
 import HabitInlineEditForm from "./HabitInlineEditForm";
@@ -16,7 +17,7 @@ type HabitRowProps = {
   onToggleDay: (habitId: string, dayIndex: number) => void;
 };
 
-export default function HabitRow({
+function HabitRow({
   habit,
   isEditing,
   allHabitNames,
@@ -83,3 +84,5 @@ export default function HabitRow({
     </div>
   );
 }
+
+export default memo(HabitRow);

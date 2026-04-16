@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Check } from "lucide-react";
 import { cn } from "../ui/cn";
 
@@ -9,7 +10,7 @@ type TaskStatusBadgeProps = {
   onMarkInProgress: () => void;
 };
 
-export default function TaskStatusBadge({
+function TaskStatusBadge({
   isCompleted,
   isInProgress,
   inputId,
@@ -54,3 +55,5 @@ export default function TaskStatusBadge({
     </label>
   );
 }
+
+export default memo(TaskStatusBadge);

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useHabits } from "../../context/HabitContext";
 import { EmptyState } from "../ui";
 import HabitRow from "./HabitRow";
@@ -14,7 +15,7 @@ export default function HabitList() {
     visibleWeekDates,
   } = useHabits();
 
-  const allHabitNames = habits.map((h) => h.name);
+  const allHabitNames = useMemo(() => habits.map((h) => h.name), [habits]);
 
   if (habits.length === 0) {
     return (

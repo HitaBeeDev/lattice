@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { PencilLine, Trash2 } from "lucide-react";
 
 type TaskActionButtonsProps = {
@@ -6,7 +7,7 @@ type TaskActionButtonsProps = {
   onDelete: () => void;
 };
 
-export default function TaskActionButtons({ taskName, onEdit, onDelete }: TaskActionButtonsProps) {
+function TaskActionButtons({ taskName, onEdit, onDelete }: TaskActionButtonsProps) {
   return (
     <div className="flex w-12 items-center justify-end gap-3 opacity-0 transition group-hover:opacity-100">
       <button
@@ -29,3 +30,5 @@ export default function TaskActionButtons({ taskName, onEdit, onDelete }: TaskAc
     </div>
   );
 }
+
+export default memo(TaskActionButtons);

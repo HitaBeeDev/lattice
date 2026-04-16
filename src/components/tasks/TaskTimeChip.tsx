@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Clock3 } from "lucide-react";
 
 type TaskTimeChipProps = {
@@ -5,7 +6,7 @@ type TaskTimeChipProps = {
   endTime?: string;
 };
 
-export default function TaskTimeChip({ startTime, endTime }: TaskTimeChipProps) {
+function TaskTimeChip({ startTime, endTime }: TaskTimeChipProps) {
   if (!startTime) return null;
   return (
     <div className="flex items-center gap-1.5 rounded-full bg-[#f5f8f9] px-2.5 py-1 text-[0.65rem] text-[#a0a5ab]">
@@ -17,3 +18,5 @@ export default function TaskTimeChip({ startTime, endTime }: TaskTimeChipProps) 
     </div>
   );
 }
+
+export default memo(TaskTimeChip);

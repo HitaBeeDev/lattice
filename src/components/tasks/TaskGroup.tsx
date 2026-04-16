@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { Task } from "../../types/task";
 import TaskListItem from "./TaskListItem";
 
@@ -11,7 +12,7 @@ type TaskGroupProps = {
   tasks: Task[];
 };
 
-export default function TaskGroup({
+function TaskGroup({
   checkedTasks,
   date,
   onDeleteTask,
@@ -33,10 +34,10 @@ export default function TaskGroup({
           <TaskListItem
             key={task.id}
             isChecked={checkedTasks.includes(task.id)}
-            onDelete={() => onDeleteTask(task.id)}
-            onEdit={() => onEditTask(task.id)}
-            onMarkInProgress={() => onMarkTaskInProgress(task.id)}
-            onToggle={() => onToggleTask(task.id)}
+            onDelete={onDeleteTask}
+            onEdit={onEditTask}
+            onMarkInProgress={onMarkTaskInProgress}
+            onToggle={onToggleTask}
             task={task}
           />
         ))}
@@ -44,3 +45,5 @@ export default function TaskGroup({
     </section>
   );
 }
+
+export default memo(TaskGroup);

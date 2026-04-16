@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Check } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { cn } from "../ui/cn";
@@ -10,7 +11,7 @@ type HabitDayButtonsProps = {
   onToggleDay: (habitId: string, dayIndex: number) => void;
 };
 
-export default function HabitDayButtons({
+function HabitDayButtons({
   habitName,
   days,
   visibleWeekDates,
@@ -74,3 +75,5 @@ export default function HabitDayButtons({
     </>
   );
 }
+
+export default memo(HabitDayButtons);

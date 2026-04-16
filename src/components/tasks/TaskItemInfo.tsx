@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Check } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { cn } from "../ui/cn";
@@ -10,7 +11,7 @@ type TaskItemInfoProps = {
   task: Task;
 };
 
-export default function TaskItemInfo({ checkboxId, isChecked, onToggle, task }: TaskItemInfoProps) {
+function TaskItemInfo({ checkboxId, isChecked, onToggle, task }: TaskItemInfoProps) {
   const shouldReduce = useReducedMotion();
 
   return (
@@ -70,3 +71,5 @@ export default function TaskItemInfo({ checkboxId, isChecked, onToggle, task }: 
     </div>
   );
 }
+
+export default memo(TaskItemInfo);

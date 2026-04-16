@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react";
 import { cn } from "../ui/cn";
 import type { Priority, Task } from "../../types/task";
 import TaskTimeChip from "./TaskTimeChip";
@@ -13,14 +14,14 @@ const PRIORITY_DOT_CLASSES: Record<Priority, string> = {
 
 type TaskListItemProps = {
   isChecked: boolean;
-  onDelete: () => void;
-  onEdit: () => void;
-  onMarkInProgress: () => void;
-  onToggle: () => void;
+  onDelete: (taskId: string) => void;
+  onEdit: (taskId: string) => void;
+  onMarkInProgress: (taskId: string) => void;
+  onToggle: (taskId: string) => void;
   task: Task;
 };
 
-export default function TaskListItem({
+function TaskListItem({
   isChecked,
   onDelete,
   onEdit,
@@ -32,13 +33,18 @@ export default function TaskListItem({
   const inProgressId = `task-progress-${task.id}`;
   const isInProgress = task.status === "in_progress" && !task.isCompleted;
 
+  const handleDelete = useCallback(() => onDelete(task.id), [onDelete, task.id]);
+  const handleEdit = useCallback(() => onEdit(task.id), [onEdit, task.id]);
+  const handleMarkInProgress = useCallback(() => onMarkInProgress(task.id), [onMarkInProgress, task.id]);
+  const handleToggle = useCallback(() => onToggle(task.id), [onToggle, task.id]);
+
   return (
     <li className="group flex items-center justify-between gap-6 border-b border-[#f0f5f6] px-5 py-4 transition hover:bg-[#fafcfc] last:border-0">
       <TaskItemInfo
         checkboxId={checkboxId}
         isChecked={isChecked}
         task={task}
-        onToggle={onToggle}
+        onToggle={handleToggle}
       />
 
       <div className="flex flex-shrink-0 items-center justify-end gap-4">
@@ -59,12 +65,14 @@ export default function TaskListItem({
             isInProgress={isInProgress}
             inputId={inProgressId}
             taskName={task.name}
-            onMarkInProgress={onMarkInProgress}
+            onMarkInProgress={handleMarkInProgress}
           />
         </div>
 
-        <TaskActionButtons taskName={task.name} onEdit={onEdit} onDelete={onDelete} />
+        <TaskActionButtons taskName={task.name} onEdit={handleEdit} onDelete={handleDelete} />
       </div>
     </li>
   );
 }
+
+export default memo(TaskListItem);

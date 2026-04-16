@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getPercentageFillClass } from "../../lib/progressStyles";
 
 const DAYS_PER_WEEK = 7;
@@ -6,7 +7,7 @@ type HabitProgressBarProps = {
   days: boolean[];
 };
 
-export default function HabitProgressBar({ days }: HabitProgressBarProps) {
+function HabitProgressBar({ days }: HabitProgressBarProps) {
   const progress = Math.round((days.filter(Boolean).length / DAYS_PER_WEEK) * 100);
   return (
     <div className="flex flex-col items-center justify-center col-span-2 mt-3">
@@ -17,3 +18,5 @@ export default function HabitProgressBar({ days }: HabitProgressBarProps) {
     </div>
   );
 }
+
+export default memo(HabitProgressBar);
