@@ -3,7 +3,6 @@ import { useTimeTracker } from "../context/TimeTrackerContext";
 import SessionTabs from "../components/pomodoro/SessionTabs";
 import TimerCircle from "../components/pomodoro/TimerCircle";
 import TimerButtons from "../components/pomodoro/TimerButtons";
-import TimerArticles from "../components/pomodoro/TimerArticles";
 const formatTodayLabel = (): string =>
   new Intl.DateTimeFormat("en-US", {
     weekday: "long",

@@ -122,7 +122,7 @@ export default function HabitList() {
               const checked = habit.days[dayIndex];
               return (
                 <div
-                  key={date.toISOString()}
+                  key={date.toLocaleDateString("en-CA")}
                   className="flex items-center justify-center col-span-1"
                 >
                   <button

@@ -25,7 +25,7 @@ function TasksWidgetSkeleton() {
     return (<div>
       <Skeleton />
       <div>
-        {[0, 1].map((i) => (<div key={i}>
+        {[0, 1].map((i) => (<div key={`skeleton-task-${i}`}>
             <Skeleton />
             <div>
               <div>

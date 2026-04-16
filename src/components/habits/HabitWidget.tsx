@@ -4,7 +4,7 @@ function HabitWidgetSkeleton() {
     return (<div>
       <Skeleton />
       <div>
-        {[0, 1, 2].map((i) => (<Skeleton key={i}/>))}
+        {[0, 1, 2].map((i) => (<Skeleton key={`skeleton-habit-${i}`}/>))}
       </div>
     </div>);
 }

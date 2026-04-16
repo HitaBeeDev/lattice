@@ -170,74 +170,109 @@ export function useHabits(): HabitContextValue {
     return { totalHabits: totalHabitCount, completedHabits: completedHabitCount };
   }, [habits]);
 
-  const weekDates = getWeekDates();
-  const today = new Date();
-  const formattedToday = formatDate(today);
-  const { totalHabits, completedHabits } = calculateHabitCompletion();
-
-  const totalHabitsCount = habits.length;
-  const markedHabitsArray = weekDates.map(
-    (_, index) => habits.filter((habit) => habit.days[index]).length
-  );
-  const percentages = markedHabitsArray.map((markedHabits) =>
-    totalHabitsCount !== 0
-      ? Math.round((markedHabits / totalHabitsCount) * 100)
-      : 0
+  const weekDates = useMemo(() => getWeekDates(), []);
+  const formattedToday = useMemo(() => formatDate(new Date()), []);
+  const { totalHabits, completedHabits } = useMemo(
+    () => calculateHabitCompletion(),
+    [calculateHabitCompletion]
   );
 
-  const bestDays: string[] = [];
-  percentages.forEach((percentage, index) => {
-    if (percentage === 100) {
-      bestDays.push(formatDayOfWeek(weekDates[index]));
+  const percentages = useMemo(() => {
+    const totalHabitsCount = habits.length;
+    return weekDates.map((_, index) => {
+      const markedHabits = habits.filter((habit) => habit.days[index]).length;
+      return totalHabitsCount !== 0
+        ? Math.round((markedHabits / totalHabitsCount) * 100)
+        : 0;
+    });
+  }, [habits, weekDates]);
+
+  const bestDayMessage = useMemo(() => {
+    const bestDays: string[] = [];
+    percentages.forEach((percentage, index) => {
+      if (percentage === 100) {
+        bestDays.push(formatDayOfWeek(weekDates[index]));
+      }
+    });
+    if (bestDays.length === 0) {
+      return "Oops! It seems like you haven't completed any day 100%. Don't worry, there's always tomorrow!";
     }
-  });
+    return bestDays.length === 1
+      ? `Hooray! Your best day of the week was: ${bestDays[0]}`
+      : `Yay! Your best days of the week were: ${bestDays.join(", ")}`;
+  }, [percentages, weekDates]);
 
-  const bestDayMessage =
-    bestDays.length > 0
-      ? bestDays.length === 1
-        ? `Hooray! Your best day of the week was: ${bestDays[0]}`
-        : `Yay! Your best days of the week were: ${bestDays.join(", ")}`
-      : "Oops! It seems like you haven't completed any day 100%. Don't worry, there's always tomorrow!";
-
-  const bestHabits = habits.filter((habit) => habit.days.every((day) => day));
-
-  const bestHabitMessage =
-    bestHabits.length > 0
+  const bestHabitMessage = useMemo(() => {
+    const bestHabits = habits.filter((habit) => habit.days.every((day) => day));
+    return bestHabits.length > 0
       ? `Keep up the great work! Your best habits this week: ${bestHabits.map((habit) => habit.name).join(", ")}. `
       : "No habits with 100% completion this week. Don't worry, there's always room for improvement!";
+  }, [habits]);
 
   const calculateAveragePercentageForWeek = useCallback((): number => {
     const totalPercentage = percentages.reduce((sum, percentage) => sum + percentage, 0);
     return Math.round(totalPercentage / DAYS_PER_WEEK);
   }, [percentages]);
 
-  const averagePercentageForWeek = calculateAveragePercentageForWeek();
-  const visibleWeekDates = isLargeScreen ? weekDates : [new Date()];
+  const averagePercentageForWeek = useMemo(
+    () => calculateAveragePercentageForWeek(),
+    [calculateAveragePercentageForWeek]
+  );
 
-  return {
-    habits,
-    isLoading: habitEntries === undefined,
-    editIndex,
-    addHabit,
-    startEdit,
-    saveEdit,
-    cancelEdit,
-    deleteHabit,
-    toggleDayMark,
-    getWeekDates,
-    formatDate,
-    formatDayOfWeek,
-    calculateHabitCompletion,
-    calculateAveragePercentageForWeek,
-    totalHabits,
-    formattedToday,
-    completedHabits,
-    bestDayMessage,
-    bestHabitMessage,
-    averagePercentageForWeek,
-    weekDates,
-    percentages,
-    visibleWeekDates,
-    quoteIndex,
-  };
+  const visibleWeekDates = useMemo(
+    () => (isLargeScreen ? weekDates : [new Date()]),
+    [isLargeScreen, weekDates]
+  );
+
+  return useMemo<HabitContextValue>(
+    () => ({
+      habits,
+      isLoading: habitEntries === undefined,
+      editIndex,
+      addHabit,
+      startEdit,
+      saveEdit,
+      cancelEdit,
+      deleteHabit,
+      toggleDayMark,
+      getWeekDates,
+      formatDate,
+      formatDayOfWeek,
+      calculateHabitCompletion,
+      calculateAveragePercentageForWeek,
+      totalHabits,
+      formattedToday,
+      completedHabits,
+      bestDayMessage,
+      bestHabitMessage,
+      averagePercentageForWeek,
+      weekDates,
+      percentages,
+      visibleWeekDates,
+      quoteIndex,
+    }),
+    [
+      habits,
+      habitEntries,
+      editIndex,
+      addHabit,
+      startEdit,
+      saveEdit,
+      cancelEdit,
+      deleteHabit,
+      toggleDayMark,
+      calculateHabitCompletion,
+      calculateAveragePercentageForWeek,
+      totalHabits,
+      formattedToday,
+      completedHabits,
+      bestDayMessage,
+      bestHabitMessage,
+      averagePercentageForWeek,
+      weekDates,
+      percentages,
+      visibleWeekDates,
+      quoteIndex,
+    ]
+  );
 }

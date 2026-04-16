@@ -140,8 +140,7 @@ export function useTimer(): TimeTrackerContextValue {
         runStartedRemainingSeconds: null,
       };
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setTimerState]);
 
   const {
     totalSeconds,

@@ -1,6 +1,32 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import clsx from "clsx";
+import {
+  WEEKDAY_ABBR,
+  MONTH_NAMES,
+  VISIBLE_HOURS,
+  MULTI_DAY_ROW_HEIGHT_PX,
+  MULTI_DAY_ROW_GAP_PX,
+  DAY_COLUMN_GAP_PX,
+  TASK_SLOT_VERTICAL_INSET_PX,
+  GRID_COLS,
+  type TimeSlot,
+  type DisplayDay,
+  dayIndexToGridCol,
+  toIso,
+  getMondayOf,
+  getWeekDays,
+  shiftWeek,
+  clamp,
+  getVisibleStartHour,
+  getTimeSlots,
+  eventTopPct,
+  eventHeightPct,
+  isFutureSlot,
+  eventOverlapsSlot,
+  FIRST_VISIBLE_HOUR,
+  LAST_VISIBLE_START_HOUR,
+} from "../../lib/calendarUtils";
 import type {
   MockDashboardDay,
   MockDashboardWeek,
@@ -10,13 +36,10 @@ import type {
 interface DashboardCalendarProps {
   activeWeek: MockDashboardWeek;
   weeks: MockDashboardWeek[];
-  todayDate: string; // real ISO today, e.g. "2026-04-14"
+  todayDate: string;
   multiDayTasks: MockMultiDayTask[];
-  /** Pin the visible hour window to a fixed start instead of using real clock time */
   fixedStartHour?: number;
-  /** Hide the per-day task pills so only timed events show */
   hideWeekTasks?: boolean;
-  /** Cap the multi-day band to this many rows */
   maxMultiDayRows?: number;
 }
 
@@ -30,182 +53,79 @@ interface CalendarEvent {
   variant: "dark" | "light";
 }
 
-interface TimeSlot {
-  label: string;
-  hour: number;
-}
-
-interface DisplayDay {
-  day: string;
-  date: string;
-}
-
 interface ResolvedMultiDayTask extends MockMultiDayTask {
   colStart: number;
   span: number;
   row: number;
 }
 
-const WEEKDAY_NAMES = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
+// Mock calendar events — only visible on the data week
+const TIMED_EVENTS: CalendarEvent[] = [
+  { id: "evt-1", title: "Weekly Team Sync", subtitle: "Discuss progress on projects", day: "Tuesday", startHour: 9, durationHours: 1, variant: "dark" },
+  { id: "evt-2", title: "Onboarding Session", subtitle: "Introduction for new hires", day: "Tuesday", startHour: 10, durationHours: 1, variant: "light" },
+  { id: "evt-3", title: "Design Sync", subtitle: "Review dashboard mockups", day: "Thursday", startHour: 8, durationHours: 1, variant: "light" },
 ];
 
-const WEEKDAY_ABBR: Record<string, string> = {
-  Sunday: "Sun",
-  Monday: "Mon",
-  Tuesday: "Tue",
-  Wednesday: "Wed",
-  Thursday: "Thu",
-  Friday: "Fri",
-  Saturday: "Sat",
+// ── Sub-components ──────────────────────────────────────────────────────────
+
+type CalendarNavProps = {
+  headerLabel: string;
+  onPrevious: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onNext: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-const MONTH_NAMES = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-const VISIBLE_HOURS = 7;
-const FIRST_VISIBLE_HOUR = 6;
-const LAST_VISIBLE_START_HOUR = 17;
-const MULTI_DAY_ROW_HEIGHT_PX = 20;
-const MULTI_DAY_ROW_GAP_PX = 2;
-const DAY_COLUMN_GAP_PX = 6;
-const TASK_SLOT_VERTICAL_INSET_PX = 3;
-
-// Mock calendar events — only visible on the data week (March 23–28)
-const TIMED_EVENTS: CalendarEvent[] = [
-  {
-    id: "evt-1",
-    title: "Weekly Team Sync",
-    subtitle: "Discuss progress on projects",
-    day: "Tuesday",
-    startHour: 9,
-    durationHours: 1,
-    variant: "dark",
-  },
-  {
-    id: "evt-2",
-    title: "Onboarding Session",
-    subtitle: "Introduction for new hires",
-    day: "Tuesday",
-    startHour: 10,
-    durationHours: 1,
-    variant: "light",
-  },
-  {
-    id: "evt-3",
-    title: "Design Sync",
-    subtitle: "Review dashboard mockups",
-    day: "Thursday",
-    startHour: 8,
-    durationHours: 1,
-    variant: "light",
-  },
-];
-
-function toIso(d: Date): string {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
-
-/** Monday of the week containing the given ISO date string. */
-function getMondayOf(isoDate: string): Date {
-  const [year, month, day] = isoDate.split("-").map(Number);
-  const d = new Date(year, month - 1, day);
-  const dow = d.getDay(); // 0=Sun
-  const offset = dow === 0 ? -6 : 1 - dow;
-  d.setDate(d.getDate() + offset);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function getWeekDays(monday: Date): DisplayDay[] {
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() - 1);
-
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(sunday);
-    d.setDate(sunday.getDate() + i);
-    return { day: WEEKDAY_NAMES[d.getDay()], date: toIso(d) };
-  });
-}
-
-function shiftWeek(monday: Date, direction: -1 | 1): Date {
-  const d = new Date(monday);
-  d.setDate(d.getDate() + direction * 7);
-  return d;
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
-function formatHourLabel(hour: number): string {
-  const normalizedHour = ((hour % 24) + 24) % 24;
-  const suffix = normalizedHour >= 12 ? "pm" : "am";
-  const displayHour = normalizedHour % 12 || 12;
-
-  return `${displayHour}:00 ${suffix}`;
-}
-
-function getVisibleStartHour(currentHour: number): number {
-  return clamp(currentHour - 1, FIRST_VISIBLE_HOUR, LAST_VISIBLE_START_HOUR);
-}
-
-function getTimeSlots(startHour: number): TimeSlot[] {
-  return Array.from({ length: VISIBLE_HOURS }, (_, index) => ({
-    hour: startHour + index,
-    label: formatHourLabel(startHour + index),
-  }));
-}
-
-function eventTopPct(startHour: number, visibleStartHour: number): number {
-  return ((startHour - visibleStartHour) / VISIBLE_HOURS) * 100;
-}
-
-function eventHeightPct(durationHours: number): number {
-  return (durationHours / VISIBLE_HOURS) * 100;
-}
-
-function isFutureDate(date: string, todayDate: string): boolean {
-  return date > todayDate;
-}
-
-function isFutureSlot(
-  date: string,
-  slotHour: number,
-  todayDate: string,
-  currentHour: number,
-): boolean {
-  return date === todayDate ? slotHour > currentHour : isFutureDate(date, todayDate);
-}
-
-function eventOverlapsSlot(event: CalendarEvent, slotHour: number): boolean {
+function CalendarNav({ headerLabel, onPrevious, onNext }: CalendarNavProps) {
+  const navBtnClass =
+    "flex h-7 w-7 items-center justify-center rounded-full bg-white/80 text-[#6f757b] transition-colors hover:bg-white hover:text-[#161c22]";
   return (
-    event.startHour <= slotHour &&
-    event.startHour + event.durationHours > slotHour
+    <div className="flex items-center justify-between flex-none">
+      <button type="button" onClick={onPrevious} className={navBtnClass} aria-label="Previous week">
+        <ChevronLeft className="h-4 w-4" strokeWidth={1.6} />
+      </button>
+      <p className="text-[0.82rem] font-[500] text-[#161c22]">{headerLabel}</p>
+      <button type="button" onClick={onNext} className={navBtnClass} aria-label="Next week">
+        <ChevronRight className="h-4 w-4" strokeWidth={1.6} />
+      </button>
+    </div>
   );
 }
+
+type CalendarDayHeadersProps = {
+  displayDays: DisplayDay[];
+  todayDate: string;
+};
+
+function CalendarDayHeaders({ displayDays, todayDate }: CalendarDayHeadersProps) {
+  return (
+    <div
+      className="grid flex-none"
+      style={{ gridTemplateColumns: GRID_COLS, columnGap: `${DAY_COLUMN_GAP_PX}px` }}
+    >
+      <div />
+      {displayDays.map((day) => {
+        const isToday = day.date === todayDate;
+        const dateNum = parseInt(day.date.split("-")[2], 10);
+        return (
+          <div key={day.date} className="flex flex-col items-center gap-[0.2rem]">
+            <span className="text-[0.52rem] font-[400] uppercase tracking-[0.07em] text-[#a0a6ab]">
+              {WEEKDAY_ABBR[day.day]}
+            </span>
+            <span
+              className={clsx(
+                "flex h-[1.3rem] w-[1.3rem] items-center justify-center rounded-full text-[0.75rem] font-[500] leading-none",
+                isToday ? "bg-[#72e1ee] text-[#0a1929]" : "text-[#3d454b]",
+              )}
+            >
+              {dateNum}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Main component ───────────────────────────────────────────────────────────
 
 export default function DashboardCalendar({
   activeWeek,
@@ -216,16 +136,13 @@ export default function DashboardCalendar({
   hideWeekTasks = false,
   maxMultiDayRows,
 }: DashboardCalendarProps): React.ReactElement {
-  // Always open on the week that contains today
-  const [currentMonday, setCurrentMonday] = useState<Date>(() =>
-    getMondayOf(todayDate),
-  );
+  const [currentMonday, setCurrentMonday] = useState<Date>(() => getMondayOf(todayDate));
   const currentHour = new Date().getHours();
   const visibleStartHour =
     fixedStartHour !== undefined
       ? clamp(fixedStartHour, FIRST_VISIBLE_HOUR, LAST_VISIBLE_START_HOUR)
       : getVisibleStartHour(currentHour);
-  const timeSlots = getTimeSlots(visibleStartHour);
+  const timeSlots: TimeSlot[] = getTimeSlots(visibleStartHour);
   const visibleEndHour = visibleStartHour + VISIBLE_HOURS;
 
   const currentMondayIso = toIso(currentMonday);
@@ -235,11 +152,8 @@ export default function DashboardCalendar({
       return monday?.date === currentMondayIso;
     }) ?? null;
 
-  // Compute Sun–Sat display days
   const displayDays: DisplayDay[] = visibleWeek
-    ? visibleWeek.days
-        .filter((d) => WEEKDAY_ABBR[d.day] !== undefined)
-        .slice(0, 7)
+    ? visibleWeek.days.filter((d) => WEEKDAY_ABBR[d.day] !== undefined).slice(0, 7)
     : getWeekDays(currentMonday);
 
   const dayDates = displayDays.map((d) => d.date);
@@ -247,62 +161,52 @@ export default function DashboardCalendar({
     (visibleWeek?.days ?? []).map((day) => [day.date, day]),
   );
 
-  // Multi-day tasks — show all that overlap the visible week dates
+  // Multi-day tasks — resolve grid positions then assign greedy rows
   const resolvedMultiDayNoRow = multiDayTasks
     .flatMap((task) => {
       const covered = dayDates
-        .map((date, i) =>
-          date >= task.startDate && date <= task.endDate ? i : -1,
-        )
+        .map((date, i) => (date >= task.startDate && date <= task.endDate ? i : -1))
         .filter((i) => i !== -1);
       if (covered.length === 0) return [];
       const firstCol = dayIndexToGridCol(covered[0]);
       const lastCol = dayIndexToGridCol(covered[covered.length - 1]);
-    return [
-        {
-          ...task,
-          colStart: firstCol,
-          span: lastCol - firstCol + 1,
-        },
-      ];
+      return [{ ...task, colStart: firstCol, span: lastCol - firstCol + 1 }];
     })
     .sort((a, b) => a.startDate.localeCompare(b.startDate));
 
-  // Greedy row assignment: pack tasks into rows without date overlap
   const rowEndDates: string[] = [];
-  const resolvedMultiDay: ResolvedMultiDayTask[] = resolvedMultiDayNoRow.map(
-    (task) => {
-      let assignedRow = -1;
-      for (let r = 0; r < rowEndDates.length; r++) {
-        if (task.startDate > rowEndDates[r]) {
-          assignedRow = r;
-          rowEndDates[r] = task.endDate;
-          break;
-        }
+  const resolvedMultiDay: ResolvedMultiDayTask[] = resolvedMultiDayNoRow.map((task) => {
+    let assignedRow = -1;
+    for (let r = 0; r < rowEndDates.length; r++) {
+      if (task.startDate > rowEndDates[r]) {
+        assignedRow = r;
+        rowEndDates[r] = task.endDate;
+        break;
       }
-      if (assignedRow === -1) {
-        assignedRow = rowEndDates.length;
-        rowEndDates.push(task.endDate);
-      }
-      return { ...task, row: assignedRow };
-    },
-  );
+    }
+    if (assignedRow === -1) {
+      assignedRow = rowEndDates.length;
+      rowEndDates.push(task.endDate);
+    }
+    return { ...task, row: assignedRow };
+  });
 
   const clippedMultiDay =
     maxMultiDayRows !== undefined
       ? resolvedMultiDay.filter((t) => t.row < maxMultiDayRows)
       : resolvedMultiDay;
 
-  const numMultiDayRows = clippedMultiDay.length > 0
-    ? Math.max(...clippedMultiDay.map((t) => t.row)) + 1
-    : 0;
+  const numMultiDayRows =
+    clippedMultiDay.length > 0
+      ? Math.max(...clippedMultiDay.map((t) => t.row)) + 1
+      : 0;
   const MULTI_DAY_BAND_HEIGHT_PX =
     numMultiDayRows > 0
       ? numMultiDayRows * MULTI_DAY_ROW_HEIGHT_PX +
         (numMultiDayRows - 1) * MULTI_DAY_ROW_GAP_PX +
         4
       : 4;
-  // TIMED_EVENTS only on the data week
+
   const visibleTimedEvents = (
     visibleWeek?.week === activeWeek.week ? TIMED_EVENTS : []
   ).filter(
@@ -312,94 +216,36 @@ export default function DashboardCalendar({
   );
 
   const headerLabel = `${MONTH_NAMES[currentMonday.getMonth()]} ${currentMonday.getFullYear()}`;
-  const GRID_COLS = "48px repeat(7, minmax(0, 1fr))";
 
-  /** Maps a day index (0=Mon … 6=Sun) to its 1-based grid column number. */
-  const dayIndexToGridCol = (i: number): number => i + 2;
-  const handlePreviousWeek = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ): void => {
+  const handlePreviousWeek = (event: React.MouseEvent<HTMLButtonElement>): void => {
     event.stopPropagation();
     setCurrentMonday((m) => shiftWeek(m, -1));
   };
-  const handleNextWeek = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ): void => {
+  const handleNextWeek = (event: React.MouseEvent<HTMLButtonElement>): void => {
     event.stopPropagation();
     setCurrentMonday((m) => shiftWeek(m, 1));
   };
 
   return (
     <div className="flex flex-col h-full gap-2">
-      {/* ── Navigation ── */}
-      <div className="flex items-center justify-between flex-none">
-        <button
-          type="button"
-          onClick={handlePreviousWeek}
-          className="flex h-7 w-7 items-center justify-center rounded-full bg-white/80 text-[#6f757b] transition-colors hover:bg-white hover:text-[#161c22]"
-          aria-label="Previous week"
-        >
-          <ChevronLeft className="h-4 w-4" strokeWidth={1.6} />
-        </button>
+      <CalendarNav
+        headerLabel={headerLabel}
+        onPrevious={handlePreviousWeek}
+        onNext={handleNextWeek}
+      />
 
-        <p className="text-[0.82rem] font-[500] text-[#161c22]">
-          {headerLabel}
-        </p>
-
-        <button
-          type="button"
-          onClick={handleNextWeek}
-          className="flex h-7 w-7 items-center justify-center rounded-full bg-white/80 text-[#6f757b] transition-colors hover:bg-white hover:text-[#161c22]"
-          aria-label="Next week"
-        >
-          <ChevronRight className="h-4 w-4" strokeWidth={1.6} />
-        </button>
-      </div>
-
-      {/* ── Day headers ── */}
-      <div
-        className="grid flex-none"
-        style={{ gridTemplateColumns: GRID_COLS, columnGap: `${DAY_COLUMN_GAP_PX}px` }}
-      >
-        <div />
-        {displayDays.map((day) => {
-          const isToday = day.date === todayDate;
-          const dateNum = parseInt(day.date.split("-")[2], 10);
-          return (
-            <div key={day.date} className="flex flex-col items-center gap-[0.2rem]">
-              <span className="text-[0.52rem] font-[400] uppercase tracking-[0.07em] text-[#a0a6ab]">
-                {WEEKDAY_ABBR[day.day]}
-              </span>
-              <span
-                className={clsx(
-                  "flex h-[1.3rem] w-[1.3rem] items-center justify-center rounded-full text-[0.75rem] font-[500] leading-none",
-                  isToday ? "bg-[#72e1ee] text-[#0a1929]" : "text-[#3d454b]",
-                )}
-              >
-                {dateNum}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+      <CalendarDayHeaders displayDays={displayDays} todayDate={todayDate} />
 
       {/* ── Time grid ── */}
-      <div
-        className="relative flex-1 min-h-0 overflow-hidden"
-        aria-label="Weekly calendar grid"
-      >
-        <div
-          className="relative h-full"
-        >
+      <div className="relative flex-1 min-h-0 overflow-hidden" aria-label="Weekly calendar grid">
+        <div className="relative h-full">
+          {/* Multi-day band */}
           <div
             className="absolute inset-x-0 top-0 pointer-events-none"
-            style={{
-              height: `${MULTI_DAY_BAND_HEIGHT_PX}px`,
-            }}
+            style={{ height: `${MULTI_DAY_BAND_HEIGHT_PX}px` }}
           >
             {clippedMultiDay.map((task) => {
-              const topPx =
-                task.row * (MULTI_DAY_ROW_HEIGHT_PX + MULTI_DAY_ROW_GAP_PX) + 2;
+              const topPx = task.row * (MULTI_DAY_ROW_HEIGHT_PX + MULTI_DAY_ROW_GAP_PX) + 2;
               return (
                 <div
                   key={task.id}
@@ -438,41 +284,26 @@ export default function DashboardCalendar({
             })}
           </div>
 
-          {/* Time lines + labels */}
-            <div
-              className="absolute inset-x-0 bottom-0 grid pointer-events-none"
-              style={{
-                gridTemplateColumns: "48px 1fr",
-                top: `${MULTI_DAY_BAND_HEIGHT_PX}px`,
-              }}
-            >
-              <div
-                className="grid"
-                style={{ gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))` }}
-              >
-                {timeSlots.map((slot) => (
-                  <div
-                    key={slot.label}
-                    className="flex items-center justify-end pr-2"
-                  >
-                    <span className="text-[0.58rem] leading-none text-[#a0a6ab]">
-                      {slot.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div
-                className="grid"
-                style={{ gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))` }}
-              >
-                {timeSlots.map((slot) => (
-                  <div key={slot.label} className="flex items-center">
-                    <div className="w-full border-t border-dashed border-[#c0d4dc]/50" />
-                  </div>
-                ))}
-              </div>
+          {/* Time labels + horizontal lines */}
+          <div
+            className="absolute inset-x-0 bottom-0 grid pointer-events-none"
+            style={{ gridTemplateColumns: "48px 1fr", top: `${MULTI_DAY_BAND_HEIGHT_PX}px` }}
+          >
+            <div className="grid" style={{ gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))` }}>
+              {timeSlots.map((slot) => (
+                <div key={slot.label} className="flex items-center justify-end pr-2">
+                  <span className="text-[0.58rem] leading-none text-[#a0a6ab]">{slot.label}</span>
+                </div>
+              ))}
             </div>
+            <div className="grid" style={{ gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))` }}>
+              {timeSlots.map((slot) => (
+                <div key={slot.label} className="flex items-center">
+                  <div className="w-full border-t border-dashed border-[#c0d4dc]/50" />
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Day column backgrounds */}
           <div
@@ -485,20 +316,18 @@ export default function DashboardCalendar({
           >
             <div />
             {displayDays.map((day) => (
-                <div
-                  key={day.date}
-                  className={clsx(
-                    "grid h-full rounded-lg border border-dashed border-[#c0d4dc]/40",
-                    day.date === todayDate && "bg-white/20",
-                  )}
-                  style={{
-                    gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))`,
-                  }}
-                />
+              <div
+                key={day.date}
+                className={clsx(
+                  "grid h-full rounded-lg border border-dashed border-[#c0d4dc]/40",
+                  day.date === todayDate && "bg-white/20",
+                )}
+                style={{ gridTemplateRows: `repeat(${VISIBLE_HOURS}, minmax(0, 1fr))` }}
+              />
             ))}
           </div>
 
-          {/* Single-day timed events (data week only) */}
+          {/* Timed events (data week only) */}
           <div
             className="absolute inset-x-0 bottom-0 grid"
             style={{
@@ -509,9 +338,7 @@ export default function DashboardCalendar({
           >
             <div />
             {displayDays.map((day) => {
-              const dayEvents = visibleTimedEvents.filter(
-                (e) => e.day === day.day,
-              );
+              const dayEvents = visibleTimedEvents.filter((e) => e.day === day.day);
               return (
                 <div key={day.date} className="relative h-full min-w-0 overflow-hidden">
                   {dayEvents.map((event) => (
@@ -533,9 +360,7 @@ export default function DashboardCalendar({
                           <p
                             className={clsx(
                               "truncate text-[0.56rem] font-[600] leading-tight",
-                              event.variant === "dark"
-                                ? "text-white"
-                                : "text-[#161c22]",
+                              event.variant === "dark" ? "text-white" : "text-[#161c22]",
                             )}
                           >
                             {event.title}
@@ -543,9 +368,7 @@ export default function DashboardCalendar({
                           <p
                             className={clsx(
                               "truncate text-[0.48rem] leading-tight mt-[0.15rem]",
-                              event.variant === "dark"
-                                ? "text-[#8a9199]"
-                                : "text-[#6f757b]",
+                              event.variant === "dark" ? "text-[#8a9199]" : "text-[#6f757b]",
                             )}
                           >
                             {event.subtitle}
@@ -559,7 +382,7 @@ export default function DashboardCalendar({
             })}
           </div>
 
-          {/* Week tasks — one column per day for the visible week */}
+          {/* Week task pills */}
           {visibleWeek && !hideWeekTasks && (
             <div
               className="absolute inset-x-0 bottom-0 grid"
@@ -576,10 +399,7 @@ export default function DashboardCalendar({
               ))}
               {displayDays.flatMap((day, dayIndex) => {
                 const dayTasks = visibleWeekDaysByDate.get(day.date)?.tasks ?? [];
-                const dayEvents = visibleTimedEvents.filter(
-                  (event) => event.day === day.day,
-                );
-
+                const dayEvents = visibleTimedEvents.filter((event) => event.day === day.day);
                 return timeSlots.map((slot, slotIndex) => {
                   const taskItem = dayTasks[slotIndex];
                   const hasOverlappingEvent = dayEvents.some((event) =>
@@ -591,8 +411,7 @@ export default function DashboardCalendar({
                     todayDate,
                     currentHour,
                   );
-                  const isCompleted =
-                    taskItem && !isFutureTaskSlot ? taskItem.done : false;
+                  const isCompleted = taskItem && !isFutureTaskSlot ? taskItem.done : false;
                   const isDarkTask = taskItem?.variant === "dark";
 
                   if (!taskItem || !taskItem.task.trim() || hasOverlappingEvent) {
@@ -600,10 +419,7 @@ export default function DashboardCalendar({
                       <div
                         key={`${day.date}-${slot.hour}`}
                         className="min-h-0"
-                        style={{
-                          gridColumn: dayIndex + 2,
-                          gridRow: slotIndex + 1,
-                        }}
+                        style={{ gridColumn: dayIndex + 2, gridRow: slotIndex + 1 }}
                       />
                     );
                   }
@@ -619,10 +435,7 @@ export default function DashboardCalendar({
                           ? "bg-[#d8edf1]/70"
                           : "bg-white/90 shadow-[0_1px_4px_rgba(0,0,0,0.06)]",
                       )}
-                      style={{
-                        gridColumn: dayIndex + 2,
-                        gridRow: slotIndex + 1,
-                      }}
+                      style={{ gridColumn: dayIndex + 2, gridRow: slotIndex + 1 }}
                     >
                       <p
                         className={clsx(
@@ -632,8 +445,8 @@ export default function DashboardCalendar({
                             : isCompleted
                             ? "text-[#8c959c] line-through"
                             : day.date === todayDate
-                              ? "text-[#161c22]"
-                              : "text-[#2c353c]",
+                            ? "text-[#161c22]"
+                            : "text-[#2c353c]",
                         )}
                       >
                         {taskItem.task}

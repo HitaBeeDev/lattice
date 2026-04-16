@@ -16,7 +16,7 @@ export default function WeekDaysHeader() {
 
         {visibleWeekDates.map((date, index) => (
           <div
-            key={date.toISOString()}
+            key={date.toLocaleDateString("en-CA")}
             className="flex flex-col items-center justify-center col-span-1"
           >
             <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">

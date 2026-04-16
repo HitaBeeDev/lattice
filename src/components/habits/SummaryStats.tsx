@@ -30,7 +30,7 @@ export default function SummaryStats() {
           {weekDates.map((date, index) => (
             <div
               className="flex flex-col justify-center col-span-1 mt-8"
-              key={date.toISOString()}
+              key={date.toLocaleDateString("en-CA")}
             >
               <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">
                 {date.toLocaleDateString("en-US", { weekday: "long" })}
