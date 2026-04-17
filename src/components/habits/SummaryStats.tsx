@@ -9,9 +9,9 @@ export default function SummaryStats() {
   const strongestDay = Math.max(...percentages, 0);
 
   return (
-    <section className="grid h-full grid-cols-5 gap-3 mt-4">
-      <div className="col-span-3 p-8 bg-white rounded-[1.7rem] min-h-[13.5rem] flex flex-col justify-start">
-        <div className="flex flex-row items-start justify-between">
+    <section className="mt-4 flex flex-col gap-3 xl:grid xl:h-full xl:grid-cols-5">
+      <div className="flex min-h-[13.5rem] flex-col justify-start rounded-[1.7rem] bg-white p-6 md:p-8 xl:col-span-3">
+        <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
           <div>
             <p className="text-[0.7rem] leading-none font-[300] text-[#a0a5ab] ml-1">
               Weekly check-ins
@@ -29,10 +29,10 @@ export default function SummaryStats() {
           </div>
         </div>
 
-        <div className="grid items-end grid-cols-7 gap-[1rem] mt-auto mb-1">
+        <div className="mt-8 grid grid-cols-1 gap-4 md:mb-1 md:mt-auto md:grid-cols-7 md:items-end md:gap-[1rem]">
           {weekDates.map((date, index) => (
             <div
-              className="flex flex-col justify-center col-span-1 mt-8"
+              className="flex flex-col justify-center md:col-span-1 md:mt-8"
               key={date.toLocaleDateString("en-CA")}
             >
               <p className="text-[0.6rem] leading-none font-[400] text-[#a0a5ab]">
@@ -51,7 +51,7 @@ export default function SummaryStats() {
         </div>
       </div>
 
-      <div className="col-span-2 p-8 bg-[#242b32] rounded-[1.7rem] min-h-[13.5rem] flex flex-col">
+      <div className="flex min-h-[13.5rem] flex-col rounded-[1.7rem] bg-[#242b32] p-6 md:p-8 xl:col-span-2">
         <p className="text-[0.7rem] leading-none font-[300] text-[#f9fafb] ml-1">
           Reflection
         </p>

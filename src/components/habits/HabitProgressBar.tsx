@@ -5,12 +5,13 @@ const DAYS_PER_WEEK = 7;
 
 type HabitProgressBarProps = {
   days: boolean[];
+  className?: string;
 };
 
-function HabitProgressBar({ days }: HabitProgressBarProps) {
+function HabitProgressBar({ days, className }: HabitProgressBarProps) {
   const progress = Math.round((days.filter(Boolean).length / DAYS_PER_WEEK) * 100);
   return (
-    <div className="flex flex-col items-center justify-center col-span-2 mt-3">
+    <div className={className ?? "flex flex-col items-center justify-center col-span-2 mt-3"}>
       <div className="w-full h-1.5 rounded-full bg-[#f0f5f6] overflow-hidden">
         <div className={getPercentageFillClass(progress, "h-full rounded-full bg-[#72e1ee] transition-all")} />
       </div>

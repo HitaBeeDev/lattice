@@ -16,7 +16,7 @@ function HabitStatCards({
   averagePercentageForWeek,
 }: HabitStatCardsProps) {
   return (
-    <div className="flex flex-row items-center justify-between gap-3 mt-auto">
+    <div className="mt-auto grid grid-cols-1 gap-3 md:grid-cols-3">
       <div className="flex flex-col justify-center items-start rounded-[1rem] bg-[#edfdfe] w-full h-[7rem] p-7">
         <p className="text-[0.6rem] leading-none font-[500] text-[#d3d6d9]">Active habits</p>
         <p className="text-[2rem] leading-none font-[200] text-[#161c22] mt-3">{totalHabits}</p>
@@ -57,16 +57,16 @@ export default function WelcomeBanner() {
   );
 
   return (
-    <section className="grid h-full grid-cols-5 gap-3 mt-6">
-      <div className="col-span-3 p-8 bg-white rounded-[1.7rem] min-h-[28rem] flex flex-col justify-start">
+    <section className="mt-6 flex flex-col gap-3 xl:grid xl:h-full xl:grid-cols-5">
+      <div className="flex min-h-[24rem] flex-col justify-start rounded-[1.7rem] bg-white p-6 md:min-h-[28rem] md:p-8 xl:col-span-3">
         <div>
           <p className="text-[0.7rem] leading-none font-[300] text-[#a0a5ab] ml-1">
             {formattedToday}
           </p>
-          <p className="text-[3.75rem] leading-none font-[200] text-[#161c22] w-10/12 mt-5">
+          <p className="mt-5 w-full text-[2.3rem] leading-none font-[200] text-[#161c22] md:w-10/12 md:text-[3.75rem]">
             Build a cleaner week, one repeatable win at a time.
           </p>
-          <p className="w-1/2 text-[0.7rem] leading-none font-[200] text-[#a0a6ab] mt-3">
+          <p className="mt-3 w-full text-[0.7rem] leading-none font-[200] text-[#a0a6ab] md:w-1/2">
             Log the small actions you complete each day, and build consistency through repetition
             rather than perfection.
           </p>
@@ -79,7 +79,7 @@ export default function WelcomeBanner() {
         />
       </div>
 
-      <div className="col-span-2 p-8 bg-white rounded-[1.7rem] min-h-[28rem] flex flex-col justify-start">
+      <div className="flex min-h-[24rem] flex-col justify-start rounded-[1.7rem] bg-white p-6 md:min-h-[28rem] md:p-8 xl:col-span-2">
         <div>
           <p className="text-[0.7rem] leading-none font-[300] text-[#a0a5ab] ml-1">Quick add</p>
           <p className="text-[1.4rem] leading-none font-[300] text-[#161c22] mt-5">

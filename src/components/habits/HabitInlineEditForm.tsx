@@ -39,10 +39,10 @@ export default function HabitInlineEditForm({
   return (
     <form
       onSubmit={handleSubmit((values) => onSave(habitId, values.name))}
-      className="w-full flex items-start gap-1.5"
+      className="flex w-full flex-col items-start gap-2 md:flex-row md:gap-1.5"
     >
       <Input
-        className="h-[2rem] text-[0.75rem] rounded-[0.4rem] border-[#e0e9ed]"
+        className="h-[2rem] w-full text-[0.75rem] rounded-[0.4rem] border-[#e0e9ed]"
         error={errors.name?.message}
         id={`edit-habit-${habitId}`}
         type="text"

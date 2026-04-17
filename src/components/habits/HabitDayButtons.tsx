@@ -3,12 +3,16 @@ import { Check } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { cn } from "../ui/cn";
 
+const DAY_LABELS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+
 type HabitDayButtonsProps = {
   habitName: string;
   days: boolean[];
   visibleWeekDates: Date[];
   habitId: string;
   onToggleDay: (habitId: string, dayIndex: number) => void;
+  showDateLabels?: boolean;
+  wrapperClassName?: string;
 };
 
 function HabitDayButtons({
@@ -17,6 +21,8 @@ function HabitDayButtons({
   visibleWeekDates,
   habitId,
   onToggleDay,
+  showDateLabels = false,
+  wrapperClassName,
 }: HabitDayButtonsProps) {
   const shouldReduce = useReducedMotion();
 
@@ -27,8 +33,24 @@ function HabitDayButtons({
         return (
           <div
             key={date.toLocaleDateString("en-CA")}
-            className="flex items-center justify-center col-span-1"
+            className={cn(
+              "flex items-center justify-center col-span-1",
+              showDateLabels && "flex-col gap-1.5",
+              wrapperClassName,
+            )}
           >
+            {showDateLabels ? (
+              <div className="flex flex-col items-center justify-center">
+                <p className="text-[0.55rem] leading-none font-[500] text-[#a0a5ab]">
+                  {DAY_LABELS[dayIndex]}
+                </p>
+                <p className="mt-1 text-[0.6rem] leading-none font-[400] text-[#161c22]">
+                  {date
+                    .toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                    .toUpperCase()}
+                </p>
+              </div>
+            ) : null}
             <motion.button
               type="button"
               aria-label={`Toggle ${habitName} for ${date.toDateString()}`}
