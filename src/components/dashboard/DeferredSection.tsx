@@ -51,5 +51,5 @@ export default function DeferredSection({
     };
   }, [rootMargin, shouldRender]);
 
-  return <div ref={containerRef}>{shouldRender ? children : fallback}</div>;
+  return <div ref={containerRef} className="h-full">{shouldRender ? children : fallback}</div>;
 }

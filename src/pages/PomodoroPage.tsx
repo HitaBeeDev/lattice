@@ -24,13 +24,19 @@ function PomodoroPage() {
     };
   }, []);
 
-  const { todayFocusSeconds, completedPomodoros, totalSeconds, maxSeconds } = useTimeTracker();
+  const { todayFocusSeconds, completedPomodoros, totalSeconds, maxSeconds } =
+    useTimeTracker();
   const todayLabel = formatTodayLabel();
   const progressPct =
-    maxSeconds === 0 ? 0 : Math.round(((maxSeconds - totalSeconds) / maxSeconds) * 100);
+    maxSeconds === 0
+      ? 0
+      : Math.round(((maxSeconds - totalSeconds) / maxSeconds) * 100);
 
   return (
-    <main className="flex w-full h-[calc(100%-7rem)] mt-[7rem] overflow-y-auto lg:overflow-hidden" id="main-content">
+    <main
+      className="flex w-full h-[calc(100%-7rem)] mt-[7rem] overflow-y-auto lg:overflow-hidden pb-6"
+      id="main-content"
+    >
       <section className="grid w-full h-full grid-cols-1 gap-3 lg:grid-cols-3">
         <PomodoroSidebar
           todayLabel={todayLabel}

@@ -1,4 +1,10 @@
-import { Link2, MessageSquareText, Monitor, PencilLine, Zap } from "lucide-react";
+import {
+  Link2,
+  MessageSquareText,
+  Monitor,
+  PencilLine,
+  Zap,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Task } from "../../types/task";
 import { useVisibleTaskCount } from "../../hooks/useVisibleTaskCount";
@@ -30,34 +36,61 @@ export default function TaskOverviewCard({
   onToggleTask,
 }: TaskOverviewCardProps): React.ReactElement {
   const navigate = useNavigate();
-  const visibleTasks = (tasks.length > 0 ? tasks : dashboardFallbackTasks).slice(0, MAX_CARD_TASKS);
+  const visibleTasks = (
+    tasks.length > 0 ? tasks : dashboardFallbackTasks
+  ).slice(0, MAX_CARD_TASKS);
 
-  const { listAreaRef, sampleRowRef, visibleCount } = useVisibleTaskCount(visibleTasks.length);
-  const { completedCount, remainingCount, progress, inProgressPct, remainingPct } =
-    computeTaskCardStats(visibleTasks);
+  const { listAreaRef, sampleRowRef, visibleCount } = useVisibleTaskCount(
+    visibleTasks.length,
+  );
+  const {
+    completedCount,
+    remainingCount,
+    progress,
+    inProgressPct,
+    remainingPct,
+  } = computeTaskCardStats(visibleTasks);
 
   const hiddenTaskCount = Math.max(visibleTasks.length - visibleCount, 0);
 
   const statPills: StatPill[] = [
-    { label: "Done", value: progress, pillClassName: "bg-[#72e1ee] text-[#f9fafb]" },
-    { label: "In Progress", value: inProgressPct, pillClassName: "bg-[#161c22] text-[#f9fafb]" },
-    { label: "Remaining", value: remainingPct, pillClassName: "bg-[#50585e] text-[#f9fafb]" },
+    {
+      label: "Done",
+      value: progress,
+      pillClassName: "bg-[#72e1ee] text-[#f9fafb]",
+    },
+    {
+      label: "In Progress",
+      value: inProgressPct,
+      pillClassName: "bg-[#161c22] text-[#f9fafb]",
+    },
+    {
+      label: "Remaining",
+      value: remainingPct,
+      pillClassName: "bg-[#50585e] text-[#f9fafb]",
+    },
   ];
 
   const handleOpenTasks = (): void => navigate("/tasks");
 
   return (
-    <section className="sm:col-span-2 lg:col-span-1 lg:col-start-4 lg:row-span-4 lg:row-start-1 flex min-h-[20rem] lg:h-full w-full flex-col overflow-hidden rounded-[1.2rem] bg-[#cee2e9]/40 p-5">
+    <section className="flex h-full w-full min-h-0 flex-col overflow-hidden rounded-[1.2rem] bg-[#cee2e9]/40 p-5">
       <div className="flex flex-row items-center justify-between">
-        <p className="pt-2 ml-2 text-[0.85rem] leading-none font-[400] text-[#3d454b]">Tasks</p>
-        <p className="text-[2.2rem] leading-none font-[200] text-[#161c22] mt-3">{progress}%</p>
+        <p className="pt-2 ml-2 text-[0.85rem] leading-none font-[400] text-[#3d454b]">
+          Tasks
+        </p>
+        <p className="text-[2.2rem] leading-none font-[200] text-[#161c22] mt-3">
+          {progress}%
+        </p>
       </div>
 
       <StatsPillBar pills={statPills} />
 
-      <div className="mt-3 ml-2 mr-2 flex h-full flex-col rounded-[1.5rem] bg-[#3d454b] p-6">
+      <div className="mt-3 ml-2 mr-2 flex min-h-0 flex-1 flex-col rounded-[1.5rem] bg-[#3d454b] p-6">
         <div className="flex flex-row items-center justify-between">
-          <p className="text-[0.85rem] leading-none font-[400] text-[#f9fafb]">Tasks for today</p>
+          <p className="text-[0.85rem] leading-none font-[400] text-[#f9fafb]">
+            Tasks for today
+          </p>
           <p className="text-[2.2rem] leading-none font-[200] text-[#f9fafb]">
             {completedCount}/{visibleTasks.length}
           </p>
@@ -65,7 +98,7 @@ export default function TaskOverviewCard({
 
         <ul
           ref={listAreaRef}
-          className="flex flex-col flex-1 min-h-0 gap-3 mt-5 overflow-hidden"
+          className="mt-5 flex min-h-0 flex-1 flex-col gap-3 overflow-hidden"
         >
           {visibleTasks.map((task, index) => {
             if (index >= visibleCount) return null;

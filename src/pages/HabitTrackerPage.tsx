@@ -11,8 +11,8 @@ function HabitTrackerPage() {
     >
       <WelcomeBanner />
 
-      <div className="overflow-x-auto">
-        <div className="min-w-[640px]">
+      <div className="">
+        <div className="">
           <WeekDaysHeader />
           <HabitList />
         </div>

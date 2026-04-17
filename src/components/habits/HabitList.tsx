@@ -28,7 +28,7 @@ export default function HabitList() {
   }
 
   return (
-    <div className="-mt-5">
+    <div className="mt-5">
       {habits.map((habit) => (
         <HabitRow
           key={habit.id}

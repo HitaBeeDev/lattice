@@ -7,7 +7,7 @@ export default function WeekDaysHeader() {
 
   return (
     <section>
-      <div className="grid grid-cols-[repeat(13,minmax(0,1fr))] justify-between items-center ml-5 mr-5 pl-5 pr-5 mt-10">
+      <div className="grid grid-cols-[repeat(13,minmax(0,1fr))] justify-between items-center ml-5 mr-5 pl-5 pr-5 mt-6">
         <div className="flex flex-col items-start justify-center col-span-2">
           <p className="text-[0.75rem] leading-none font-[400] text-[#a0a5ab]">
             Your Habit

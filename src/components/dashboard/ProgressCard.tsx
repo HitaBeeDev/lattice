@@ -14,10 +14,12 @@ function ProgressCard({
   focusChartData,
 }: ProgressCardProps): React.ReactElement {
   return (
-    <div className="sm:col-span-1 lg:col-span-1 lg:row-span-2 flex min-h-[12rem] lg:h-full w-full flex-col overflow-hidden rounded-[1.2rem] bg-[#cee2e9]/40 p-5">
+    <div className="rounded-[1.2rem] bg-[#cee2e9]/40 p-5 h-full">
       <div className="flex flex-row items-start justify-between">
         <div className="pt-2 ml-2">
-          <p className="text-[0.85rem] leading-none font-[400] text-[#3d454b]">Progress</p>
+          <p className="text-[0.85rem] leading-none font-[400] text-[#3d454b]">
+            Progress
+          </p>
           <p className="text-[2.2rem] leading-none font-[200] text-[#161c22] mt-3">
             {sampleFocusHours}
           </p>

@@ -22,27 +22,10 @@ function TaskListPage() {
           <TaskList />
         </div>
 
-        <div className="lg:col-span-2 bg-white rounded-[1.7rem]">
+        <div className="lg:col-span-2 bg-white rounded-[1.7rem] h-fit">
           <UpcomingTasks />
         </div>
       </section>
-
-      {/* <section
-        aria-labelledby="tasks-layout-heading"
-        className="grid gap-6 lg:grid-cols-[minmax(0,1.9fr)_minmax(21rem,0.95fr)]"
-      >
-        <header className="sr-only">
-          <h2 id="tasks-layout-heading">Tasks and upcoming schedule</h2>
-        </header>
-
-        <div className="min-w-0">
-          <TaskList />
-        </div>
-
-        <div className="min-w-0">
-          <UpcomingTasks />
-        </div>
-      </section> */}
     </main>
   );
 }
