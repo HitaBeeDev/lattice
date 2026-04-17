@@ -86,7 +86,7 @@ export default function TaskOverviewCard({
 
       <StatsPillBar pills={statPills} />
 
-      <div className="mt-3 ml-2 mr-2 flex min-h-0 flex-1 flex-col rounded-[1.5rem] bg-[#3d454b] p-6">
+      <div className="mt-5 ml-2 mr-2 flex min-h-0 flex-1 flex-col rounded-[1.5rem] bg-[#3d454b] p-6 lg:mt-3">
         <div className="flex flex-row items-center justify-between">
           <p className="text-[0.85rem] leading-none font-[400] text-[#f9fafb]">
             Tasks for today

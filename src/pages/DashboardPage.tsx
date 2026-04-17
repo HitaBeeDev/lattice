@@ -131,13 +131,13 @@ function DashboardPage() {
 
   return (
     <main
-      className="h-full overflow-y-auto lg:overflow-hidden"
+      className="h-full overflow-y-auto xl:overflow-hidden"
       id="main-content"
       tabIndex={-1}
     >
-      <div className="flex flex-col lg:h-full">
+      <div className="flex flex-col gap-6 xl:h-full xl:gap-0">
         <div className="mt-8">
-          <p className="font-['Inter'] font-[300] text-[2.1rem] text-[#060a0f]">
+          <p className="font-['Inter'] text-[1.9rem] font-[300] text-[#060a0f] sm:text-[2.1rem]">
             Welcome in, {mockUser.name}
           </p>
         </div>
@@ -155,15 +155,15 @@ function DashboardPage() {
           completedPomodoros={completedPomodoros}
         />
 
-        <div className="grid h-full min-h-[70vh] grid-cols-4 grid-rows-4 gap-3 mt-6">
-          <div className="h-full col-span-1 row-span-2">
+        <div className="mt-2 flex flex-col gap-4 md:mt-6 xl:grid xl:h-full xl:min-h-[70vh] xl:grid-cols-4 xl:grid-rows-4 xl:gap-3">
+          <div className="-mt-6 xl:-mt-0 min-h-[16rem] xl:col-span-1 xl:row-span-2 xl:h-full">
             <ProgressCard
               sampleFocusHours={sampleFocusHours}
               focusChartData={focusChartData}
             />
           </div>
 
-          <div className="h-full col-span-2 row-span-3">
+          <div className="hidden xl:col-span-2 xl:row-span-3 xl:block xl:h-full">
             <CalendarCard
               activeWeek={syncedActiveWeek}
               weeks={syncedWeeks}
@@ -172,18 +172,18 @@ function DashboardPage() {
             />
           </div>
 
-          <div className="h-full col-span-1 row-span-4">
+          <div className="-mt-10 min-h-[24rem] xl:mt-0 xl:col-span-1 xl:row-span-4 xl:h-full">
             <TaskOverviewCard
               tasks={todayTasks}
               onToggleTask={handleCheckboxChange}
             />
           </div>
 
-          <div className="h-full col-span-1 row-span-2">
+          <div className="min-h-[22rem] xl:col-span-1 xl:row-span-2 xl:h-full">
             <TimeTrackerCard />
           </div>
 
-          <div className="h-full col-span-2 row-span-1">
+          <div className="hidden xl:col-span-2 xl:row-span-1 xl:block xl:h-full">
             <HabitConsistencyCard entries={entries} />
           </div>
         </div>
