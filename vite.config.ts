@@ -32,10 +32,6 @@ export default defineConfig({
           if (id.includes('react-router') || id.includes('@remix-run')) {
             return 'vendor-router';
           }
-          // Dexie IndexedDB layer
-          if (id.includes('dexie')) {
-            return 'vendor-dexie';
-          }
           // React Hook Form — used across multiple lazy pages; cache separately
           if (id.includes('react-hook-form') || id.includes('@hookform')) {
             return 'vendor-hookform';
