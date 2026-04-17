@@ -1,8 +1,7 @@
 # Lattice
 
-Lattice is a frontend productivity app built with React and TypeScript. It combines task management, habit tracking, a Pomodoro timer, and a dashboard that shows everything in one place.
+Lattice is a productivity dashboard built with React and TypeScript. It combines task management, habit tracking, a Pomodoro timer, and a dashboard that shows everything in one place.
 
-The app is local-first. Data is stored in the browser, so there is no backend, no account system, and no API setup.
 
 ## Features
 
@@ -74,8 +73,3 @@ src/
 └── types/        Shared TypeScript types
 ```
 
-## Notes
-
-- This project runs fully on the client side.
-- Clearing browser storage will reset saved data.
-- The app seeds mock data on first load so the dashboard is not empty.
