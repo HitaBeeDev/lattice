@@ -1,4 +1,4 @@
-import { Sparkles, X } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "../../ui/cn";
 import NavList from "./NavList";
 import { mainNavItems } from "./navData";
@@ -27,14 +27,8 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[#f0f5f6] px-5 py-5">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#161c22]">
-            <Sparkles className="h-3.5 w-3.5 text-white" aria-hidden="true" />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-[#161c22]">Lattice</p>
-            <p className="text-[0.65rem] text-[#a0a5ab]">Productive OS</p>
-          </div>
+        <div>
+          <p className="text-sm font-semibold text-[#161c22]">Lattice</p>
         </div>
         <button
           aria-label="Close navigation menu"

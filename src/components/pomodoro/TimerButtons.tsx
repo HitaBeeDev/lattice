@@ -12,7 +12,7 @@ function TimerButtons() {
     isEditing,
   } = useTimeTracker();
   return (
-    <div className="flex flex-row items-center justify-center gap-4 mt-auto">
+    <div className="mt-auto flex flex-wrap items-center justify-center gap-3 md:gap-4">
       <button
         onClick={handleStart}
         type="button"

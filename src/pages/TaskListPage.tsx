@@ -17,12 +17,12 @@ function TaskListPage() {
 
       {showModal && isEditing && <AddModal />}
 
-      <section className="grid h-full grid-cols-1 gap-3 lg:grid-cols-5">
-        <div className="lg:col-span-3 bg-white rounded-[1.7rem]">
+      <section className="grid h-full grid-cols-1 gap-3 xl:grid-cols-5">
+        <div className="rounded-[1.7rem] bg-white xl:col-span-3">
           <TaskList />
         </div>
 
-        <div className="lg:col-span-2 bg-white rounded-[1.7rem] h-fit">
+        <div className="h-fit rounded-[1.7rem] bg-white xl:col-span-2">
           <UpcomingTasks />
         </div>
       </section>

@@ -34,10 +34,10 @@ function PomodoroPage() {
 
   return (
     <main
-      className="flex w-full h-[calc(100%-7rem)] mt-[7rem] overflow-y-auto lg:overflow-hidden pb-6"
+      className="mt-[7rem] flex h-[calc(100%-7rem)] w-full overflow-y-auto pb-6 xl:overflow-hidden"
       id="main-content"
     >
-      <section className="grid w-full h-full grid-cols-1 gap-3 lg:grid-cols-3">
+      <section className="grid h-full w-full grid-cols-1 gap-3 xl:grid-cols-3">
         <PomodoroSidebar
           todayLabel={todayLabel}
           todayFocusSeconds={todayFocusSeconds}
@@ -45,7 +45,7 @@ function PomodoroPage() {
           progressPct={progressPct}
         />
 
-        <div className="lg:col-span-2 flex flex-col rounded-[1.7rem] bg-white p-8">
+        <div className="flex flex-col rounded-[1.7rem] bg-white p-6 md:p-8 xl:col-span-2">
           <SessionTabs />
           <TimerCircle />
           <TimerButtons />

@@ -9,7 +9,7 @@ function UpcomingTasks() {
   return (
     <aside
       aria-labelledby="upcoming-tasks-heading h-fit"
-      className="lg:sticky lg:top-6 lg:self-start"
+      className="xl:sticky xl:top-6 xl:self-start"
     >
       <div className="overflow-hidden rounded-[1.7rem] h-fit">
         <div className="border-b border-[#f0f5f6] px-5 py-4">

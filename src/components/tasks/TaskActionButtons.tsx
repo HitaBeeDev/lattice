@@ -9,7 +9,7 @@ type TaskActionButtonsProps = {
 
 function TaskActionButtons({ taskName, onEdit, onDelete }: TaskActionButtonsProps) {
   return (
-    <div className="flex w-12 items-center justify-end gap-3 opacity-0 transition group-hover:opacity-100">
+    <div className="flex items-center justify-end gap-3 transition xl:w-12 xl:opacity-0 xl:group-hover:opacity-100">
       <button
         type="button"
         aria-label={`Edit ${taskName}`}

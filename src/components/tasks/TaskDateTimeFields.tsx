@@ -12,7 +12,7 @@ type TaskDateTimeFieldsProps = {
 
 export default function TaskDateTimeFields({ register, errors }: TaskDateTimeFieldsProps) {
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <div>
         <label className="text-[0.6rem] font-[500] text-[#d3d6d9] mb-1.5 block" htmlFor="new-task-date">
           Date

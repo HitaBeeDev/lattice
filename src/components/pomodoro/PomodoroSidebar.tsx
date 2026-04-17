@@ -23,10 +23,10 @@ export default function PomodoroSidebar({
   progressPct,
 }: PomodoroSidebarProps) {
   return (
-    <div className="lg:col-span-1 flex flex-col justify-between rounded-[1.7rem] bg-white p-8">
+    <div className="flex flex-col justify-between rounded-[1.7rem] bg-white p-6 md:p-8 xl:col-span-1">
       <div>
         <p className="text-[0.7rem] leading-none font-[300] text-[#a0a5ab] ml-1 mt-3">{todayLabel}</p>
-        <p className="mt-7 max-w-[10ch] text-[4rem] leading-[0.92] font-[200] tracking-[-0.05em] text-[#161c22]">
+        <p className="mt-7 max-w-[14ch] text-[2.8rem] leading-[0.92] font-[200] tracking-[-0.05em] text-[#161c22] md:max-w-[10ch] md:text-[4rem]">
           Hold the line on your focus.
         </p>
         <p className="mt-3 max-w-[30rem] text-[0.74rem] leading-5 font-[300] text-[#a0a6ab]">
@@ -35,7 +35,7 @@ export default function PomodoroSidebar({
         </p>
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3 xl:grid-cols-1">
         <div className="w-full rounded-[1rem] bg-[#edfdfe] p-5">
           <p className="text-[0.62rem] font-[500] uppercase tracking-[0.12em] text-[#a0a6ab]">Today&apos;s focus</p>
           <p className="mt-3 text-[2rem] font-[200] leading-none text-[#161c22]">
