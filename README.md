@@ -8,13 +8,11 @@ Lattice is a productivity dashboard built with React and TypeScript. It combines
 
 ## Quality
 
-| Metric | Score |
-|---|---|
-| Lighthouse Performance | 99 |
-| Accessibility | 96 |
-| SEO | 100 |
-| LCP | — |
-| Bundle Size | — |
+| Metric                 | Score |
+| ---------------------- | ----- |
+| Lighthouse Performance | 99    |
+| Accessibility          | 96    |
+| SEO                    | 100   |
 
 ## Features
 
@@ -85,4 +83,3 @@ src/
 ├── pages/        Route-level pages
 └── types/        Shared TypeScript types
 ```
-
