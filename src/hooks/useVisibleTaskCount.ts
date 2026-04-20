@@ -39,7 +39,7 @@ export function useVisibleTaskCount(maxCount: number): {
     const resizeObserver = new ResizeObserver(update);
     resizeObserver.observe(listArea);
     if (sampleRowRef.current) resizeObserver.observe(sampleRowRef.current);
-    window.addEventListener("resize", update);
+    window.addEventListener("resize", update, { passive: true });
 
     return () => {
       resizeObserver.disconnect();

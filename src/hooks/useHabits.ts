@@ -98,7 +98,7 @@ export function useHabits(): HabitContextValue {
       setWindowWidth(window.innerWidth);
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
 
     return (): void => {
       window.removeEventListener("resize", handleResize);
