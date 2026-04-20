@@ -2,6 +2,17 @@
 
 Lattice is a productivity dashboard built with React and TypeScript. It combines task management, habit tracking, a Pomodoro timer, and a dashboard that shows everything in one place.
 
+<p align="center">
+  <img src="docs/assets/preview.png" alt="Lattice Dashboard" width="800" />
+</p>
+
+## Performance
+
+| Metric | Score |
+|---|---|
+| Lighthouse Performance | 99 |
+| Accessibility | 96 |
+| SEO | 100 |
 
 ## Features
 
